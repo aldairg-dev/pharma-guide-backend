@@ -1,0 +1,49 @@
+{
+  "name": "pharma-guide-backend",
+  "version": "1.0.0",
+  "description": "API REST para la aplicación móvil PharmaGuide, una herramienta académica para estudiantes de Química Farmacéutica.",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/2A2G/pharma-guide-backend.git"
+  },
+  "keywords": [
+    "API",
+    "Química",
+    "Farmacéutica",
+    "Educación",
+    "Medicamentos",
+    "Inteligencia Artificial",
+    "DeepSeek",
+    "Backend",
+    "Node.js",
+    "Express",
+    "REST",
+    "API REST"
+  ],
+  "author": "2A2G",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/2A2G/pharma-guide-backend/issues"
+  },
+  "homepage": "https://github.com/2A2G/pharma-guide-backend#readme",
+  "dependencies": {
+    "@prisma/client": "^6.5.0",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.14.0",
+    "nodemon": "^3.0.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.3",
+    "prisma": "^6.5.0"
+  }
+}
