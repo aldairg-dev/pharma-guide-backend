@@ -32,7 +32,7 @@ El backend gestiona usuarios, contenido educativo, planificación académica ada
 
 ---
 
-## ⚙️ Scripts Disponibles
+## ⚙️ Scripts
 
 | Comando         | Descripción                                               |
 | --------------- | --------------------------------------------------------- |
