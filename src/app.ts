@@ -1,15 +1,9 @@
-// app.js
+import express from "express";
+import routerUser from "./modules/user/router/user.router"; // Ajusta la ruta según tu estructura
 
-const express = require("express");
 const app = express();
 
-// Middlewares globales
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use("/api/users", routerUser);
 
-// Ruta de prueba
-app.get("/", (req, res) => {
-  res.send("Bienvenido a la API de PharmaGuide 🎓💊");
-});
-
-module.exports = app;
+export default app;
