@@ -1,5 +1,5 @@
 import express from "express";
-import routerUser from "./modules/user/router/user.router"; // Ajusta la ruta según tu estructura
+import routerUser from "./modules/user/router/user.router";
 
 const app = express();
 
