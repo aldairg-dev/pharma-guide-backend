@@ -1,7 +1,8 @@
-// index.ts
-const application = require("./app");
+import app from "./app";
+import { PrismaClient } from "@prisma/client";
+
 const PORT = process.env.PORT || 3000;
 
-application.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log(`🚀 Servidor ejecutándose en http://localhost:${PORT}`);
 });

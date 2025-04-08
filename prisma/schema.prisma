@@ -12,3 +12,25 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id         Int         @id @default(autoincrement()) @db.Integer
+  full_name  String      @db.VarChar(100)
+  email      String?     @unique
+  password   String      @db.VarChar(100)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  studyPlans StudyPlan[]
+}
+
+model StudyPlan {
+  id          Int      @id @default(autoincrement()) @db.Integer
+  user        User     @relation(fields: [userId], references: [id])
+  userId      Int
+  subjet_name String   @db.VarChar(100)
+  total_days  Int      @db.Integer
+  daily_hour  Decimal  @db.Decimal(10, 2)
+  status      String   @db.VarChar(20)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
