@@ -1,4 +1,5 @@
 import { PrismaClient, User } from "@prisma/client";
+import { bcryptService } from "../../../utils/bcryp/bcryp.service";
 
 const prisma = new PrismaClient();
 
@@ -14,6 +15,9 @@ export class UserService {
         return null;
       }
 
+      const hashedPassword = await bcryptService.encryptPassword(user.password);
+      user.password = hashedPassword;
+
       const newUser = await prisma.user.create({
         data: user,
       });
@@ -28,11 +32,21 @@ export class UserService {
   async loginUser(email: string, password: string): Promise<User | null> {
     try {
       const user = await prisma.user.findFirst({
-        where: {
-          email,
-          password,
-        },
+        where: { email },
       });
+
+      if (!user) {
+        return null;
+      }
+
+      const isPasswordValid = await bcryptService.comparePasswords(
+        password,
+        user.password
+      );
+
+      if (!isPasswordValid) {
+        return null;
+      }
 
       return user;
     } catch (error) {
