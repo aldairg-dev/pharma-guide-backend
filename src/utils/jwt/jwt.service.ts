@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+import { Request, Response, NextFunction, RequestHandler } from "express";
 
 interface JwtPayload {
   emailUser: string;
@@ -21,11 +22,10 @@ export class JwtService {
       );
     }
 
-    return jwt.sign(payload, secret, {
-      expiresIn,
-    });
+    return jwt.sign(payload, secret, { expiresIn });
   }
 
+  // Token verification process
   verifyToken(token: string): JwtPayload {
     const secret = process.env.JWT_SECRET;
 
@@ -35,4 +35,29 @@ export class JwtService {
 
     return jwt.verify(token, secret) as JwtPayload;
   }
+
+  // Token verify Middleware
+  verifyTokenMiddleware: RequestHandler = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      res.status(401).json({ message: "Token no proporcionado o inválido" });
+      return undefined;
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    try {
+      const decoded = this.verifyToken(token);
+      (req as any).user = decoded;
+      next();
+    } catch (error) {
+      res.status(401).json({ message: "Token inválido o expirado" });
+      return undefined;
+    }
+  };
 }
