@@ -1,0 +1,63 @@
+const jwt = require("jsonwebtoken");
+import { Request, Response, NextFunction, RequestHandler } from "express";
+
+interface JwtPayload {
+  emailUser: string;
+}
+
+/**
+ * @author "@2A2G (Aldair Gutierrez Guerrero)"
+ * @abstract "This class is responsible for creating and verifying JWT tokens."
+ * @date "2023-10-01"
+ */
+export class JwtService {
+  // Token creation process
+  createToken(payload: JwtPayload): string {
+    const secret = process.env.JWT_SECRET;
+    const expiresIn = process.env.JWT_EXPIRATION;
+
+    if (!secret || !expiresIn) {
+      throw new Error(
+        "Faltan las variables de entorno JWT_SECRET o JWT_EXPIRATION"
+      );
+    }
+
+    return jwt.sign(payload, secret, { expiresIn });
+  }
+
+  // Token verification process
+  verifyToken(token: string): JwtPayload {
+    const secret = process.env.JWT_SECRET;
+
+    if (!secret) {
+      throw new Error("Falta la variable de entorno JWT_SECRET");
+    }
+
+    return jwt.verify(token, secret) as JwtPayload;
+  }
+
+  // Token verify Middleware
+  verifyTokenMiddleware: RequestHandler = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      res.status(401).json({ message: "Token no proporcionado o inválido" });
+      return undefined;
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    try {
+      const decoded = this.verifyToken(token);
+      (req as any).user = decoded;
+      next();
+    } catch (error) {
+      res.status(401).json({ message: "Token inválido o expirado" });
+      return undefined;
+    }
+  };
+}

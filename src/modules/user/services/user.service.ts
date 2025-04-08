@@ -1,7 +1,9 @@
 import { PrismaClient, User } from "@prisma/client";
 import { bcryptService } from "../../../utils/bcryp/bcryp.service";
+import { JwtService } from "../../../utils/jwt/jwt.service";
 
 const prisma = new PrismaClient();
+const jwtService = new JwtService();
 
 export class UserService {
   async createUser(user: User): Promise<User | null> {
@@ -29,7 +31,7 @@ export class UserService {
     }
   }
 
-  async loginUser(email: string, password: string): Promise<User | null> {
+  async loginUser(email: string, password: string): Promise<string | null> {
     try {
       const user = await prisma.user.findFirst({
         where: { email },
@@ -48,7 +50,11 @@ export class UserService {
         return null;
       }
 
-      return user;
+      const token = jwtService.createToken({
+        emailUser: user.email ?? "",
+      });
+
+      return token;
     } catch (error) {
       console.error("Error en login:", error);
       throw new Error("No se pudo iniciar sesión");
