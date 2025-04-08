@@ -15,6 +15,9 @@ export class UserService {
         return null;
       }
 
+      const hashedPassword = await bcryptService.encryptPassword(user.password);
+      user.password = hashedPassword;
+
       const newUser = await prisma.user.create({
         data: user,
       });
