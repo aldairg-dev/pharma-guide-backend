@@ -30,6 +30,7 @@ async function main() {
       await prisma.role.create({
         data: {
           name: "admin",
+          statusId: 1,
         },
       });
       console.log("Seed de rol registrado con éxito!");
