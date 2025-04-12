@@ -1,0 +1,12 @@
+[
+  {
+    "name": "Pharma Guide Dev",
+    "type": "postgres",
+    "host": "localhost",
+    "port": 5432,
+    "username": "postgres",
+    "password": "12345678",
+    "database": "pharma_guide",
+    "schema": "public"
+  }
+]

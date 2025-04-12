@@ -52,6 +52,7 @@ export class UserService {
 
       const token = jwtService.createToken({
         emailUser: user.email ?? "",
+        userId: user.id ?? null,
       });
 
       return token;
