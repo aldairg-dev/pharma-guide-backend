@@ -8,5 +8,9 @@ routerStudyPlan.post(
   "/study-plans/create",
   studyPlanController.createStudyPlan.bind(studyPlanController)
 );
+routerStudyPlan.get(
+  "/study-plans",
+  studyPlanController.getStudyPlan.bind(studyPlanController)
+);
 
 export default routerStudyPlan;

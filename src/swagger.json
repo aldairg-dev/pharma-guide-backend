@@ -101,6 +101,69 @@
           }
         }
       }
+    },
+    "/api/study-plans/create": {
+      "post": {
+        "summary": "Crear un nuevo plan de estudio",
+        "tags": ["Plan de Estudio"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["subjet_name", "total_days", "daily_hour"],
+                "properties": {
+                  "subjet_name": {
+                    "type": "string",
+                    "example": "Farmacología"
+                  },
+                  "total_days": {
+                    "type": "integer",
+                    "example": 30
+                  },
+                  "daily_hour": {
+                    "type": "number",
+                    "format": "float",
+                    "example": 2.5
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Plan de estudio creado correctamente"
+          },
+          "400": {
+            "description": "Faltan valores para crear el plan de estudio"
+          },
+          "409": {
+            "description": "El plan de estudio ya existe"
+          },
+          "500": {
+            "description": "Error al crear el plan de estudio"
+          }
+        }
+      }
+    },
+    "/api/study-plans": {
+      "get": {
+        "summary": "Obtener el plan de estudio del usuario",
+        "tags": ["Plan de Estudio"],
+        "responses": {
+          "200": {
+            "description": "Plan de estudio obtenido correctamente"
+          },
+          "404": {
+            "description": "No se encontró el plan de estudio"
+          },
+          "500": {
+            "description": "Error al obtener el plan de estudio"
+          }
+        }
+      }
     }
   }
 }
