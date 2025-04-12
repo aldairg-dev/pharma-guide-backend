@@ -4,6 +4,15 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+/**
+ * npx prisma migrate dev  -> Crea y aplica migraciones en desarrollo, útil cuando se hacen cambios en el esquema y se necesita aplicarlos en la base de datos local.
+ * npx prisma migrate reset --force  -> Reinicia la base de datos, eliminando todas las tablas y aplicando todas las migraciones desde cero. La opción `--force` evita la confirmación interactiva.
+ * npx prisma migrate deploy -> Aplica las migraciones pendientes en un entorno de producción o despliegue, sin eliminar datos existentes.
+ * npx prisma db push  -> Sin generar migraciones, empuja el estado actual del esquema a la base de datos (útil cuando solo quieres sincronizar el esquema sin generar migraciones).
+ * npx prisma generate  -> Regenera el cliente Prisma después de realizar cambios en el esquema o después de actualizar la configuración.
+ * npx prisma studio  -> Abre una interfaz gráfica en el navegador para interactuar con la base de datos a través de Prisma Studio, donde puedes visualizar y modificar los datos.
+ */
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,24 +22,57 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Status {
+  id        Int         @id @default(autoincrement()) @db.Integer
+  name      String      @unique @db.VarChar(100)
+  role      Role[] // Relación uno a muchos, no necesita cambios
+  user      User[] // Relación uno a muchos, no necesita cambios
+  studyPlan StudyPlan[] // Relación uno a muchos, no necesita cambios
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Role {
+  id       Int     @id @default(autoincrement()) @db.Integer
+  name     String  @unique @db.VarChar(100)
+  statusId Int?
+  status   Status? @relation(fields: [statusId], references: [id])
+
+  user User[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model User {
   id         Int         @id @default(autoincrement()) @db.Integer
   full_name  String      @db.VarChar(100)
-  email      String?     @unique
+  email      String      @unique
   password   String      @db.VarChar(100)
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  roleId     Int?
   studyPlans StudyPlan[]
+
+  role     Role?   @relation(fields: [roleId], references: [id])
+  statusId Int?
+  status   Status? @relation(fields: [statusId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model StudyPlan {
-  id          Int      @id @default(autoincrement()) @db.Integer
-  user        User     @relation(fields: [userId], references: [id])
+  id          Int     @id @default(autoincrement()) @db.Integer
+  user        User    @relation(fields: [userId], references: [id])
   userId      Int
-  subjet_name String   @unique @db.VarChar(100)
-  total_days  Int      @db.Integer
-  daily_hour  Decimal  @db.Decimal(10, 2)
-  status      String   @db.VarChar(20)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  subjet_name String  @unique @db.VarChar(100)
+  total_days  Int     @db.Integer
+  daily_hour  Decimal @db.Decimal(10, 2)
+
+  statusId Int? @db.Integer
+
+  Status Status? @relation(fields: [statusId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
