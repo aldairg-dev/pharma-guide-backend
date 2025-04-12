@@ -9,5 +9,6 @@
             "database": "pharma_guide",
             "username": "postgres"
         }
-    ]
+    ],
+    "postman.settings.dotenv-detection-notification-visibility": false
 }

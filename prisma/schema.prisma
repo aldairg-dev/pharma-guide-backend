@@ -27,7 +27,7 @@ model StudyPlan {
   id          Int      @id @default(autoincrement()) @db.Integer
   user        User     @relation(fields: [userId], references: [id])
   userId      Int
-  subjet_name String   @db.VarChar(100)
+  subjet_name String   @unique @db.VarChar(100)
   total_days  Int      @db.Integer
   daily_hour  Decimal  @db.Decimal(10, 2)
   status      String   @db.VarChar(20)

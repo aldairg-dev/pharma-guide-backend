@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 import { Request, Response, NextFunction, RequestHandler } from "express";
 
 interface JwtPayload {
+  userId: number;
   emailUser: string;
 }
 
@@ -55,6 +56,7 @@ export class JwtService {
       const decoded = this.verifyToken(token);
       (req as any).user = decoded;
       next();
+      console.log(decoded);
     } catch (error) {
       res.status(401).json({ message: "Token inválido o expirado" });
       return undefined;
