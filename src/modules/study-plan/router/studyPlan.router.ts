@@ -12,5 +12,9 @@ routerStudyPlan.get(
   "/study-plans",
   studyPlanController.getStudyPlan.bind(studyPlanController)
 );
+routerStudyPlan.put(
+  "/study-plans",
+  studyPlanController.updateStudyPlan.bind(studyPlanController)
+);
 
 export default routerStudyPlan;

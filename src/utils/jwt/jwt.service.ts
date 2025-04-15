@@ -19,11 +19,11 @@ export class JwtService {
 
     if (!secret || !expiresIn) {
       throw new Error(
-        "Faltan las variables de entorno JWT_SECRET o JWT_EXPIRATION"
+        "Missing required environment variables: JWT_SECRET or JWT_EXPIRATION."
       );
     }
 
-    return jwt.sign(payload, secret, { expiresIn });
+    return jwt.sign(payload, secret, { expiresIn: Number(expiresIn) });
   }
 
   // Token verification process

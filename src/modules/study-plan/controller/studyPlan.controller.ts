@@ -18,20 +18,20 @@ export class StudyPlanController {
     next: NextFunction
   ): Promise<void> {
     try {
+      const userId = getUserIdOrRespond(req, res);
+      if (!userId) return;
+
       const studyPlanData = req.body;
 
       if (
         !validateFieldOrRespond(
           studyPlanData,
           res,
-          "Faltan valores para crear el plan de estudio"
+          "Missing required values to create the study plan."
         )
       ) {
         return;
       }
-
-      const userId = getUserIdOrRespond(req, res);
-      if (!userId) return;
 
       const studyPlanWithUser = { ...studyPlanData, userId };
 
@@ -40,18 +40,21 @@ export class StudyPlanController {
       );
 
       if (!createdStudyPlan) {
-        res.status(409).json({ message: "El plan de estudio ya existe" });
+        res.status(409).json({
+          message: "A study plan already exists for this user.",
+        });
         return;
       }
 
       res.status(201).json({
-        message: "Plan de estudio creado correctamente",
+        message: "Study plan created successfully.",
         studyPlan: createdStudyPlan,
       });
     } catch (error) {
-      console.error("Error al crear el StudyPlan: ", error);
+      console.error("Error while creating the study plan:", error);
       res.status(500).json({
-        message: "Error al crear el plan de estudio. Inténtelo nuevamente.",
+        message:
+          "An error occurred while creating the study plan. Please try again later.",
       });
     }
   }
@@ -70,18 +73,66 @@ export class StudyPlanController {
       );
 
       if (!studyPlanUser) {
-        res.status(404).json({ message: "No se encontró el plan de estudio" });
+        res.status(404).json({
+          message: "No study plan found for the specified user.",
+        });
         return;
       }
 
       res.status(200).json({
-        message: "Plan de estudio obtenido correctamente",
+        message: "Study plan retrieved successfully.",
         studyPlan: studyPlanUser,
       });
     } catch (error) {
-      console.error("Error al obtener el StudyPlan:", error);
+      console.error("Error while retrieving the study plan:", error);
       res.status(500).json({
-        message: "Error al obtener el plan de estudio. Inténtelo nuevamente.",
+        message:
+          "An error occurred while retrieving the study plan. Please try again later.",
+      });
+    }
+  }
+
+  public async updateStudyPlan(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const userId = getUserIdOrRespond(req, res);
+      if (!userId) return;
+
+      const studyPlan = req.body;
+
+      if (
+        !validateFieldOrRespond(
+          studyPlan,
+          res,
+          "Missing required values to update the study plan."
+        )
+      ) {
+        return;
+      }
+
+      const studyPlanUpdate = await this.studyPlanSerive.updateStudyPlan(
+        studyPlan
+      );
+
+      if (!studyPlanUpdate) {
+        res.status(400).json({
+          message: "Study plan not found. Unable to update.",
+        });
+        return;
+      }
+
+      res.status(200).json({
+        message: "Study plan updated successfully.",
+        studyPlan: studyPlanUpdate,
+      });
+    } catch (error) {
+      console.error("Error while updating the study plan:", error);
+      res.status(500).json({
+        message:
+          "An error occurred while updating the study plan. Please try again later.",
       });
     }
   }

@@ -32,4 +32,33 @@ export class StudyPlanService {
 
     return studyPlan;
   }
+
+  async updateStudyPlan(studyPlan: StudyPlan): Promise<StudyPlan | null> {
+    try {
+      const existingPlans = await prisma.studyPlan.findMany({
+        where: {
+          id: studyPlan.id,
+        },
+      });
+
+      if (existingPlans.length === 0) {
+        console.warn(
+          "No existing study plan found with the given subject name."
+        );
+        return null;
+      }
+
+      const updatedStudyPlan = await prisma.studyPlan.update({
+        where: { id: studyPlan.id },
+        data: studyPlan,
+      });
+
+      return updatedStudyPlan;
+    } catch (error) {
+      console.error("Failed to update study plan:", error);
+      throw new Error(
+        "Unable to update the study plan. Please try again later."
+      );
+    }
+  }
 }
