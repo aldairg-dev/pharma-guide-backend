@@ -164,6 +164,66 @@
           }
         }
       }
+    },
+    "/api/study-plans/{id}": {
+      "put": {
+        "summary": "Actualizar el plan de estudio del usuario",
+        "tags": ["Plan de Estudio"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID del plan de estudio que se desea actualizar"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["subjet_name", "total_days", "daily_hour"],
+                "properties": {
+                  "subjet_name": {
+                    "type": "string",
+                    "example": "Farmacología"
+                  },
+                  "total_days": {
+                    "type": "integer",
+                    "example": 30
+                  },
+                  "daily_hour": {
+                    "type": "number",
+                    "format": "float",
+                    "example": 2.5
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Plan de estudio actualizado correctamente"
+          },
+          "400": {
+            "description": "Faltan valores para actualizar el plan de estudio"
+          },
+          "403": {
+            "description": "No estás autorizado para actualizar este plan de estudio"
+          },
+          "404": {
+            "description": "No se encontró el plan de estudio"
+          },
+          "500": {
+            "description": "Error al actualizar el plan de estudio"
+          }
+        }
+      }
     }
   }
 }

@@ -101,6 +101,15 @@ export class StudyPlanController {
       const userId = getUserIdOrRespond(req, res);
       if (!userId) return;
 
+      const { id } = req.params;
+
+      if (userId !== id) {
+        res.status(403).json({
+          message: "You are not authorized to update this study plan.",
+        });
+        return;
+      }
+
       const studyPlan = req.body;
 
       if (
