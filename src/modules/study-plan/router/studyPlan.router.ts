@@ -12,8 +12,9 @@ routerStudyPlan.get(
   "/study-plans",
   studyPlanController.getStudyPlan.bind(studyPlanController)
 );
+
 routerStudyPlan.put(
-  "/study-plans",
+  "/study-plans/:id",
   studyPlanController.updateStudyPlan.bind(studyPlanController)
 );
 
