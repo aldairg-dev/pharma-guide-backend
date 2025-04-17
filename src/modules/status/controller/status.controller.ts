@@ -77,4 +77,40 @@ export class StatusController {
       });
     }
   }
+
+  public async getOneStatus(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { idStatus } = req.body;
+
+      if (typeof idStatus !== "number" || idStatus <= 0) {
+        res.status(400).json({
+          message: "Invalid or missing status ID.",
+        });
+        return;
+      }
+
+      const dataStatus = await this.statusService.getOneStatus(idStatus);
+
+      if (!dataStatus) {
+        res.status(404).json({
+          message: `Status with ID ${idStatus} not found.`,
+        });
+        return;
+      }
+
+      res.status(200).json({
+        message: "Status retrieved successfully.",
+        dataStatus: dataStatus,
+      });
+    } catch (error) {
+      console.error("Error retrieving status:", error);
+      res.status(500).json({
+        message: "An error occurred while retrieving the status.",
+      });
+    }
+  }
 }

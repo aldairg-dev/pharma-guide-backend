@@ -9,5 +9,9 @@ routerStatus.post(
   statusController.createStatus.bind(statusController)
 );
 routerStatus.get("/status", statusController.getStatus.bind(statusController));
+routerStatus.get(
+  "status/:id",
+  statusController.getOneStatus.bind(statusController)
+);
 
 export default routerStatus;

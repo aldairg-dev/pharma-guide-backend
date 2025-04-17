@@ -26,6 +26,7 @@ export class StatusService {
       throw new Error("Unable to create new status.");
     }
   }
+
   async getStatus() {
     try {
       const dataStatus = await prisma.status.findMany({
@@ -45,6 +46,30 @@ export class StatusService {
         error
       );
       throw new Error("Unable to retrieve status records.");
+    }
+  }
+
+  async getOneStatus(idStatus: number) {
+    try {
+      if (typeof idStatus !== "number" || idStatus <= 0) {
+        throw new Error("Invalid or missing status ID.");
+      }
+
+      const dataStatus = await prisma.status.findFirst({
+        where: {
+          id: idStatus,
+          isDeleted: false,
+        },
+      });
+
+      if (!dataStatus) {
+        throw new Error(`Status with ID ${idStatus} not found.`);
+      }
+
+      return dataStatus;
+    } catch (error) {
+      console.error("Error retrieving status:", error);
+      throw new Error("Unable to retrieve the status.");
     }
   }
 }
