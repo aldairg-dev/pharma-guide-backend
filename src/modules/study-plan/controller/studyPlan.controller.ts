@@ -91,6 +91,44 @@ export class StudyPlanController {
       });
     }
   }
+  public async getOneStudyPlan(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { id } = req.params;
+
+      if (!id) {
+        res.status(400).json({ message: "Study plan ID is required." });
+        return;
+      }
+
+      const idStudyPlan = Number(id);
+
+      if (isNaN(idStudyPlan)) {
+        res.status(400).json({ message: "Invalid ID format." });
+        return;
+      }
+
+      const studyPlan = await this.studyPlanSerive.getOneStudyPlan(idStudyPlan);
+
+      if (!studyPlan) {
+        res.status(404).json({ message: "Study plan not found." });
+        return;
+      }
+
+      res.status(200).json({
+        message: "Study plan found successfully.",
+        studyPlan: studyPlan,
+      });
+    } catch (error) {
+      console.error("Error getting study plan:", error);
+      res.status(500).json({
+        message: "Unable to get the study plan. Please try again later.",
+      });
+    }
+  }
 
   public async updateStudyPlan(
     req: Request,
