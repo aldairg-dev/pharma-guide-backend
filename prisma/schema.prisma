@@ -12,7 +12,6 @@
  * npx prisma generate  -> Regenera el cliente Prisma después de realizar cambios en el esquema o después de actualizar la configuración.
  * npx prisma studio  -> Abre una interfaz gráfica en el navegador para interactuar con la base de datos a través de Prisma Studio, donde puedes visualizar y modificar los datos.
  */
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -25,9 +24,11 @@ datasource db {
 model Status {
   id        Int         @id @default(autoincrement()) @db.Integer
   name      String      @unique @db.VarChar(100)
-  role      Role[] // Relación uno a muchos, no necesita cambios
-  user      User[] // Relación uno a muchos, no necesita cambios
-  studyPlan StudyPlan[] // Relación uno a muchos, no necesita cambios
+  role      Role[]
+  user      User[]
+  studyPlan StudyPlan[]
+
+  isDeleted Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -40,6 +41,8 @@ model Role {
   status   Status? @relation(fields: [statusId], references: [id])
 
   user User[]
+
+  isDeleted Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -57,6 +60,8 @@ model User {
   statusId Int?
   status   Status? @relation(fields: [statusId], references: [id])
 
+  isDeleted Boolean @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -72,6 +77,8 @@ model StudyPlan {
   statusId Int? @db.Integer
 
   Status Status? @relation(fields: [statusId], references: [id])
+
+  isDeleted Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -8,8 +8,9 @@ export class StudyPlanService {
         where: { subjet_name: studyPlan.subjet_name },
       });
 
-      if (existingStudyPlan)
-        return console.warn("El studyPlan ya existe"), null;
+      if (existingStudyPlan) {
+        throw new Error("The study plan already exists.");
+      }
 
       const newStudyPlan = await prisma.studyPlan.create({
         data: studyPlan,
@@ -17,8 +18,8 @@ export class StudyPlanService {
 
       return newStudyPlan;
     } catch (error) {
-      console.log("Error al crear el study Plan", error);
-      throw new Error("No se pudo crear el study Plan");
+      console.error("Error creating the study plan:", error);
+      throw new Error("Failed to create the study plan.");
     }
   }
 
