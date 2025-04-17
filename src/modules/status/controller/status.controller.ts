@@ -50,4 +50,31 @@ export class StatusController {
       });
     }
   }
+
+  public async getStatus(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const dataStatus = await this.statusService.getStatus();
+
+      if (dataStatus.length === 0) {
+        res.status(404).json({
+          message: "No status records found.",
+        });
+        return;
+      }
+
+      res.status(200).json({
+        message: "Status retrieved successfully.",
+        status: dataStatus,
+      });
+    } catch (error) {
+      console.error("Error while retrieving the status:", error);
+      res.status(500).json({
+        message: "An error occurred while retrieving the status.",
+      });
+    }
+  }
 }

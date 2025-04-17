@@ -26,4 +26,25 @@ export class StatusService {
       throw new Error("Unable to create new status.");
     }
   }
+  async getStatus() {
+    try {
+      const dataStatus = await prisma.status.findMany({
+        where: {
+          isDeleted: false,
+        },
+      });
+
+      if (dataStatus.length === 0) {
+        console.log("No status records found.");
+      }
+
+      return dataStatus;
+    } catch (error) {
+      console.error(
+        "An error occurred while retrieving status records:",
+        error
+      );
+      throw new Error("Unable to retrieve status records.");
+    }
+  }
 }
