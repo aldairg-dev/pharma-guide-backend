@@ -9,11 +9,14 @@ export class UserService {
   async createUser(user: User): Promise<User | null> {
     try {
       const existingUser = await prisma.user.findFirst({
-        where: { email: user.email },
+        where: {
+          email: user.email,
+          isDeleted: false,
+        },
       });
 
       if (existingUser) {
-        console.warn(`Usuario con email ${user.email} ya existe`);
+        console.warn(`A user with the email ${user.email} already exists.`);
         return null;
       }
 
@@ -26,18 +29,22 @@ export class UserService {
 
       return newUser;
     } catch (error) {
-      console.error("Error al crear usuario:", error);
-      throw new Error("No se pudo crear el usuario");
+      console.error("Error creating user:", error);
+      throw new Error("Failed to create user.");
     }
   }
 
   async loginUser(email: string, password: string): Promise<string | null> {
     try {
       const user = await prisma.user.findFirst({
-        where: { email },
+        where: {
+          email,
+          isDeleted: false,
+        },
       });
 
       if (!user) {
+        console.warn("User not found or has been deleted.");
         return null;
       }
 
@@ -47,6 +54,7 @@ export class UserService {
       );
 
       if (!isPasswordValid) {
+        console.warn("Invalid password.");
         return null;
       }
 
@@ -57,21 +65,24 @@ export class UserService {
 
       return token;
     } catch (error) {
-      console.error("Error en login:", error);
-      throw new Error("No se pudo iniciar sesión");
+      console.error("Login error:", error);
+      throw new Error("Failed to log in.");
     }
   }
 
   async existUser(email: string): Promise<User | null> {
     try {
       const user = await prisma.user.findFirst({
-        where: { email },
+        where: {
+          email,
+          isDeleted: false,
+        },
       });
 
       return user;
     } catch (error) {
-      console.error("Error al verificar usuario:", error);
-      throw new Error("No se pudo verificar el usuario");
+      console.error("Error checking user existence:", error);
+      throw new Error("Failed to verify user.");
     }
   }
 }
