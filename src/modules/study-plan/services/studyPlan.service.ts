@@ -33,6 +33,21 @@ export class StudyPlanService {
     return studyPlan;
   }
 
+  async getOneStudyPlan(idStudyPlan: number) {
+    try {
+      if (!idStudyPlan) throw new Error("Study plan ID is required.");
+
+      const studyPlan = await prisma.studyPlan.findUnique({
+        where: { id: idStudyPlan },
+      });
+
+      return studyPlan;
+    } catch (error) {
+      console.log("Failed to get the study plan:", error);
+      throw new Error("Unable to get the study plan. Please try again later.");
+    }
+  }
+
   async updateStudyPlan(studyPlan: StudyPlan): Promise<StudyPlan | null> {
     try {
       const existingPlans = await prisma.studyPlan.findMany({

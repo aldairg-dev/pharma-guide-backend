@@ -49,18 +49,10 @@
           }
         },
         "responses": {
-          "201": {
-            "description": "Usuario registrado correctamente"
-          },
-          "400": {
-            "description": "Faltan datos obligatorios"
-          },
-          "409": {
-            "description": "El usuario ya existe"
-          },
-          "500": {
-            "description": "Error interno del servidor"
-          }
+          "201": { "description": "Usuario registrado correctamente" },
+          "400": { "description": "Faltan datos obligatorios" },
+          "409": { "description": "El usuario ya existe" },
+          "500": { "description": "Error interno del servidor" }
         }
       }
     },
@@ -90,19 +82,13 @@
           }
         },
         "responses": {
-          "200": {
-            "description": "Inicio de sesión exitoso"
-          },
-          "401": {
-            "description": "Credenciales inválidas"
-          },
-          "500": {
-            "description": "Error al iniciar sesión"
-          }
+          "200": { "description": "Inicio de sesión exitoso" },
+          "401": { "description": "Credenciales inválidas" },
+          "500": { "description": "Error al iniciar sesión" }
         }
       }
     },
-    "/api/study-plans/create": {
+    "/api/study-plans": {
       "post": {
         "summary": "Crear un nuevo plan de estudio",
         "tags": ["Plan de Estudio"],
@@ -112,9 +98,9 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["subjet_name", "total_days", "daily_hour"],
+                "required": ["subject_name", "total_days", "daily_hour"],
                 "properties": {
-                  "subjet_name": {
+                  "subject_name": {
                     "type": "string",
                     "example": "Farmacología"
                   },
@@ -133,39 +119,45 @@
           }
         },
         "responses": {
-          "201": {
-            "description": "Plan de estudio creado correctamente"
-          },
+          "201": { "description": "Plan de estudio creado correctamente" },
           "400": {
             "description": "Faltan valores para crear el plan de estudio"
           },
-          "409": {
-            "description": "El plan de estudio ya existe"
-          },
-          "500": {
-            "description": "Error al crear el plan de estudio"
-          }
+          "409": { "description": "El plan de estudio ya existe" },
+          "500": { "description": "Error al crear el plan de estudio" }
         }
-      }
-    },
-    "/api/study-plans": {
+      },
       "get": {
         "summary": "Obtener el plan de estudio del usuario",
         "tags": ["Plan de Estudio"],
         "responses": {
-          "200": {
-            "description": "Plan de estudio obtenido correctamente"
-          },
-          "404": {
-            "description": "No se encontró el plan de estudio"
-          },
-          "500": {
-            "description": "Error al obtener el plan de estudio"
-          }
+          "200": { "description": "Plan de estudio obtenido correctamente" },
+          "404": { "description": "No se encontró el plan de estudio" },
+          "500": { "description": "Error al obtener el plan de estudio" }
         }
       }
     },
     "/api/study-plans/{id}": {
+      "get": {
+        "summary": "Obtener un plan de estudio específico por ID",
+        "tags": ["Plan de Estudio"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID del plan de estudio que se desea obtener"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Plan de estudio obtenido correctamente" },
+          "404": { "description": "No se encontró el plan de estudio" },
+          "500": { "description": "Error al obtener el plan de estudio" }
+        }
+      },
       "put": {
         "summary": "Actualizar el plan de estudio del usuario",
         "tags": ["Plan de Estudio"],
@@ -186,9 +178,9 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["subjet_name", "total_days", "daily_hour"],
+                "required": ["subject_name", "total_days", "daily_hour"],
                 "properties": {
-                  "subjet_name": {
+                  "subject_name": {
                     "type": "string",
                     "example": "Farmacología"
                   },
@@ -207,21 +199,15 @@
           }
         },
         "responses": {
-          "200": {
-            "description": "Plan de estudio actualizado correctamente"
-          },
+          "200": { "description": "Plan de estudio actualizado correctamente" },
           "400": {
             "description": "Faltan valores para actualizar el plan de estudio"
           },
           "403": {
             "description": "No estás autorizado para actualizar este plan de estudio"
           },
-          "404": {
-            "description": "No se encontró el plan de estudio"
-          },
-          "500": {
-            "description": "Error al actualizar el plan de estudio"
-          }
+          "404": { "description": "No se encontró el plan de estudio" },
+          "500": { "description": "Error al actualizar el plan de estudio" }
         }
       }
     }
