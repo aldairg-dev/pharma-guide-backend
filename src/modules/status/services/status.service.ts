@@ -6,7 +6,10 @@ export class StatusService {
   async createStatus(status: Status): Promise<Status | null> {
     try {
       const existingStatus = await prisma.status.findFirst({
-        where: { name: status.name },
+        where: {
+          name: status.name,
+          isDeleted: false,
+        },
       });
 
       if (existingStatus) {
