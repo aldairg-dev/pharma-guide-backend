@@ -5,7 +5,10 @@ export class StudyPlanService {
   async createStudyPlan(studyPlan: StudyPlan): Promise<StudyPlan | null> {
     try {
       const existingStudyPlan = await prisma.studyPlan.findFirst({
-        where: { subjet_name: studyPlan.subjet_name },
+        where: {
+          subjet_name: studyPlan.subjet_name,
+          isDeleted: false,
+        },
       });
 
       if (existingStudyPlan) {
@@ -25,11 +28,16 @@ export class StudyPlanService {
 
   async getStudyPlan(userId: number) {
     const studyPlan = await prisma.studyPlan.findMany({
-      where: { userId },
+      where: {
+        userId,
+        isDeleted: false,
+      },
     });
 
-    if (!studyPlan || studyPlan.length === 0)
-      return console.warn("No existen study plan para este usuario"), null;
+    if (!studyPlan || studyPlan.length === 0) {
+      console.warn("No existen study plan para este usuario");
+      return null;
+    }
 
     return studyPlan;
   }
@@ -38,8 +46,11 @@ export class StudyPlanService {
     try {
       if (!idStudyPlan) throw new Error("Study plan ID is required.");
 
-      const studyPlan = await prisma.studyPlan.findUnique({
-        where: { id: idStudyPlan },
+      const studyPlan = await prisma.studyPlan.findFirst({
+        where: {
+          id: idStudyPlan,
+          isDeleted: false,
+        },
       });
 
       return studyPlan;
@@ -54,6 +65,7 @@ export class StudyPlanService {
       const existingPlans = await prisma.studyPlan.findMany({
         where: {
           id: studyPlan.id,
+          isDeleted: false,
         },
       });
 
