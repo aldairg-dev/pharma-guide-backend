@@ -20,5 +20,9 @@ routerStatus.put(
   "/status",
   statusController.updateStatus.bind(statusController)
 );
+routerStatus.delete(
+  "/status",
+  statusController.deleteStatus.bind(statusController)
+);
 
 export default routerStatus;

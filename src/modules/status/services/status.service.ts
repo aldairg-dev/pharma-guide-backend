@@ -78,7 +78,6 @@ export class StatusService {
       const existingStatus = await prisma.status.findFirst({
         where: {
           id: status.id,
-          isDeleted: false,
         },
       });
 
@@ -98,6 +97,36 @@ export class StatusService {
     } catch (error) {
       console.error("Error updating status:", error);
       throw new Error("Unable to update status.");
+    }
+  }
+
+  async deleteStatus(idStatus: number): Promise<Status | null> {
+    try {
+      if (typeof idStatus !== "number" || idStatus <= 0) {
+        throw new Error("Invalid or missing status ID");
+      }
+
+      const dataStatus = await prisma.status.findUnique({
+        where: { id: idStatus },
+      });
+
+      if (!dataStatus) {
+        throw new Error("Status not found");
+      }
+
+      if (!dataStatus.isDeleted) {
+        const updatedStatus = await prisma.status.update({
+          where: { id: idStatus },
+          data: { isDeleted: true },
+        });
+
+        return updatedStatus;
+      }
+
+      return dataStatus;
+    } catch (error) {
+      console.error("Error deleting status:", error);
+      throw error;
     }
   }
 }

@@ -146,4 +146,52 @@ export class StatusController {
       });
     }
   }
+
+  public async deleteStatus(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { id } = req.body;
+
+      if (
+        !validateFieldOrRespond(
+          { id },
+          res,
+          "Missing required field 'id' to delete the status."
+        )
+      ) {
+        return;
+      }
+
+      const idNumber = parseInt(id);
+
+      if (isNaN(idNumber) || idNumber <= 0) {
+        res.status(400).json({
+          message: "Invalid 'id'. It must be a positive number.",
+        });
+        return;
+      }
+
+      const deletedStatus = await this.statusService.deleteStatus(idNumber);
+
+      if (!deletedStatus) {
+        res.status(404).json({
+          message: `Status not found or could not be deleted.`,
+        });
+        return;
+      }
+
+      res.status(200).json({
+        message: `Status deleted successfully.`,
+        data: deletedStatus,
+      });
+    } catch (error) {
+      console.error("Error deleting status:", error);
+      res.status(500).json({
+        message: "An unexpected error occurred while deleting the status.",
+      });
+    }
+  }
 }
