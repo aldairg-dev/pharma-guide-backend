@@ -1,9 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { StatusService } from "../services/status.service";
-import {
-  getUserIdOrRespond,
-  validateFieldOrRespond,
-} from "../../../utils/helpers/helpers.service";
+import { validateFieldOrRespond } from "../../../utils/helpers/helpers.service";
 
 export class StatusController {
   private statusService: StatusService;
