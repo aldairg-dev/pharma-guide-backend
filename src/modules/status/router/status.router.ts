@@ -12,7 +12,7 @@ routerStatus.post(
 routerStatus.get("/status", statusController.getStatus.bind(statusController));
 
 routerStatus.get(
-  "status/:id",
+  "/status/:id",
   statusController.getOneStatus.bind(statusController)
 );
 

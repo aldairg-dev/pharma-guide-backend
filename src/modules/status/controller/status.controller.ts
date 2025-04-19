@@ -84,14 +84,7 @@ export class StatusController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { idStatus } = req.params;
-
-      if (typeof idStatus !== "number" || idStatus <= 0) {
-        res.status(400).json({
-          message: "Invalid or missing status ID.",
-        });
-        return;
-      }
+      const idStatus = parseInt(req.params.id);
 
       const dataStatus = await this.statusService.getOneStatus(idStatus);
 
