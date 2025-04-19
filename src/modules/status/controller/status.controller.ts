@@ -84,7 +84,7 @@ export class StatusController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { idStatus } = req.body;
+      const { idStatus } = req.params;
 
       if (typeof idStatus !== "number" || idStatus <= 0) {
         res.status(400).json({
@@ -110,6 +110,46 @@ export class StatusController {
       console.error("Error retrieving status:", error);
       res.status(500).json({
         message: "An error occurred while retrieving the status.",
+      });
+    }
+  }
+
+  public async updateStatus(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const dataStatus = req.body;
+
+      if (
+        !validateFieldOrRespond(
+          dataStatus,
+          res,
+          "Missing required fields to updated the status."
+        )
+      ) {
+        return;
+      }
+
+      const updatedStatus = await this.statusService.updateStatus(dataStatus);
+
+      if (!updatedStatus) {
+        res.status(404).json({
+          message: `Status with ID ${dataStatus.id} not found or already deleted.`,
+        });
+        return;
+      }
+
+      res.status(200).json({
+        message: "Status updated successfully.",
+        dataStatus: updatedStatus,
+      });
+    } catch (error) {
+      console.error("Error updating status:", error);
+
+      res.status(500).json({
+        message: "An error occurred while updating the status.",
       });
     }
   }
