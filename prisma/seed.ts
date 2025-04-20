@@ -6,19 +6,21 @@ const prisma = new PrismaClient();
 async function main() {
   try {
     // -> Crear un nuevo status
-    const existingStatus = await prisma.status.findUnique({
-      where: { name: "active" },
-    });
+    const statuses = ["active", "deleted"];
 
-    if (!existingStatus) {
-      await prisma.status.create({
-        data: {
-          name: "active",
-        },
+    for (const name of statuses) {
+      const existingStatus = await prisma.status.findUnique({
+        where: { name },
       });
-      console.log("Seed de status registrado con éxito!");
-    } else {
-      console.log("El status ya existe.");
+
+      if (!existingStatus) {
+        await prisma.status.create({
+          data: { name },
+        });
+        console.log(`Status '${name}' registered successfully.`);
+      } else {
+        console.log(`Status '${name}' already exists.`);
+      }
     }
 
     // -> Crear un nuevo rol
@@ -52,7 +54,7 @@ async function main() {
           email: "test@pharma.guide",
           password: hashedPassword,
           roleId: 1,
-          isDeleted: false
+          isDeleted: false,
         },
       });
       console.log("Seed de usuario registrado con éxito!");
