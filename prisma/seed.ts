@@ -52,7 +52,7 @@ async function main() {
           email: "test@pharma.guide",
           password: hashedPassword,
           roleId: 1,
-          statusId: 1,
+          isDeleted: false
         },
       });
       console.log("Seed de usuario registrado con éxito!");
