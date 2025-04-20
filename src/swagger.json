@@ -3,7 +3,7 @@
   "info": {
     "title": "Pharma Guide Backend API",
     "version": "1.0.0",
-    "description": "API REST para la aplicación móvil **PharmaGuide**, una herramienta académica para estudiantes de **Química Farmacéutica**. Esta API ofrente las diferentes funcionalidades para que la aplicación móvil pueda funcionar correctamente.",
+    "description": "API REST para la aplicación móvil **PharmaGuide**, una herramienta académica para estudiantes de **Química Farmacéutica**.",
     "contact": {
       "name": "2A2G (Aldair Gutierrez Guerrero)",
       "url": "https://github.com/2A2G/pharma-guide-backend"
@@ -19,112 +19,7 @@
     }
   ],
   "paths": {
-    "/api/setting/status": {
-      "get": {
-        "summary": "Obtener todos los estados",
-        "tags": ["Estado"],
-        "responses": {
-          "200": { "description": "Estados obtenidos correctamente" },
-          "500": { "description": "Error del servidor" }
-        }
-      },
-      "post": {
-        "summary": "Crear un nuevo estado",
-        "tags": ["Estado"],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["name"],
-                "properties": {
-                  "name": { "type": "string", "example": "Pendiente" },
-                  "description": {
-                    "type": "string",
-                    "example": "Estado inicial"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": { "description": "Estado creado correctamente" },
-          "400": { "description": "Datos inválidos" },
-          "500": { "description": "Error del servidor" }
-        }
-      },
-      "put": {
-        "summary": "Actualizar un estado por ID",
-        "tags": ["Estado"],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "integer", "example": 1 }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": { "type": "string", "example": "En proceso" },
-                  "description": { "type": "string", "example": "Actualizado" }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": { "description": "Estado actualizado correctamente" },
-          "400": { "description": "Datos inválidos" },
-          "404": { "description": "Estado no encontrado" },
-          "500": { "description": "Error del servidor" }
-        }
-      },
-      "delete": {
-        "summary": "Eliminar un estado por ID",
-        "tags": ["Estado"],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "integer", "example": 1 }
-          }
-        ],
-        "responses": {
-          "200": { "description": "Estado eliminado correctamente" },
-          "404": { "description": "Estado no encontrado" },
-          "500": { "description": "Error del servidor" }
-        }
-      }
-    },
-    "/api/setting/status/{id}": {
-      "get": {
-        "summary": "Obtener un estado por ID",
-        "tags": ["Estado"],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "integer", "example": 1 }
-          }
-        ],
-        "responses": {
-          "200": { "description": "Estado obtenido correctamente" },
-          "404": { "description": "Estado no encontrado" },
-          "500": { "description": "Error del servidor" }
-        }
-      }
-    },
-    "/api/users/register": {
+    "/api/access/pharma-guide/register": {
       "post": {
         "summary": "Registrar un nuevo usuario",
         "tags": ["Acceso"],
@@ -161,7 +56,7 @@
         }
       }
     },
-    "/api/users/login": {
+    "/api/access/pharma-guide/login": {
       "post": {
         "summary": "Iniciar sesión de usuario",
         "tags": ["Acceso"],
@@ -187,16 +82,32 @@
           }
         },
         "responses": {
-          "200": { "description": "Inicio de sesión exitoso" },
+          "200": {
+            "description": "Inicio de sesión exitoso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    }
+                  }
+                }
+              }
+            }
+          },
           "401": { "description": "Credenciales inválidas" },
           "500": { "description": "Error al iniciar sesión" }
         }
       }
     },
-    "/api/study-plans": {
+    "/api/pharma-guide/study-plans": {
       "post": {
         "summary": "Crear un nuevo plan de estudio",
         "tags": ["Plan de Estudio"],
+        "security": [{ "BearerAuth": [] }],
         "requestBody": {
           "required": true,
           "content": {
@@ -228,6 +139,7 @@
           "400": {
             "description": "Faltan valores para crear el plan de estudio"
           },
+          "401": { "description": "No autorizado" },
           "409": { "description": "El plan de estudio ya existe" },
           "500": { "description": "Error al crear el plan de estudio" }
         }
@@ -235,24 +147,26 @@
       "get": {
         "summary": "Obtener el plan de estudio del usuario",
         "tags": ["Plan de Estudio"],
+        "security": [{ "BearerAuth": [] }],
         "responses": {
           "200": { "description": "Plan de estudio obtenido correctamente" },
+          "401": { "description": "No autorizado" },
           "404": { "description": "No se encontró el plan de estudio" },
           "500": { "description": "Error al obtener el plan de estudio" }
         }
-      },
+      }
+    },
+    "/api/pharma-guide/study-plans/{id}": {
       "put": {
         "summary": "Actualizar el plan de estudio del usuario",
         "tags": ["Plan de Estudio"],
+        "security": [{ "BearerAuth": [] }],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "integer"
-            },
-            "description": "ID del plan de estudio que se desea actualizar"
+            "schema": { "type": "integer" }
           }
         ],
         "requestBody": {
@@ -286,8 +200,9 @@
           "400": {
             "description": "Faltan valores para actualizar el plan de estudio"
           },
+          "401": { "description": "No autorizado" },
           "403": {
-            "description": "No estás autorizado para actualizar este plan de estudio"
+            "description": "No tienes permiso para actualizar este plan"
           },
           "404": { "description": "No se encontró el plan de estudio" },
           "500": { "description": "Error al actualizar el plan de estudio" }
@@ -296,55 +211,171 @@
       "delete": {
         "summary": "Eliminar un plan de estudio",
         "tags": ["Plan de Estudio"],
+        "security": [{ "BearerAuth": [] }],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "integer"
-            },
-            "description": "ID del plan de estudio que se desea eliminar"
+            "schema": { "type": "integer" }
           }
         ],
         "responses": {
           "200": { "description": "Plan de estudio eliminado correctamente" },
-          "400": {
-            "description": "Faltan valores para eliminar el plan de estudio"
-          },
-          "403": {
-            "description": "No estás autorizado para eliminar este plan de estudio"
-          },
+          "401": { "description": "No autorizado" },
+          "403": { "description": "No tienes permiso para eliminar este plan" },
           "404": { "description": "No se encontró el plan de estudio" },
           "500": { "description": "Error al eliminar el plan de estudio" }
         }
-      }
-    },
-    "/api/study-plans/{id}": {
+      },
       "get": {
         "summary": "Obtener un plan de estudio específico por ID",
         "tags": ["Plan de Estudio"],
+        "security": [{ "BearerAuth": [] }],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "integer"
-            },
-            "description": "ID del plan de estudio que se desea obtener"
+            "schema": { "type": "integer" }
           }
         ],
         "responses": {
           "200": { "description": "Plan de estudio obtenido correctamente" },
+          "401": { "description": "No autorizado" },
           "404": { "description": "No se encontró el plan de estudio" },
           "500": { "description": "Error al obtener el plan de estudio" }
+        }
+      }
+    },
+    "/api/pharma-guide/setting/status": {
+      "get": {
+        "summary": "Obtener todos los estados",
+        "tags": ["Estado"],
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Estados obtenidos correctamente" },
+          "401": { "description": "No autorizado" },
+          "500": { "description": "Error del servidor" }
+        }
+      },
+      "post": {
+        "summary": "Crear un nuevo estado",
+        "tags": ["Estado"],
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name"],
+                "properties": {
+                  "name": { "type": "string", "example": "Pendiente" },
+                  "description": {
+                    "type": "string",
+                    "example": "Estado inicial"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Estado creado correctamente" },
+          "400": { "description": "Datos inválidos" },
+          "401": { "description": "No autorizado" },
+          "500": { "description": "Error del servidor" }
+        }
+      }
+    },
+    "/api/pharma-guide/setting/status/{id}": {
+      "get": {
+        "summary": "Obtener un estado por ID",
+        "tags": ["Estado"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Estado obtenido correctamente" },
+          "401": { "description": "No autorizado" },
+          "404": { "description": "Estado no encontrado" },
+          "500": { "description": "Error del servidor" }
+        }
+      },
+      "put": {
+        "summary": "Actualizar un estado por ID",
+        "tags": ["Estado"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string", "example": "En proceso" },
+                  "description": { "type": "string", "example": "Actualizado" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Estado actualizado correctamente" },
+          "400": { "description": "Datos inválidos" },
+          "401": { "description": "No autorizado" },
+          "404": { "description": "Estado no encontrado" },
+          "500": { "description": "Error del servidor" }
+        }
+      },
+      "delete": {
+        "summary": "Eliminar un estado por ID",
+        "tags": ["Estado"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Estado eliminado correctamente" },
+          "401": { "description": "No autorizado" },
+          "404": { "description": "Estado no encontrado" },
+          "500": { "description": "Error del servidor" }
         }
       }
     }
   },
   "components": {
-    "schemas": {},
-    "securitySchemes": {}
-  }
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ]
 }
