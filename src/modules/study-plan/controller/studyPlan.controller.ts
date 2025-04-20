@@ -183,4 +183,35 @@ export class StudyPlanController {
       });
     }
   }
+
+  public async deleteStudyPlan(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const dataStudyPlan = req.body;
+
+      const deletedStatus = await this.studyPlanSerive.deleteStudyPlan(
+        dataStudyPlan.id
+      );
+
+      if (!deletedStatus) {
+        res.status(400).json({
+          message:
+            "Failed to delete study plan. It may not exist or is already deleted.",
+        });
+        return;
+      }
+
+      res.status(200).json({
+        message: "Study plan deleted successfully.",
+      });
+    } catch (error) {
+      console.error("Error deleting study plan:", error);
+      res.status(500).json({
+        message: "An unexpected error occurred while deleting the study plan.",
+      });
+    }
+  }
 }
