@@ -14,7 +14,7 @@ export class UserController {
     this.userService = new UserService();
   }
 
-  public async register(
+  public async deleteUser(
     req: Request,
     res: Response,
     next: NextFunction
@@ -22,44 +22,31 @@ export class UserController {
     try {
       const userData = req.body;
 
-      if (!userData?.email || !userData?.password) {
-        res.status(400).json({ message: "Faltan datos obligatorios" });
+      if (!userData || !userData.id) {
+        res.status(400).json({
+          message: "Invalid user data. 'id' is required.",
+        });
+        return;
       }
 
-      const createdUser = await userService.createUser(userData);
+      const userDataUpdate = await userService.deleteUser(userData.id);
 
-      if (!createdUser) {
-        res.status(409).json({ message: "El usuario ya existe" });
+      if (!userDataUpdate) {
+        res.status(404).json({
+          message: "User not found or already deleted.",
+        });
+        return;
       }
 
-      res.status(201).json({
-        message: "Usuario registrado correctamente",
-        user: createdUser,
+      res.status(200).json({
+        message: "User deleted successfully.",
+        data: userDataUpdate,
       });
     } catch (error) {
-      console.error("Error en register:", error);
-      res.status(500).json({ message: "Error interno al registrar usuario" });
-    }
-  }
-
-  public async login(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const { email, password } = req.body;
-
-      const user = await userService.loginUser(email, password);
-
-      if (!user) {
-        res.status(401).json({ message: "Credenciales inválidas" });
-      }
-
-      res.status(200).json(user);
-    } catch (error) {
-      console.error("Error en login:", error);
-      res.status(500).json({ message: "Error al iniciar sesión" });
+      console.error("Error deleting user:", error);
+      res.status(500).json({
+        message: "An error occurred while deleting the user.",
+      });
     }
   }
 }

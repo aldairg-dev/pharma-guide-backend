@@ -129,4 +129,39 @@ export class StatusService {
       throw error;
     }
   }
+
+  // -> Para evitar hacer duplicidad de código
+  async getActive(): Promise<Status> {
+    const dataActive = await prisma.status.findUnique({
+      where: {
+        name: "active",
+        isDeleted: false,
+      },
+    });
+
+    if (!dataActive) {
+      throw new Error(
+        "The 'active' status was not found or is marked as deleted."
+      );
+    }
+
+    return dataActive;
+  }
+
+  async getDelete(): Promise<Status> {
+    const dataDeleted = await prisma.status.findUnique({
+      where: {
+        name: "deleted",
+        isDeleted: false,
+      },
+    });
+
+    if (!dataDeleted) {
+      throw new Error(
+        "The 'deleted' status was not found or is marked as deleted."
+      );
+    }
+
+    return dataDeleted;
+  }
 }

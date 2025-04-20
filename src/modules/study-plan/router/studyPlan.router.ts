@@ -24,4 +24,9 @@ routerStudyPlan.put(
   studyPlanController.updateStudyPlan.bind(studyPlanController)
 );
 
+routerStudyPlan.delete(
+  "/study-plans",
+  studyPlanController.deleteStudyPlan.bind(studyPlanController)
+);
+
 export default routerStudyPlan;

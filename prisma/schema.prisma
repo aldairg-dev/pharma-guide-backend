@@ -25,7 +25,6 @@ model Status {
   id        Int         @id @default(autoincrement()) @db.Integer
   name      String      @unique @db.VarChar(100)
   role      Role[]
-  user      User[]
   studyPlan StudyPlan[]
 
   isDeleted Boolean @default(false)
@@ -57,8 +56,6 @@ model User {
   studyPlans StudyPlan[]
 
   role     Role?   @relation(fields: [roleId], references: [id])
-  statusId Int?
-  status   Status? @relation(fields: [statusId], references: [id])
 
   isDeleted Boolean @default(false)
 
@@ -77,8 +74,6 @@ model StudyPlan {
   statusId Int? @db.Integer
 
   Status Status? @relation(fields: [statusId], references: [id])
-
-  isDeleted Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

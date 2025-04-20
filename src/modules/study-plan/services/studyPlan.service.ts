@@ -1,4 +1,5 @@
 import { PrismaClient, StudyPlan } from "@prisma/client";
+import { StatusService } from "../../status/services/status.service";
 const prisma = new PrismaClient();
 
 export class StudyPlanService {
@@ -7,7 +8,7 @@ export class StudyPlanService {
       const existingStudyPlan = await prisma.studyPlan.findFirst({
         where: {
           subjet_name: studyPlan.subjet_name,
-          isDeleted: false,
+          statusId: 1,
         },
       });
 
@@ -16,7 +17,10 @@ export class StudyPlanService {
       }
 
       const newStudyPlan = await prisma.studyPlan.create({
-        data: studyPlan,
+        data: {
+          ...studyPlan,
+          statusId: 1,
+        },
       });
 
       return newStudyPlan;
@@ -30,7 +34,11 @@ export class StudyPlanService {
     const studyPlan = await prisma.studyPlan.findMany({
       where: {
         userId,
-        isDeleted: false,
+        statusId: 1,
+      },
+      include: {
+        Status: true,
+        user: true,
       },
     });
 
@@ -49,7 +57,11 @@ export class StudyPlanService {
       const studyPlan = await prisma.studyPlan.findFirst({
         where: {
           id: idStudyPlan,
-          isDeleted: false,
+          statusId: 1,
+        },
+        include: {
+          Status: true,
+          user: true,
         },
       });
 
@@ -65,7 +77,7 @@ export class StudyPlanService {
       const existingPlans = await prisma.studyPlan.findMany({
         where: {
           id: studyPlan.id,
-          isDeleted: false,
+          statusId: 1,
         },
       });
 
@@ -87,6 +99,41 @@ export class StudyPlanService {
       throw new Error(
         "Unable to update the study plan. Please try again later."
       );
+    }
+  }
+
+  async deleteStudyPlan(idStudyPlan: number): Promise<StudyPlan | null> {
+    try {
+      const statusService = new StatusService();
+      const deletedStatus = await statusService.getDelete();
+
+      if (!idStudyPlan) {
+        throw new Error("Study plan ID is required.");
+      }
+
+      const dataStudyPlan = await prisma.studyPlan.findUnique({
+        where: {
+          id: idStudyPlan,
+        },
+      });
+
+      if (!dataStudyPlan) {
+        throw new Error("Study plan not found.");
+      }
+
+      const updatedStudyPlan = await prisma.studyPlan.update({
+        where: {
+          id: dataStudyPlan.id,
+        },
+        data: {
+          statusId: deletedStatus.id,
+        },
+      });
+
+      return updatedStudyPlan;
+    } catch (error) {
+      console.error("Error deleting study plan:", error);
+      throw error;
     }
   }
 }
