@@ -127,7 +127,7 @@
     "/api/users/register": {
       "post": {
         "summary": "Registrar un nuevo usuario",
-        "tags": ["Usuarios"],
+        "tags": ["Acceso"],
         "requestBody": {
           "required": true,
           "content": {
@@ -164,7 +164,7 @@
     "/api/users/login": {
       "post": {
         "summary": "Iniciar sesión de usuario",
-        "tags": ["Usuarios"],
+        "tags": ["Acceso"],
         "requestBody": {
           "required": true,
           "content": {
@@ -240,28 +240,6 @@
           "404": { "description": "No se encontró el plan de estudio" },
           "500": { "description": "Error al obtener el plan de estudio" }
         }
-      }
-    },
-    "/api/study-plans/{id}": {
-      "get": {
-        "summary": "Obtener un plan de estudio específico por ID",
-        "tags": ["Plan de Estudio"],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            },
-            "description": "ID del plan de estudio que se desea obtener"
-          }
-        ],
-        "responses": {
-          "200": { "description": "Plan de estudio obtenido correctamente" },
-          "404": { "description": "No se encontró el plan de estudio" },
-          "500": { "description": "Error al obtener el plan de estudio" }
-        }
       },
       "put": {
         "summary": "Actualizar el plan de estudio del usuario",
@@ -314,7 +292,59 @@
           "404": { "description": "No se encontró el plan de estudio" },
           "500": { "description": "Error al actualizar el plan de estudio" }
         }
+      },
+      "delete": {
+        "summary": "Eliminar un plan de estudio",
+        "tags": ["Plan de Estudio"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID del plan de estudio que se desea eliminar"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Plan de estudio eliminado correctamente" },
+          "400": {
+            "description": "Faltan valores para eliminar el plan de estudio"
+          },
+          "403": {
+            "description": "No estás autorizado para eliminar este plan de estudio"
+          },
+          "404": { "description": "No se encontró el plan de estudio" },
+          "500": { "description": "Error al eliminar el plan de estudio" }
+        }
+      }
+    },
+    "/api/study-plans/{id}": {
+      "get": {
+        "summary": "Obtener un plan de estudio específico por ID",
+        "tags": ["Plan de Estudio"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID del plan de estudio que se desea obtener"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Plan de estudio obtenido correctamente" },
+          "404": { "description": "No se encontró el plan de estudio" },
+          "500": { "description": "Error al obtener el plan de estudio" }
+        }
       }
     }
+  },
+  "components": {
+    "schemas": {},
+    "securitySchemes": {}
   }
 }
