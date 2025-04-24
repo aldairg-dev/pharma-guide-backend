@@ -8,7 +8,7 @@ export class RoleService {
   private idActive: number | null = null;
   private idDelete: number | null = null;
 
-  private constructor() {
+  public constructor() {
     this.statusService = new StatusService();
   }
 
