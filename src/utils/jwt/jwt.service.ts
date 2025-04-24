@@ -4,6 +4,7 @@ import { Request, Response, NextFunction, RequestHandler } from "express";
 interface JwtPayload {
   userId: number;
   emailUser: string;
+  roleId: number;
 }
 
 /**
