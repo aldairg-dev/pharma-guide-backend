@@ -24,7 +24,7 @@ app.use(
   routerUser
 );
 
-//  -> Setting status and Role
+//  -> Setting Status and Role
 app.use(
   "/api/pharma-guide/setting",
   jwtService.verifyTokenMiddleware.bind(jwtService),

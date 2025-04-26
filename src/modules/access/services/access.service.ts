@@ -61,6 +61,7 @@ export class AccessService {
       const token = jwtService.createToken({
         emailUser: user.email ?? "",
         userId: user.id ?? null,
+        roleId: user.roleId ?? 2,
       });
 
       return token;
