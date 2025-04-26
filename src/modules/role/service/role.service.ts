@@ -4,154 +4,106 @@ import { StatusService } from "../../status/services/status.service";
 const prisma = new PrismaClient();
 
 export class RoleService {
-  private statusService: StatusService;
-  private idActive: number | null = null;
-  private idDelete: number | null = null;
+  private statusService = new StatusService();
+  private idActive!: number;
+  private idDelete!: number;
 
   public constructor() {
-    this.statusService = new StatusService();
-  }
-
-  static async createInstance(): Promise<RoleService> {
-    const instance = new RoleService();
-    await instance.init();
-    return instance;
+    this.init();
   }
 
   private async init(): Promise<void> {
-    const statusActive = await this.statusService.getActive();
-    if (!statusActive) {
-      throw new Error("Active status not found.");
-    }
-    this.idActive = statusActive.id;
+    const [statusActive, statusDelete] = await Promise.all([
+      this.statusService.getActive(),
+      this.statusService.getDelete(),
+    ]);
 
-    const statusDelete = await this.statusService.getDelete();
-    if (!statusDelete) {
-      throw new Error("Active status not found.");
+    if (!statusActive || !statusDelete) {
+      throw new Error("Required statuses (active/delete) not found.");
     }
+
+    this.idActive = statusActive.id;
     this.idDelete = statusDelete.id;
   }
 
-  async createRole(role: Role): Promise<Role | null> {
-    if (!this.idActive) {
+  private ensureInitialized(): void {
+    if (!this.idActive || !this.idDelete) {
       throw new Error("RoleService not initialized.");
-    }
-
-    try {
-      if (!role) {
-        throw new Error("Role data must be provided.");
-      }
-
-      const existingRole = await prisma.role.findUnique({
-        where: {
-          name: role.name,
-          statusId: this.idActive,
-        },
-      });
-
-      if (existingRole) {
-        throw new Error("Role with this name already exists.");
-      }
-
-      const newRole = await prisma.role.create({
-        data: {
-          ...role,
-          statusId: this.idActive,
-        },
-      });
-
-      return newRole;
-    } catch (error) {
-      console.log("Error creating role:", error);
-      throw new Error("Failed to create role.");
     }
   }
 
-  async getRole(): Promise<Role[] | null> {
-    if (!this.idActive) {
-      throw new Error("RoleService not initialized.");
+  public async createRole(role: Role): Promise<Role> {
+    this.ensureInitialized();
+
+    if (!role?.name) {
+      throw new Error("Role name must be provided.");
     }
 
-    try {
-      const dataRole = await prisma.role.findMany({
-        where: {
-          statusId: this.idActive,
-        },
-      });
+    const existingRole = await prisma.role.findUnique({
+      where: { name: role.name },
+    });
 
-      if (!dataRole || dataRole.length === 0) {
-        throw new Error("No roles found.");
-      }
-
-      return dataRole;
-    } catch (error) {
-      console.log("Error retrieving roles:", error);
-      throw new Error("Failed to retrieve roles.");
+    if (existingRole) {
+      throw new Error(`Role "${role.name}" already exists.`);
     }
+
+    return prisma.role.create({
+      data: {
+        ...role,
+        statusId: this.idActive,
+      },
+    });
   }
 
-  async updateRole(role: Role): Promise<Role | null> {
-    if (!this.idActive) {
-      throw new Error("RoleService not initialized.");
-    }
+  public async getRole(): Promise<Role[]> {
+    this.ensureInitialized();
 
-    try {
-      if (!role) {
-        throw new Error("Role data must be provided for update.");
-      }
+    const roles = await prisma.role.findMany({
+      where: { statusId: this.idActive },
+    });
 
-      const roleOld = await prisma.role.findUnique({
-        where: {
-          id: role.id,
-          statusId: this.idActive,
-        },
-      });
-
-      if (!roleOld) {
-        throw new Error("Role not found or inactive.");
-      }
-
-      const roleUpdate = await prisma.role.update({
-        where: { id: roleOld.id },
-        data: role,
-      });
-
-      return roleUpdate;
-    } catch (error) {
-      console.log("Error updating role:", error);
-      throw new Error("Failed to update role.");
-    }
+    return roles;
   }
 
-  async deleteRole(idRole: number): Promise<Role | null> {
-    try {
-      if (!idRole) {
-        throw new Error("Role ID must be provided.");
-      }
+  public async updateRole(role: Role): Promise<Role> {
+    this.ensureInitialized();
 
-      const role = await prisma.role.findUnique({
-        where: {
-          id: idRole,
-        },
-      });
-
-      if (!role) {
-        throw new Error("Role not found.");
-      }
-
-      const roleDelete = await prisma.role.update({
-        where: {
-          id: idRole,
-        },
-        data: {
-          statusId: this.idDelete,
-        },
-      });
-
-      return roleDelete;
-    } catch (error) {
-      console.log("Error deleting role:", error);
-      throw new Error("Failed to delete role.");
+    if (!role?.id) {
+      throw new Error("Role ID must be provided for update.");
     }
+
+    const existingRole = await prisma.role.findUnique({
+      where: { id: role.id },
+    });
+
+    if (!existingRole || existingRole.statusId !== this.idActive) {
+      throw new Error(`Role with ID ${role.id} not found or inactive.`);
+    }
+
+    return prisma.role.update({
+      where: { id: role.id },
+      data: role,
+    });
+  }
+
+  public async deleteRole(idRole: number): Promise<Role> {
+    this.ensureInitialized();
+
+    if (!idRole) {
+      throw new Error("Role ID must be provided for deletion.");
+    }
+
+    const existingRole = await prisma.role.findUnique({
+      where: { id: idRole },
+    });
+
+    if (!existingRole) {
+      throw new Error(`Role with ID ${idRole} not found.`);
+    }
+
+    return prisma.role.update({
+      where: { id: idRole },
+      data: { statusId: this.idDelete },
+    });
   }
 }
