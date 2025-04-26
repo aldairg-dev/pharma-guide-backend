@@ -362,6 +362,103 @@
           "500": { "description": "Error del servidor" }
         }
       }
+    },
+    "/api/pharma-guide/setting/role": {
+      "post": {
+        "summary": "Crear un nuevo rol",
+        "tags": ["Rol"],
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name"],
+                "properties": {
+                  "name": { "type": "string", "example": "Admin" },
+                  "description": {
+                    "type": "string",
+                    "example": "Rol de administrador"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Rol creado correctamente" },
+          "400": { "description": "Datos inválidos" },
+          "401": { "description": "No autorizado" },
+          "500": { "description": "Error del servidor" }
+        }
+      },
+      "get": {
+        "summary": "Obtener todos los roles",
+        "tags": ["Rol"],
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Roles obtenidos correctamente" },
+          "401": { "description": "No autorizado" },
+          "500": { "description": "Error del servidor" }
+        }
+      },
+      "delete": {
+        "summary": "Eliminar un rol por ID",
+        "tags": ["Rol"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Rol eliminado correctamente" },
+          "401": { "description": "No autorizado" },
+          "404": { "description": "Rol no encontrado" },
+          "500": { "description": "Error del servidor" }
+        }
+      },
+      "put": {
+        "summary": "Actualizar un rol por ID",
+        "tags": ["Rol"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string", "example": "User" },
+                  "description": {
+                    "type": "string",
+                    "example": "Rol de usuario"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Rol actualizado correctamente" },
+          "400": { "description": "Datos inválidos" },
+          "401": { "description": "No autorizado" },
+          "404": { "description": "Rol no encontrado" },
+          "500": { "description": "Error del servidor" }
+        }
+      }
     }
   },
   "components": {

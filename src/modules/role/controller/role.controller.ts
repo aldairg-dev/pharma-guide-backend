@@ -123,8 +123,8 @@ export class RoleController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const idRole = req.body();
-
+      const idRole = req.body.id;
+      
       const deletedRole = await this.roleService.deleteRole(idRole);
 
       if (!deletedRole) {
