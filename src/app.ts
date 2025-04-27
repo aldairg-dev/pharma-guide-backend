@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import routerAccess from "./modules/access/router/access.router";
 import routerStudyPlan from "./modules/study-plan/router/studyPlan.router";
 import { JwtService } from "./utils/jwt/jwt.service";
@@ -8,6 +9,8 @@ import routerRole from "./modules/role/router/role.router";
 
 const app = express();
 const jwtService = new JwtService();
+
+app.use(cors());
 
 app.use(express.json());
 
