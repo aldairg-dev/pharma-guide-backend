@@ -14,6 +14,7 @@ export class UserController {
     this.userService = new UserService();
   }
 
+  
   public async deleteUser(
     req: Request,
     res: Response,
