@@ -30,7 +30,6 @@ export class UserController {
       }
 
       res.status(200).json({
-        message: "Users retrieved successfully.",
         data: userData,
       });
     } catch (error) {

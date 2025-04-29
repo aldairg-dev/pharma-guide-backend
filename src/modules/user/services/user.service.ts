@@ -6,6 +6,7 @@ export class UserService {
     try {
       return await prisma.user.findMany({
         where: { isDeleted: false },
+        include: { role: true },
       });
     } catch (error) {
       console.error("Error fetching users:", error);
