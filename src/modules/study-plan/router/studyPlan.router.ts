@@ -15,7 +15,7 @@ routerStudyPlan.get(
 );
 
 routerStudyPlan.get(
-  "/study-plans",
+  "/study-plans-all",
   studyPlanController.getAllStudyPlan.bind(studyPlanController)
 );
 
