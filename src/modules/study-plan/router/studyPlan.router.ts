@@ -15,6 +15,11 @@ routerStudyPlan.get(
 );
 
 routerStudyPlan.get(
+  "/study-plans",
+  studyPlanController.getAllStudyPlan.bind(studyPlanController)
+);
+
+routerStudyPlan.get(
   "/study-plans/:id",
   studyPlanController.getOneStudyPlan.bind(studyPlanController)
 );

@@ -59,6 +59,33 @@ export class StudyPlanController {
     }
   }
 
+  public async getAllStudyPlan(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const studyPlanUser = await this.studyPlanSerive.getAllStudyPlan();
+
+      if (!studyPlanUser || studyPlanUser.length === 0) {
+        res.status(404).json({
+          message: "No study plans found.",
+        });
+        return;
+      }
+
+      res.status(200).json({
+        message: "Study plan retrieved successfully.",
+        studyPlan: studyPlanUser,
+      });
+    } catch (error) {
+      console.error("Error while retrieving the study plan:", error);
+      res.status(500).json({
+        message:
+          "An error occurred while retrieving the study plan. Please try again later.",
+      });
+    }
+  }
   public async getStudyPlan(
     req: Request,
     res: Response,
@@ -91,6 +118,7 @@ export class StudyPlanController {
       });
     }
   }
+
   public async getOneStudyPlan(
     req: Request,
     res: Response,

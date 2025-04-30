@@ -29,6 +29,24 @@ export class StudyPlanService {
       throw new Error("Failed to create the study plan.");
     }
   }
+  async getAllStudyPlan() {
+    const studyPlan = await prisma.studyPlan.findMany({
+      where: {
+        statusId: 1,
+      },
+      include: {
+        Status: true,
+        user: true,
+      },
+    });
+
+    if (!studyPlan || studyPlan.length === 0) {
+      console.warn("No existen study plan para este usuario");
+      return null;
+    }
+
+    return studyPlan;
+  }
 
   async getStudyPlan(userId: number) {
     const studyPlan = await prisma.studyPlan.findMany({
