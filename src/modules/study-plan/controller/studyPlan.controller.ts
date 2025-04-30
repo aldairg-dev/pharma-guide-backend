@@ -67,15 +67,11 @@ export class StudyPlanController {
     try {
       const studyPlanUser = await this.studyPlanSerive.getAllStudyPlan();
 
-      if (!studyPlanUser || studyPlanUser.length === 0) {
-        res.status(404).json({
-          message: "No study plans found.",
-        });
-        return;
-      }
-
       res.status(200).json({
-        message: "Study plan retrieved successfully.",
+        message:
+          studyPlanUser && studyPlanUser.length > 0
+            ? "Study plan retrieved successfully."
+            : "No study plans found.",
         studyPlan: studyPlanUser,
       });
     } catch (error) {
@@ -86,6 +82,7 @@ export class StudyPlanController {
       });
     }
   }
+
   public async getStudyPlan(
     req: Request,
     res: Response,
