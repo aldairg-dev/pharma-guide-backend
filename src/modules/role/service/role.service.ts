@@ -60,6 +60,9 @@ export class RoleService {
 
     const roles = await prisma.role.findMany({
       where: { statusId: this.idActive },
+      include: {
+        status: true,
+      },
     });
 
     return roles;

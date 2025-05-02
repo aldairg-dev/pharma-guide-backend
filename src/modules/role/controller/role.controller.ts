@@ -60,14 +60,11 @@ export class RoleController {
       const dataRole = await this.roleService.getRole();
 
       if (!dataRole) {
-        res.status(409).json({
-          message: "Role not found",
-        });
+        res.status(200).json([]);
         return;
       }
 
       res.status(200).json({
-        message: "Role found successfully",
         role: dataRole,
       });
     } catch (error) {
@@ -124,7 +121,7 @@ export class RoleController {
   ): Promise<void> {
     try {
       const idRole = req.body.id;
-      
+
       const deletedRole = await this.roleService.deleteRole(idRole);
 
       if (!deletedRole) {
