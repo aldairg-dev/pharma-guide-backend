@@ -29,11 +29,7 @@ export class StatusService {
 
   async getStatus(): Promise<Status[]> {
     try {
-      const dataStatus = await prisma.status.findMany({
-        where: {
-          isDeleted: false,
-        },
-      });
+      const dataStatus = await prisma.status.findMany({});
 
       if (dataStatus.length === 0) {
         console.log("No status records found.");
