@@ -82,18 +82,16 @@ export class RoleController {
   ): Promise<void> {
     try {
       const dataRole = req.body;
-
-      if (
-        !validateFieldOrRespond(
-          dataRole,
-          res,
-          "Missing required fields to update the Role"
-        )
-      ) {
+      if (!dataRole.idRole || !dataRole.idStatus) {
+        res.status(400).json({
+          message: "Missing required fields to update the Role",
+        });
         return;
       }
-
-      const updatedRole = await this.roleService.updateRole(dataRole);
+      const updatedRole = await this.roleService.updateRole(
+        dataRole.idRole,
+        dataRole.idStatus
+      );
 
       if (!updatedRole) {
         res.status(409).json({

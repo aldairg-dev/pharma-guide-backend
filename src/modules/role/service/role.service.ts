@@ -59,7 +59,6 @@ export class RoleService {
     this.ensureInitialized();
 
     const roles = await prisma.role.findMany({
-      where: { statusId: this.idActive },
       include: {
         status: true,
       },
@@ -68,24 +67,24 @@ export class RoleService {
     return roles;
   }
 
-  public async updateRole(role: Role): Promise<Role> {
+  public async updateRole($idRol: number, $idStatus: number): Promise<Role> {
     this.ensureInitialized();
 
-    if (!role?.id) {
+    if (!$idRol || !$idStatus) {
       throw new Error("Role ID must be provided for update.");
     }
 
     const existingRole = await prisma.role.findUnique({
-      where: { id: role.id },
+      where: { id: $idRol },
     });
 
-    if (!existingRole || existingRole.statusId !== this.idActive) {
-      throw new Error(`Role with ID ${role.id} not found or inactive.`);
+    if (!existingRole) {
+      throw new Error(`No role found with ID ${$idRol}.`);
     }
 
     return prisma.role.update({
-      where: { id: role.id },
-      data: role,
+      where: { id: $idRol },
+      data: { statusId: $idStatus },
     });
   }
 

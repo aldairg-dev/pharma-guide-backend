@@ -13,10 +13,7 @@ routerStudyPlan.get("/role", roleController.getRole.bind(roleController));
 //   roleController.getOneStudyPlan.bind(roleController)
 // );
 
-routerStudyPlan.put(
-  "/role/:id",
-  roleController.updateRole.bind(roleController)
-);
+routerStudyPlan.put("/role", roleController.updateRole.bind(roleController));
 
 routerStudyPlan.delete("/role", roleController.deleteRole.bind(roleController));
 
