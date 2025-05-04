@@ -64,7 +64,6 @@ export class StatusController {
       }
 
       res.status(200).json({
-        message: "Status retrieved successfully.",
         status: dataStatus,
       });
     } catch (error) {
