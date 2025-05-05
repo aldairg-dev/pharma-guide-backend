@@ -180,7 +180,6 @@ export class StatusController {
       }
 
       res.status(200).json({
-        message: `Status deleted successfully.`,
         data: deletedStatus,
       });
     } catch (error) {
