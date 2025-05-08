@@ -5,7 +5,6 @@ export class UserService {
   async getUser(): Promise<User[]> {
     try {
       return await prisma.user.findMany({
-        where: { isDeleted: false },
         include: { role: true },
       });
     } catch (error) {
