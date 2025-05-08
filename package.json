@@ -2,7 +2,7 @@
   "name": "pharma-guide-backend",
   "version": "1.0.0",
   "description": "API REST para la aplicación móvil PharmaGuide, una herramienta académica para estudiantes de Química Farmacéutica.",
-  "main": "dist/index.js",
+  "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
