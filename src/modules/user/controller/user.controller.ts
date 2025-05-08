@@ -120,7 +120,7 @@ export class UserController {
     try {
       const userData = req.body;
 
-      if (!userData || !userData.id) {
+      if (!userData || !userData.idUser) {
         res.status(400).json({
           message: "Invalid user data. 'id' is required.",
         });
