@@ -1,6 +1,8 @@
 import { PrismaClient, User } from "@prisma/client";
 import { bcryptService } from "../../../utils/bcryp/bcryp.service";
 import { JwtService } from "../../../utils/jwt/jwt.service";
+import { randomUUID } from "node:crypto";
+import { RoleService } from "../../role/service/role.service";
 
 const prisma = new PrismaClient();
 const jwtService = new JwtService();
@@ -8,6 +10,7 @@ const jwtService = new JwtService();
 export class AccessService {
   async createUser(user: User): Promise<User | null> {
     try {
+      const roleService = new RoleService();
       const existingUser = await prisma.user.findFirst({
         where: {
           email: user.email,
@@ -20,8 +23,22 @@ export class AccessService {
         return null;
       }
 
-      const hashedPassword = await bcryptService.encryptPassword(user.password);
-      user.password = hashedPassword;
+      if (!user.password) {
+        const randomPassword = randomUUID().slice(0, 10);
+        const hashedPassword = await bcryptService.encryptPassword(
+          randomPassword
+        );
+        user.password = hashedPassword;
+      } else {
+        const password = await bcryptService.encryptPassword(user.password);
+        user.password = password;
+      }
+      if (!user.roleId) {
+        const roleClient = await roleService.getRoleClient();
+        user.roleId = roleClient.id;
+      } else {
+        user.roleId = Number(user.roleId);
+      }
 
       const newUser = await prisma.user.create({
         data: user,
@@ -30,7 +47,9 @@ export class AccessService {
       return newUser;
     } catch (error) {
       console.error("Error creating user:", error);
-      throw new Error("Failed to create user.");
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      throw new Error(`Failed  to create user: ${errorMessage}`);
     }
   }
 
