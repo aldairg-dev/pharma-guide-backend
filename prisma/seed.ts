@@ -23,22 +23,26 @@ async function main() {
       }
     }
 
-    // -> Crear un nuevo rol
-    const existingRole = await prisma.role.findUnique({
-      where: { name: "admin" },
-    });
-
-    if (!existingRole) {
-      await prisma.role.create({
-        data: {
-          name: "admin",
-          statusId: 1,
-        },
+    async function createRoleIfNotExists(roleName: string, statusId: number) {
+      const existingRole = await prisma.role.findUnique({
+        where: { name: roleName },
       });
-      console.log("Seed de rol registrado con éxito!");
-    } else {
-      console.log("El rol ya existe.");
+
+      if (!existingRole) {
+        await prisma.role.create({
+          data: {
+            name: roleName,
+            statusId: statusId,
+          },
+        });
+        console.log(`Rol '${roleName}' registrado con éxito!`);
+      } else {
+        console.log(`El rol '${roleName}' ya existe.`);
+      }
     }
+
+    await createRoleIfNotExists("admin", 1);
+    await createRoleIfNotExists("client", 1);
 
     // -> Crear un nuevo usuario
     const hashedPassword = await bcrypt.hash("pharmaGuide", 10);

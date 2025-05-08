@@ -32,6 +32,18 @@ export class RoleService {
     }
   }
 
+  public async getRoleClient(): Promise<Role> {
+    const roleGuest = await prisma.role.findFirst({
+      where: { name: "client" },
+    });
+
+    if (!roleGuest) {
+      throw new Error("No existe el rol de client");
+    } else {
+      return roleGuest;
+    }
+  }
+
   public async createRole(role: Role): Promise<Role> {
     this.ensureInitialized();
 

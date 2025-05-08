@@ -22,7 +22,7 @@ export class AccessController {
     try {
       const userData = req.body;
 
-      if (!userData?.email || !userData?.password) {
+      if (!userData?.email || !userData?.full_name) {
         res.status(400).json({ message: "Faltan datos obligatorios" });
       }
 
@@ -36,9 +36,12 @@ export class AccessController {
         message: "Usuario registrado correctamente",
         user: createdUser,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error en register:", error);
-      res.status(500).json({ message: "Error interno al registrar usuario" });
+      res.status(500).json({
+        message: "Error interno al registrar usuario",
+        error: error?.message || "Detalles no disponibles",
+      });
     }
   }
 
