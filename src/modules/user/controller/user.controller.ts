@@ -14,10 +14,11 @@ export class UserController {
     this.userService = new UserService();
   }
 
-  public async getUsers(
-    req: Request,
+  public async getUser(
+    _req: Request,
+
     res: Response,
-    next: NextFunction
+    _next: NextFunction
   ): Promise<void> {
     try {
       const users = await userService.getUser();
@@ -41,7 +42,7 @@ export class UserController {
   public async getUserById(
     req: Request,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
   ): Promise<void> {
     try {
       const id = Number(req.params.id);
@@ -81,7 +82,7 @@ export class UserController {
   public async updateUser(
     req: Request,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
   ): Promise<void> {
     try {
       const userId = Number(req.params.id);
@@ -130,7 +131,7 @@ export class UserController {
   public async deleteUser(
     req: Request,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
   ): Promise<void> {
     try {
       const userId = Number(req.params.id);
@@ -140,8 +141,8 @@ export class UserController {
           success: false,
           message: "Invalid user ID. It must be a number.",
         });
-        return;
       }
+
 
       const deletedUser = await userService.deleteUser(userId);
 
@@ -150,19 +151,17 @@ export class UserController {
           success: false,
           message: "User not found or already deleted.",
         });
-        return;
       }
 
-      res.status(200).json({
-        success: true,
-        message: "User deleted successfully.",
-        data: deletedUser,
+      res.status(204).json({
+        message: "User deleted successfully.",      
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error deleting user:", error);
       res.status(500).json({
         success: false,
         message: "An error occurred while deleting the user.",
+        error: error.message,
       });
     }
   }

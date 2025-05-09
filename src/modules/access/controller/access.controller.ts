@@ -17,7 +17,7 @@ export class AccessController {
   public async register(
     req: Request,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
   ): Promise<void> {
     try {
       const userData = req.body;
@@ -48,7 +48,7 @@ export class AccessController {
   public async login(
     req: Request,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
   ): Promise<void> {
     try {
       const { email, password } = req.body;
@@ -72,32 +72,30 @@ export class AccessController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const userData = req.body;
+      const { id } = req.body;
 
-      if (!userData || !userData.id) {
+      if (!id) {
         res.status(400).json({
           message: "Invalid user data. 'id' is required.",
         });
-        return;
       }
 
-      const userDataUpdate = await accessService.deleteUser(userData.id);
+      const userDataUpdate = await accessService.deleteUser(id);
 
       if (!userDataUpdate) {
         res.status(404).json({
           message: "User not found or already deleted.",
         });
-        return;
       }
 
-      res.status(200).json({
+      res.status(204).json({
         message: "User deleted successfully.",
-        data: userDataUpdate,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error deleting user:", error);
       res.status(500).json({
         message: "An error occurred while deleting the user.",
+        error: error.message,
       });
     }
   }
