@@ -10,12 +10,12 @@ routerStudyPlan.post(
 );
 
 routerStudyPlan.get(
-  "/study-plans",
+  "/study-plans/me",
   studyPlanController.getStudyPlan.bind(studyPlanController)
 );
 
 routerStudyPlan.get(
-  "/study-plans-all",
+  "/study-plans",
   studyPlanController.getAllStudyPlan.bind(studyPlanController)
 );
 
@@ -30,7 +30,7 @@ routerStudyPlan.put(
 );
 
 routerStudyPlan.delete(
-  "/study-plans",
+  "/study-plans/:id",
   studyPlanController.deleteStudyPlan.bind(studyPlanController)
 );
 

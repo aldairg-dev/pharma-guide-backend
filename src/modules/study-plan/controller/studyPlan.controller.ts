@@ -6,17 +6,13 @@ import {
 } from "../../../utils/helpers/helpers.service";
 
 export class StudyPlanController {
-  private studyPlanSerive: StudyPlanService;
+  private studyPlanService = new StudyPlanService();
 
-  constructor() {
-    this.studyPlanSerive = new StudyPlanService();
-  }
-
-  public async createStudyPlan(
+  public createStudyPlan = async (
     req: Request,
     res: Response,
-    next: NextFunction
-  ): Promise<void> {
+    _next: NextFunction
+  ): Promise<void> => {
     try {
       const userId = getUserIdOrRespond(req, res);
       if (!userId) return;
@@ -29,20 +25,18 @@ export class StudyPlanController {
           res,
           "Missing required values to create the study plan."
         )
-      ) {
+      )
         return;
-      }
 
-      const studyPlanWithUser = { ...studyPlanData, userId };
-
-      const createdStudyPlan = await this.studyPlanSerive.createStudyPlan(
-        studyPlanWithUser
-      );
+      const createdStudyPlan = await this.studyPlanService.createStudyPlan({
+        ...studyPlanData,
+        userId,
+      });
 
       if (!createdStudyPlan) {
-        res.status(409).json({
-          message: "A study plan already exists for this user.",
-        });
+        res
+          .status(409)
+          .json({ message: "A study plan already exists for this user." });
         return;
       }
 
@@ -51,92 +45,80 @@ export class StudyPlanController {
         studyPlan: createdStudyPlan,
       });
     } catch (error) {
-      console.error("Error while creating the study plan:", error);
+      console.error("Create StudyPlan Error:", error);
       res.status(500).json({
-        message:
-          "An error occurred while creating the study plan. Please try again later.",
+        message: "An error occurred while creating the study plan.",
       });
     }
-  }
+  };
 
-  public async getAllStudyPlan(
-    req: Request,
+  public getAllStudyPlan = async (
+    _req: Request,
     res: Response,
-    next: NextFunction
-  ): Promise<void> {
+    _next: NextFunction
+  ): Promise<void> => {
     try {
-      const studyPlanUser = await this.studyPlanSerive.getAllStudyPlan();
+      const studyPlans = await this.studyPlanService.getStudyPlans();
 
       res.status(200).json({
         message:
-          studyPlanUser && studyPlanUser.length > 0
-            ? "Study plan retrieved successfully."
+          studyPlans && studyPlans.length > 0
+            ? "Study plans retrieved successfully."
             : "No study plans found.",
-        studyPlan: studyPlanUser,
+        studyPlans,
       });
     } catch (error) {
-      console.error("Error while retrieving the study plan:", error);
+      console.error("Get All StudyPlans Error:", error);
       res.status(500).json({
-        message:
-          "An error occurred while retrieving the study plan. Please try again later.",
+        message: "An error occurred while retrieving study plans.",
       });
     }
-  }
+  };
 
-  public async getStudyPlan(
+  public getStudyPlan = async (
     req: Request,
     res: Response,
-    next: NextFunction
-  ): Promise<void> {
+    _next: NextFunction
+  ): Promise<void> => {
     try {
       const userId = getUserIdOrRespond(req, res);
       if (!userId) return;
 
-      const studyPlanUser = await this.studyPlanSerive.getStudyPlan(
+      const studyPlan = await this.studyPlanService.getStudyPlans(
         Number(userId)
       );
 
-      if (!studyPlanUser) {
-        res.status(404).json({
-          message: "No study plan found for the specified user.",
-        });
+      if (!studyPlan) {
+        res.status(404).json({ message: "No study plan found for this user." });
         return;
       }
 
       res.status(200).json({
         message: "Study plan retrieved successfully.",
-        studyPlan: studyPlanUser,
+        studyPlan,
       });
     } catch (error) {
-      console.error("Error while retrieving the study plan:", error);
+      console.error("Get StudyPlan Error:", error);
       res.status(500).json({
-        message:
-          "An error occurred while retrieving the study plan. Please try again later.",
+        message: "An error occurred while retrieving the study plan.",
       });
     }
-  }
+  };
 
-  public async getOneStudyPlan(
+  public getOneStudyPlan = async (
     req: Request,
     res: Response,
-    next: NextFunction
-  ): Promise<void> {
+    _next: NextFunction
+  ): Promise<void> => {
     try {
-      const { id } = req.params;
+      const id = Number(req.params.id);
 
-      if (!id) {
-        res.status(400).json({ message: "Study plan ID is required." });
+      if (!req.params.id || isNaN(id)) {
+        res.status(400).json({ message: "Invalid or missing study plan ID." });
         return;
       }
 
-      const idStudyPlan = Number(id);
-
-      if (isNaN(idStudyPlan)) {
-        res.status(400).json({ message: "Invalid ID format." });
-        return;
-      }
-
-      const studyPlan = await this.studyPlanSerive.getOneStudyPlan(idStudyPlan);
+      const studyPlan = await this.studyPlanService.getOneStudyPlan(id);
 
       if (!studyPlan) {
         res.status(404).json({ message: "Study plan not found." });
@@ -144,40 +126,40 @@ export class StudyPlanController {
       }
 
       res.status(200).json({
-        message: "Study plan found successfully.",
-        studyPlan: studyPlan,
+        message: "Study plan retrieved successfully.",
+        studyPlan,
       });
     } catch (error) {
-      console.error("Error getting study plan:", error);
+      console.error("Get One StudyPlan Error:", error);
       res.status(500).json({
-        message: "Unable to get the study plan. Please try again later.",
+        message: "An error occurred while retrieving the study plan.",
       });
     }
-  }
+  };
 
-  public async updateStudyPlan(
+  public updateStudyPlan = async (
     req: Request,
     res: Response,
-    next: NextFunction
-  ): Promise<void> {
+    _next: NextFunction
+  ): Promise<void> => {
     try {
       const userId = getUserIdOrRespond(req, res);
       if (!userId) return;
 
-      const { id } = req.params;
+      const paramId = Number(req.params.id);
 
-      if (userId !== id) {
+      if (isNaN(paramId) || Number(userId) !== paramId) {
         res.status(403).json({
           message: "You are not authorized to update this study plan.",
         });
         return;
       }
 
-      const studyPlan = req.body;
+      const studyPlanData = req.body;
 
       if (
         !validateFieldOrRespond(
-          studyPlan,
+          studyPlanData,
           res,
           "Missing required values to update the study plan."
         )
@@ -185,58 +167,58 @@ export class StudyPlanController {
         return;
       }
 
-      const studyPlanUpdate = await this.studyPlanSerive.updateStudyPlan(
-        studyPlan
+      const updatedStudyPlan = await this.studyPlanService.updateStudyPlan(
+        studyPlanData
       );
 
-      if (!studyPlanUpdate) {
-        res.status(400).json({
-          message: "Study plan not found. Unable to update.",
+      if (!updatedStudyPlan) {
+        res.status(404).json({
+          message: "Study plan not found.",
         });
         return;
       }
 
+      // Devolver la respuesta con el plan de estudio actualizado
       res.status(200).json({
         message: "Study plan updated successfully.",
-        studyPlan: studyPlanUpdate,
+        studyPlan: updatedStudyPlan,
       });
     } catch (error) {
-      console.error("Error while updating the study plan:", error);
+      console.error("Update StudyPlan Error:", error);
       res.status(500).json({
-        message:
-          "An error occurred while updating the study plan. Please try again later.",
+        message: "An error occurred while updating the study plan.",
       });
     }
-  }
+  };
 
-  public async deleteStudyPlan(
+  public deleteStudyPlan = async (
     req: Request,
     res: Response,
-    next: NextFunction
-  ): Promise<void> {
+    _next: NextFunction
+  ): Promise<void> => {
     try {
-      const dataStudyPlan = req.body;
+      const { id } = req.params;
 
-      const deletedStatus = await this.studyPlanSerive.deleteStudyPlan(
-        dataStudyPlan.id
-      );
+      if (!id || isNaN(Number(id))) {
+        res.status(400).json({ message: "Valid study plan ID is required." });
+        return;
+      }
 
-      if (!deletedStatus) {
-        res.status(400).json({
-          message:
-            "Failed to delete study plan. It may not exist or is already deleted.",
+      const deleted = await this.studyPlanService.deleteStudyPlan(Number(id));
+
+      if (!deleted) {
+        res.status(404).json({
+          message: "Study plan not found or already deleted.",
         });
         return;
       }
 
-      res.status(200).json({
-        message: "Study plan deleted successfully.",
-      });
+      res.status(204).send();
     } catch (error) {
-      console.error("Error deleting study plan:", error);
+      console.error("Delete StudyPlan Error:", error);
       res.status(500).json({
-        message: "An unexpected error occurred while deleting the study plan.",
+        message: "An error occurred while deleting the study plan.",
       });
     }
-  }
+  };
 }
