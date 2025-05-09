@@ -23,10 +23,6 @@ export class UserController {
       const users = await userService.getUser();
 
       res.status(200).json({
-        success: true,
-        message: users.length
-          ? "Users fetched successfully."
-          : "No users found.",
         data: users,
       });
     } catch (error) {
