@@ -24,10 +24,10 @@ export class UserService {
     }
   }
 
-  async updateUser(user: User): Promise<User | null> {
+  async updateUser(userId: number, user: User): Promise<User | null> {
     try {
       const existingUser = await prisma.user.findFirst({
-        where: { id: user.id, isDeleted: false },
+        where: { id: userId, isDeleted: false },
       });
 
       if (!existingUser) {
