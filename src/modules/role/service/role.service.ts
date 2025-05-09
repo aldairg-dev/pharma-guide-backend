@@ -33,23 +33,19 @@ export class RoleService {
   }
 
   public async getRoleClient(): Promise<Role> {
-    const roleGuest = await prisma.role.findFirst({
+    const roleClient = await prisma.role.findFirst({
       where: { name: "client" },
     });
 
-    if (!roleGuest) {
-      throw new Error("No existe el rol de client");
-    } else {
-      return roleGuest;
+    if (!roleClient) {
+      throw new Error("Role 'client' does not exist.");
     }
+
+    return roleClient;
   }
 
   public async createRole(role: Role): Promise<Role> {
     this.ensureInitialized();
-
-    if (!role?.name) {
-      throw new Error("Role name must be provided.");
-    }
 
     const existingRole = await prisma.role.findUnique({
       where: { name: role.name },
@@ -62,7 +58,7 @@ export class RoleService {
     return prisma.role.create({
       data: {
         ...role,
-        statusId: this.idActive,
+        statusId: this.idActive, // Asignamos el estado 'activo'
       },
     });
   }
@@ -70,20 +66,16 @@ export class RoleService {
   public async getRole(): Promise<Role[]> {
     this.ensureInitialized();
 
-    const roles = await prisma.role.findMany({
-      include: {
-        status: true,
-      },
+    return prisma.role.findMany({
+      include: { status: true },
     });
-
-    return roles;
   }
 
   public async updateRole($idRol: number, $idStatus: number): Promise<Role> {
     this.ensureInitialized();
 
     if (!$idRol || !$idStatus) {
-      throw new Error("Role ID must be provided for update.");
+      throw new Error("Both Role ID and Status ID must be provided.");
     }
 
     const existingRole = await prisma.role.findUnique({
@@ -91,7 +83,7 @@ export class RoleService {
     });
 
     if (!existingRole) {
-      throw new Error(`No role found with ID ${$idRol}.`);
+      throw new Error(`Role with ID ${$idRol} not found.`);
     }
 
     return prisma.role.update({
