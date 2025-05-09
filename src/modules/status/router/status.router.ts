@@ -17,7 +17,7 @@ routerStatus.get(
 );
 
 routerStatus.put(
-  "/status",
+  "/status/:id",
   statusController.updateStatus.bind(statusController)
 );
 

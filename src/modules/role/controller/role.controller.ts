@@ -70,19 +70,20 @@ export class RoleController {
   public async updateRole(
     req: Request,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
   ): Promise<void> {
     try {
-      const { idRole, idStatus } = req.body;
+      const idRole = Number(req.params);
+      const dataRole = req.body;
 
-      if (!idRole || !idStatus) {
+      if (isNaN(idRole) || !dataRole) {
         res.status(400).json({
           message: "Missing required fields to update the Role",
         });
         return;
       }
 
-      const updatedRole = await this.roleService.updateRole(idRole, idStatus);
+      const updatedRole = await this.roleService.updateRole(idRole, dataRole);
 
       res.status(200).json({
         message: "Role updated successfully",

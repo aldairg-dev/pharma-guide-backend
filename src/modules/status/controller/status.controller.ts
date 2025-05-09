@@ -116,6 +116,7 @@ export class StatusController {
     _next: NextFunction
   ): Promise<void> {
     try {
+      const idStatus = Number(req.params.id);
       const dataStatus = req.body;
 
       if (
@@ -128,7 +129,10 @@ export class StatusController {
         return;
       }
 
-      const updatedStatus = await this.statusService.updateStatus(dataStatus);
+      const updatedStatus = await this.statusService.updateStatus(
+        idStatus,
+        dataStatus
+      );
 
       if (!updatedStatus) {
         res.status(404).json({

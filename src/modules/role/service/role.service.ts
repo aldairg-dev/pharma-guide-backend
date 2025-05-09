@@ -71,10 +71,10 @@ export class RoleService {
     });
   }
 
-  public async updateRole($idRol: number, $idStatus: number): Promise<Role> {
+  public async updateRole($idRol: number, $dataRole: Role): Promise<Role> {
     this.ensureInitialized();
 
-    if (!$idRol || !$idStatus) {
+    if (isNaN($idRol) || !$dataRole) {
       throw new Error("Both Role ID and Status ID must be provided.");
     }
 
@@ -88,7 +88,7 @@ export class RoleService {
 
     return prisma.role.update({
       where: { id: $idRol },
-      data: { statusId: $idStatus },
+      data: { ...$dataRole },
     });
   }
 

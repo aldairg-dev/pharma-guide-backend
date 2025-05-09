@@ -71,8 +71,8 @@ export class StatusService {
     return status;
   }
 
-  async updateStatus(status: Status): Promise<Status> {
-    const existingStatus = await this.findStatusById(status.id);
+  async updateStatus(idStatus: number, status: Status): Promise<Status> {
+    const existingStatus = await this.findStatusById(idStatus);
 
     if (!existingStatus) {
       throw new NotFoundError(
@@ -81,7 +81,7 @@ export class StatusService {
     }
 
     return prisma.status.update({
-      where: { id: status.id },
+      where: { id: idStatus },
       data: status,
     });
   }
