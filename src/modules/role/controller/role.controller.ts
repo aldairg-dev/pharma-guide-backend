@@ -115,7 +115,7 @@ export class RoleController {
   public async deleteRole(
     req: Request,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
   ): Promise<void> {
     try {
       const idRole = req.body.id;
@@ -123,20 +123,20 @@ export class RoleController {
       const deletedRole = await this.roleService.deleteRole(idRole);
 
       if (!deletedRole) {
-        res.status(409).json({
+        res.status(404).json({
           message: "Role not found",
         });
         return;
       }
 
-      res.status(200).json({
+      res.status(204).json({
         message: "Role deleted successfully",
-        role: deletedRole,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error deleting role:", error);
       res.status(500).json({
         message: "Internal server error",
+        error: error.message,
       });
     }
   }

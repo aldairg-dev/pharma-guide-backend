@@ -98,7 +98,7 @@ export class StatusService {
 
   async deleteStatus(idStatus: number): Promise<Status | null> {
     try {
-      if (typeof idStatus !== "number" || idStatus <= 0) {
+      if (idStatus <= 0) {
         throw new Error("Invalid or missing status ID");
       }
 
@@ -107,7 +107,7 @@ export class StatusService {
       });
 
       if (!dataStatus) {
-        throw new Error("Status not found");
+        return null;
       }
 
       if (!dataStatus.isDeleted) {
@@ -122,7 +122,9 @@ export class StatusService {
       return dataStatus;
     } catch (error) {
       console.error("Error deleting status:", error);
-      throw error;
+      throw new Error(
+        "An unexpected error occurred while deleting the status."
+      );
     }
   }
 

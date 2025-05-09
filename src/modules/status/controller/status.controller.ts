@@ -167,25 +167,25 @@ export class StatusController {
         res.status(400).json({
           message: "Invalid 'id'. It must be a positive number.",
         });
-        return;
       }
 
       const deletedStatus = await this.statusService.deleteStatus(idNumber);
 
       if (!deletedStatus) {
         res.status(404).json({
-          message: `Status not found or could not be deleted.`,
+          message: "Status not found or could not be deleted.",
         });
-        return;
       }
 
-      res.status(200).json({
+      res.status(204).json({
+        message: "Status successfully deleted.",
         data: deletedStatus,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error deleting status:", error);
       res.status(500).json({
         message: "An unexpected error occurred while deleting the status.",
+        error: error.message,
       });
     }
   }
