@@ -32,7 +32,11 @@ export class AccessService {
 
       if (!user.roleId) {
         const roleClient = await roleService.getRoleClient();
-        user.roleId = roleClient.id;
+        if (roleClient && roleClient.id) {
+          user.roleId = Number(roleClient.id);
+        } else {
+          throw new Error("Role not found");
+        }
       }
 
       const newUser = await prisma.user.create({
