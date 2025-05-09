@@ -14,9 +14,8 @@ export class UserController {
     this.userService = new UserService();
   }
 
-  public async getUser(
+  public async getUsers(
     _req: Request,
-
     res: Response,
     _next: NextFunction
   ): Promise<void> {
@@ -143,7 +142,6 @@ export class UserController {
         });
       }
 
-
       const deletedUser = await userService.deleteUser(userId);
 
       if (!deletedUser) {
@@ -154,7 +152,7 @@ export class UserController {
       }
 
       res.status(204).json({
-        message: "User deleted successfully.",      
+        message: "User deleted successfully.",
       });
     } catch (error: any) {
       console.error("Error deleting user:", error);
