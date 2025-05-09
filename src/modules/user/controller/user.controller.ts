@@ -14,27 +14,25 @@ export class UserController {
     this.userService = new UserService();
   }
 
-  public async getUser(
+  public async getUsers(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const userData = await userService.getUser();
-
-      if (!userData) {
-        res.status(404).json({
-          message: "No users found.",
-        });
-        return;
-      }
+      const users = await userService.getUser();
 
       res.status(200).json({
-        data: userData,
+        success: true,
+        message: users.length
+          ? "Users fetched successfully."
+          : "No users found.",
+        data: users,
       });
     } catch (error) {
       console.error("Error fetching users:", error);
       res.status(500).json({
+        success: false,
         message: "An error occurred while fetching users.",
       });
     }
@@ -46,31 +44,35 @@ export class UserController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const idUser = parseInt(req.params.idUser, 10);
+      const id = Number(req.params.id);
 
-      if (isNaN(idUser)) {
+      if (isNaN(id)) {
         res.status(400).json({
+          success: false,
           message: "Invalid user ID.",
         });
         return;
       }
 
-      const userData = await userService.getUserById(idUser);
+      const user = await userService.getUserById(id);
 
-      if (!userData) {
+      if (!user) {
         res.status(404).json({
+          success: false,
           message: "User not found.",
         });
         return;
       }
 
       res.status(200).json({
+        success: true,
         message: "User retrieved successfully.",
-        data: userData,
+        data: user,
       });
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({
+        success: false,
         message: "An error occurred while fetching the user.",
       });
     }
@@ -82,31 +84,44 @@ export class UserController {
     next: NextFunction
   ): Promise<void> {
     try {
+      const userId = Number(req.params.id);
       const userData = req.body;
 
-      if (!userData || !userData.id) {
+      if (isNaN(userId)) {
         res.status(400).json({
-          message: "Invalid user data. 'id' is required.",
+          success: false,
+          message: "Invalid user ID. It must be a number.",
         });
         return;
       }
 
-      const userDataUpdate = await userService.updateUser(userData);
+      if (!userData || Object.keys(userData).length === 0) {
+        res.status(400).json({
+          success: false,
+          message: "Invalid user data. Body cannot be empty.",
+        });
+        return;
+      }
 
-      if (!userDataUpdate) {
+      const updatedUser = await userService.updateUser(userId, userData);
+
+      if (!updatedUser) {
         res.status(404).json({
+          success: false,
           message: "User not found or already deleted.",
         });
         return;
       }
 
       res.status(200).json({
+        success: true,
         message: "User updated successfully.",
-        data: userDataUpdate,
+        data: updatedUser,
       });
     } catch (error) {
       console.error("Error updating user:", error);
       res.status(500).json({
+        success: false,
         message: "An error occurred while updating the user.",
       });
     }
@@ -118,31 +133,35 @@ export class UserController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const userData = req.body;
+      const userId = Number(req.params.id);
 
-      if (!userData || !userData.idUser) {
+      if (isNaN(userId)) {
         res.status(400).json({
-          message: "Invalid user data. 'id' is required.",
+          success: false,
+          message: "Invalid user ID. It must be a number.",
         });
         return;
       }
 
-      const userDataUpdate = await userService.deleteUser(userData.id);
+      const deletedUser = await userService.deleteUser(userId);
 
-      if (!userDataUpdate) {
+      if (!deletedUser) {
         res.status(404).json({
+          success: false,
           message: "User not found or already deleted.",
         });
         return;
       }
 
       res.status(200).json({
+        success: true,
         message: "User deleted successfully.",
-        data: userDataUpdate,
+        data: deletedUser,
       });
     } catch (error) {
       console.error("Error deleting user:", error);
       res.status(500).json({
+        success: false,
         message: "An error occurred while deleting the user.",
       });
     }
