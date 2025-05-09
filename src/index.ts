@@ -1,17 +1,10 @@
-import app from "./app";
-import * as dotenv from 'dotenv';
-const swaggerUi = require("swagger-ui-express");
-const swaggerDocument = require("./swagger.json");
-
-const PORT = process.env.PORT || 3001;
+import express from "express";
+import swaggerUi from "swagger-ui-express";
+import swaggerDocument from "./swagger.json";
+const app = express();
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-dotenv.config({
-  path: `.env.${process.env.NODE_ENV || "development"}`,
-});
-
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor ejecutándose en http://localhost:${PORT}`);
-  console.log(`🌱 Entorno: ${process.env.NODE_ENV}`);
+app.listen(3000, () => {
+  console.log("Server running on http://localhost:3000");
 });
