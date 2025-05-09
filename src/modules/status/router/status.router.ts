@@ -20,8 +20,9 @@ routerStatus.put(
   "/status",
   statusController.updateStatus.bind(statusController)
 );
+
 routerStatus.delete(
-  "/status",
+  "/status/:id",
   statusController.deleteStatus.bind(statusController)
 );
 

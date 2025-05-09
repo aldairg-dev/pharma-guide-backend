@@ -2,164 +2,124 @@ import { PrismaClient, Status } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+class NotFoundError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "NotFoundError";
+  }
+}
+
+class BadRequestError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "BadRequestError";
+  }
+}
+
 export class StatusService {
+  private async findStatusById(id: number): Promise<Status | null> {
+    return prisma.status.findUnique({
+      where: { id },
+    });
+  }
+
+  private async findStatusByName(name: string): Promise<Status | null> {
+    return prisma.status.findFirst({
+      where: {
+        name,
+        isDeleted: false,
+      },
+    });
+  }
+
   async createStatus(status: Status): Promise<Status> {
-    try {
-      const existingStatus = await prisma.status.findFirst({
-        where: {
-          name: status.name,
-          isDeleted: false,
-        },
-      });
-
-      if (existingStatus) {
-        throw new Error("The status already exists.");
-      }
-
-      const newStatus = await prisma.status.create({
-        data: status,
-      });
-
-      return newStatus;
-    } catch (error) {
-      console.error("Failed to create status:", error);
-      throw new Error("Unable to create new status.");
+    const existingStatus = await this.findStatusByName(status.name);
+    if (existingStatus) {
+      throw new BadRequestError("The status already exists.");
     }
+
+    return prisma.status.create({
+      data: status,
+    });
   }
 
   async getStatus(): Promise<Status[]> {
-    try {
-      const dataStatus = await prisma.status.findMany({});
+    const statuses = await prisma.status.findMany({
+      where: { isDeleted: false }, // Filtering only non-deleted statuses
+    });
 
-      if (dataStatus.length === 0) {
-        console.log("No status records found.");
-      }
-
-      return dataStatus;
-    } catch (error) {
-      console.error(
-        "An error occurred while retrieving status records:",
-        error
-      );
-      throw new Error("Unable to retrieve status records.");
+    if (statuses.length === 0) {
+      throw new NotFoundError("No status records found.");
     }
+
+    return statuses;
   }
 
   async getOneStatus(idStatus: number): Promise<Status> {
-    try {
-      if (typeof idStatus !== "number" || idStatus <= 0) {
-        throw new Error("Invalid or missing status ID.");
-      }
-
-      const dataStatus = await prisma.status.findUnique({
-        where: {
-          id: idStatus,
-          isDeleted: false,
-        },
-      });
-
-      if (!dataStatus) {
-        throw new Error(`Status with ID ${idStatus} not found.`);
-      }
-
-      return dataStatus;
-    } catch (error) {
-      console.error("Error retrieving status:", error);
-      throw new Error("Unable to retrieve the status.");
+    if (idStatus <= 0) {
+      throw new BadRequestError("Invalid or missing status ID.");
     }
-  }
 
-  async updateStatus(status: Status): Promise<Status | null> {
-    try {
-      const existingStatus = await prisma.status.findFirst({
-        where: {
-          id: status.id,
-        },
-      });
+    const status = await this.findStatusById(idStatus);
 
-      if (!existingStatus) {
-        console.warn(
-          `Status with ID ${status.id} not found or already deleted.`
-        );
-        return null;
-      }
-
-      const updatedStatus = await prisma.status.update({
-        where: { id: status.id },
-        data: status,
-      });
-
-      return updatedStatus;
-    } catch (error) {
-      console.error("Error updating status:", error);
-      throw new Error("Unable to update status.");
-    }
-  }
-
-  async deleteStatus(idStatus: number): Promise<Status | null> {
-    try {
-      if (idStatus <= 0) {
-        throw new Error("Invalid or missing status ID");
-      }
-
-      const dataStatus = await prisma.status.findUnique({
-        where: { id: idStatus },
-      });
-
-      if (!dataStatus) {
-        return null;
-      }
-
-      if (!dataStatus.isDeleted) {
-        const updatedStatus = await prisma.status.update({
-          where: { id: idStatus },
-          data: { isDeleted: true },
-        });
-
-        return updatedStatus;
-      }
-
-      return dataStatus;
-    } catch (error) {
-      console.error("Error deleting status:", error);
-      throw new Error(
-        "An unexpected error occurred while deleting the status."
+    if (!status || status.isDeleted) {
+      throw new NotFoundError(
+        `Status with ID ${idStatus} not found or deleted.`
       );
     }
+
+    return status;
   }
 
-  // -> Para evitar hacer duplicidad de código
-  async getActive(): Promise<Status> {
-    const dataActive = await prisma.status.findUnique({
-      where: {
-        name: "active",
-        isDeleted: false,
-      },
+  async updateStatus(status: Status): Promise<Status> {
+    const existingStatus = await this.findStatusById(status.id);
+
+    if (!existingStatus) {
+      throw new NotFoundError(
+        `Status with ID ${status.id} not found or already deleted.`
+      );
+    }
+
+    return prisma.status.update({
+      where: { id: status.id },
+      data: status,
     });
+  }
 
-    if (!dataActive) {
-      throw new Error(
-        "The 'active' status was not found or is marked as deleted."
+  async deleteStatus(idStatus: number): Promise<Status> {
+    if (idStatus <= 0) {
+      throw new BadRequestError("Invalid or missing status ID.");
+    }
+
+    const status = await this.findStatusById(idStatus);
+
+    if (!status || status.isDeleted) {
+      throw new NotFoundError("Status not found or already deleted.");
+    }
+
+    return prisma.status.update({
+      where: { id: idStatus },
+      data: { isDeleted: true },
+    });
+  }
+
+  private async getStatusByName(name: string): Promise<Status> {
+    const status = await this.findStatusByName(name);
+
+    if (!status) {
+      throw new NotFoundError(
+        `The '${name}' status was not found or is marked as deleted.`
       );
     }
 
-    return dataActive;
+    return status;
+  }
+
+  async getActive(): Promise<Status> {
+    return this.getStatusByName("active");
   }
 
   async getDelete(): Promise<Status> {
-    const dataDeleted = await prisma.status.findUnique({
-      where: {
-        name: "deleted",
-        isDeleted: false,
-      },
-    });
-
-    if (!dataDeleted) {
-      throw new Error(
-        "The 'deleted' status was not found or is marked as deleted."
-      );
-    }
-
-    return dataDeleted;
+    return this.getStatusByName("deleted");
   }
 }

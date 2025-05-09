@@ -12,7 +12,7 @@ export class StatusController {
   public async createStatus(
     req: Request,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
   ): Promise<void> {
     try {
       const dataStatus = req.body;
@@ -29,29 +29,29 @@ export class StatusController {
 
       const newStatus = await this.statusService.createStatus(dataStatus);
 
-      if (!newStatus) {
-        res.status(409).json({
-          message: "The status already exists.",
-        });
-        return;
-      }
-
       res.status(201).json({
         message: "Status created successfully.",
         status: newStatus,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error while creating the status:", error);
-      res.status(500).json({
-        message: "An error occurred while creating the status.",
-      });
+      if (error.message === "The status already exists.") {
+        res.status(409).json({
+          message: "The status already exists.",
+        });
+      } else {
+        res.status(500).json({
+          message: "An error occurred while creating the status.",
+          error: error.message,
+        });
+      }
     }
   }
 
   public async getStatus(
     req: Request,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
   ): Promise<void> {
     try {
       const dataStatus = await this.statusService.getStatus();
@@ -66,10 +66,11 @@ export class StatusController {
       res.status(200).json({
         status: dataStatus,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error while retrieving the status:", error);
       res.status(500).json({
         message: "An error occurred while retrieving the status.",
+        error: error.message,
       });
     }
   }
@@ -77,10 +78,16 @@ export class StatusController {
   public async getOneStatus(
     req: Request,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
   ): Promise<void> {
     try {
       const idStatus = parseInt(req.params.id);
+
+      if (isNaN(idStatus) || idStatus <= 0) {
+        res.status(400).json({
+          message: "Invalid ID format. ID should be a positive number.",
+        });
+      }
 
       const dataStatus = await this.statusService.getOneStatus(idStatus);
 
@@ -88,17 +95,17 @@ export class StatusController {
         res.status(404).json({
           message: `Status with ID ${idStatus} not found.`,
         });
-        return;
       }
 
       res.status(200).json({
         message: "Status retrieved successfully.",
         dataStatus: dataStatus,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error retrieving status:", error);
       res.status(500).json({
         message: "An error occurred while retrieving the status.",
+        error: error.message,
       });
     }
   }
@@ -106,7 +113,7 @@ export class StatusController {
   public async updateStatus(
     req: Request,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
   ): Promise<void> {
     try {
       const dataStatus = req.body;
@@ -115,7 +122,7 @@ export class StatusController {
         !validateFieldOrRespond(
           dataStatus,
           res,
-          "Missing required fields to updated the status."
+          "Missing required fields to update the status."
         )
       ) {
         return;
@@ -134,11 +141,11 @@ export class StatusController {
         message: "Status updated successfully.",
         dataStatus: updatedStatus,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating status:", error);
-
       res.status(500).json({
         message: "An error occurred while updating the status.",
+        error: error.message,
       });
     }
   }
@@ -146,28 +153,19 @@ export class StatusController {
   public async deleteStatus(
     req: Request,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
   ): Promise<void> {
     try {
-      const { id } = req.body;
+      const { id } = req.params;
 
-      if (
-        !validateFieldOrRespond(
-          { id },
-          res,
-          "Missing required field 'id' to delete the status."
-        )
-      ) {
+      if (!id || isNaN(parseInt(id)) || parseInt(id) <= 0) {
+        res.status(400).json({
+          message: "Invalid 'id'. It must be a positive number.",
+        });
         return;
       }
 
       const idNumber = parseInt(id);
-
-      if (isNaN(idNumber) || idNumber <= 0) {
-        res.status(400).json({
-          message: "Invalid 'id'. It must be a positive number.",
-        });
-      }
 
       const deletedStatus = await this.statusService.deleteStatus(idNumber);
 
@@ -175,11 +173,11 @@ export class StatusController {
         res.status(404).json({
           message: "Status not found or could not be deleted.",
         });
+        return;
       }
 
       res.status(204).json({
         message: "Status successfully deleted.",
-        data: deletedStatus,
       });
     } catch (error: any) {
       console.error("Error deleting status:", error);
