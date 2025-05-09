@@ -1,14 +1,18 @@
 import { PrismaClient, StudyPlan } from "@prisma/client";
 import { StatusService } from "../../status/services/status.service";
+
 const prisma = new PrismaClient();
 
 export class StudyPlanService {
-  async createStudyPlan(studyPlan: StudyPlan): Promise<StudyPlan | null> {
+  private readonly statusService = new StatusService();
+  private readonly ACTIVE_STATUS_ID = 1;
+
+  async createStudyPlan(studyPlan: StudyPlan): Promise<StudyPlan> {
     try {
       const existingStudyPlan = await prisma.studyPlan.findFirst({
         where: {
           subjet_name: studyPlan.subjet_name,
-          statusId: 1,
+          statusId: this.ACTIVE_STATUS_ID,
         },
       });
 
@@ -19,63 +23,49 @@ export class StudyPlanService {
       const newStudyPlan = await prisma.studyPlan.create({
         data: {
           ...studyPlan,
-          statusId: 1,
+          statusId: this.ACTIVE_STATUS_ID,
         },
       });
 
       return newStudyPlan;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating the study plan:", error);
-      throw new Error("Failed to create the study plan.");
+      throw new Error(`Failed to create the study plan: ${error.message}`);
     }
   }
-  async getAllStudyPlan() {
-    const studyPlan = await prisma.studyPlan.findMany({
-      where: {
-        statusId: 1,
-      },
-      include: {
-        Status: true,
-        user: true,
-      },
-    });
 
-    if (!studyPlan || studyPlan.length === 0) {
-      console.warn("No existen study plan para este usuario");
-      return null;
-    }
-
-    return studyPlan;
-  }
-
-  async getStudyPlan(userId: number) {
-    const studyPlan = await prisma.studyPlan.findMany({
-      where: {
-        userId,
-        statusId: 1,
-      },
-      include: {
-        Status: true,
-        user: true,
-      },
-    });
-
-    if (!studyPlan || studyPlan.length === 0) {
-      console.warn("No existen study plan para este usuario");
-      return null;
-    }
-
-    return studyPlan;
-  }
-
-  async getOneStudyPlan(idStudyPlan: number) {
+  async getStudyPlans(userId?: number): Promise<StudyPlan[] | null> {
     try {
-      if (!idStudyPlan) throw new Error("Study plan ID is required.");
+      const where = {
+        ...(userId ? { userId } : {}),
+        statusId: this.ACTIVE_STATUS_ID,
+      };
+
+      const studyPlans = await prisma.studyPlan.findMany({
+        where,
+        include: {
+          Status: true,
+          user: true,
+        },
+      });
+
+      return studyPlans.length > 0 ? studyPlans : null;
+    } catch (error: any) {
+      console.error("Error fetching study plans:", error);
+      throw new Error(`Failed to fetch study plans: ${error.message}`);
+    }
+  }
+
+  async getOneStudyPlan(idStudyPlan: number): Promise<StudyPlan | null> {
+    try {
+      if (!idStudyPlan || isNaN(idStudyPlan)) {
+        throw new Error("Study plan ID is required and must be a number.");
+      }
 
       const studyPlan = await prisma.studyPlan.findFirst({
         where: {
           id: idStudyPlan,
-          statusId: 1,
+          statusId: this.ACTIVE_STATUS_ID,
         },
         include: {
           Status: true,
@@ -84,25 +74,27 @@ export class StudyPlanService {
       });
 
       return studyPlan;
-    } catch (error) {
-      console.log("Failed to get the study plan:", error);
-      throw new Error("Unable to get the study plan. Please try again later.");
+    } catch (error: any) {
+      console.error("Failed to get the study plan:", error);
+      throw new Error(`Unable to get the study plan: ${error.message}`);
     }
   }
 
   async updateStudyPlan(studyPlan: StudyPlan): Promise<StudyPlan | null> {
     try {
-      const existingPlans = await prisma.studyPlan.findMany({
+      if (!studyPlan.id || isNaN(studyPlan.id)) {
+        throw new Error("Study plan ID is required and must be a number.");
+      }
+
+      const existingPlan = await prisma.studyPlan.findFirst({
         where: {
           id: studyPlan.id,
-          statusId: 1,
+          statusId: this.ACTIVE_STATUS_ID,
         },
       });
 
-      if (existingPlans.length === 0) {
-        console.warn(
-          "No existing study plan found with the given subject name."
-        );
+      if (!existingPlan) {
+        console.warn("No existing study plan found with the given ID.");
         return null;
       }
 
@@ -112,46 +104,37 @@ export class StudyPlanService {
       });
 
       return updatedStudyPlan;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to update study plan:", error);
-      throw new Error(
-        "Unable to update the study plan. Please try again later."
-      );
+      throw new Error(`Unable to update the study plan: ${error.message}`);
     }
   }
 
   async deleteStudyPlan(idStudyPlan: number): Promise<StudyPlan | null> {
     try {
-      const statusService = new StatusService();
-      const deletedStatus = await statusService.getDelete();
-
-      if (!idStudyPlan) {
-        throw new Error("Study plan ID is required.");
+      if (!idStudyPlan || isNaN(idStudyPlan)) {
+        throw new Error("Study plan ID is required and must be a number.");
       }
 
-      const dataStudyPlan = await prisma.studyPlan.findUnique({
-        where: {
-          id: idStudyPlan,
-        },
+      const deletedStatus = await this.statusService.getDelete();
+
+      const existingPlan = await prisma.studyPlan.findUnique({
+        where: { id: idStudyPlan },
       });
 
-      if (!dataStudyPlan) {
+      if (!existingPlan) {
         throw new Error("Study plan not found.");
       }
 
       const updatedStudyPlan = await prisma.studyPlan.update({
-        where: {
-          id: dataStudyPlan.id,
-        },
-        data: {
-          statusId: deletedStatus.id,
-        },
+        where: { id: idStudyPlan },
+        data: { statusId: deletedStatus.id },
       });
 
       return updatedStudyPlan;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error deleting study plan:", error);
-      throw error;
+      throw new Error(`Unable to delete the study plan: ${error.message}`);
     }
   }
 }
