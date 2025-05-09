@@ -8,13 +8,14 @@ routerStudyPlan.post("/role", roleController.createRole.bind(roleController));
 
 routerStudyPlan.get("/role", roleController.getRole.bind(roleController));
 
-// routerStudyPlan.get(
-//   "/role/:id",
-//   roleController.getOneStudyPlan.bind(roleController)
-// );
+routerStudyPlan.put(
+  "/role/:id",
+  roleController.updateRole.bind(roleController)
+);
 
-routerStudyPlan.put("/role", roleController.updateRole.bind(roleController));
-
-routerStudyPlan.delete("/role", roleController.deleteRole.bind(roleController));
+routerStudyPlan.delete(
+  "/role/:id",
+  roleController.deleteRole.bind(roleController)
+);
 
 export default routerStudyPlan;

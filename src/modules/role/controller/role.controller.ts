@@ -1,9 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { RoleService } from "../service/role.service";
-import {
-  getUserIdOrRespond,
-  validateFieldOrRespond,
-} from "../../../utils/helpers/helpers.service";
+import { validateFieldOrRespond } from "../../../utils/helpers/helpers.service";
 
 export class RoleController {
   private roleService: RoleService;
@@ -52,25 +49,20 @@ export class RoleController {
   }
 
   public async getRole(
-    req: Request,
+    _req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const dataRole = await this.roleService.getRole();
+      const roles = await this.roleService.getRole();
 
-      if (!dataRole) {
-        res.status(200).json([]);
-        return;
-      }
-
-      res.status(200).json({
-        role: dataRole,
+      res.status(roles.length > 0 ? 200 : 404).json({
+        role: roles.length > 0 ? roles : [],
       });
-    } catch (error) {
-      console.log("Error getting role:", error);
+    } catch (error: any) {
+      console.log("Error getting roles:", error);
       res.status(500).json({
-        message: "Internal server error",
+        message: error.message || "Internal server error",
       });
     }
   }
@@ -81,33 +73,25 @@ export class RoleController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const dataRole = req.body;
-      if (!dataRole.idRole || !dataRole.idStatus) {
+      const { idRole, idStatus } = req.body;
+
+      if (!idRole || !idStatus) {
         res.status(400).json({
           message: "Missing required fields to update the Role",
         });
         return;
       }
-      const updatedRole = await this.roleService.updateRole(
-        dataRole.idRole,
-        dataRole.idStatus
-      );
 
-      if (!updatedRole) {
-        res.status(409).json({
-          message: "Role not found",
-        });
-        return;
-      }
+      const updatedRole = await this.roleService.updateRole(idRole, idStatus);
 
       res.status(200).json({
         message: "Role updated successfully",
         role: updatedRole,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating role:", error);
       res.status(500).json({
-        message: "Internal server error",
+        message: error.message || "Internal server error",
       });
     }
   }
@@ -118,16 +102,16 @@ export class RoleController {
     _next: NextFunction
   ): Promise<void> {
     try {
-      const idRole = req.body.id;
+      const { id } = req.params;
 
-      const deletedRole = await this.roleService.deleteRole(idRole);
-
-      if (!deletedRole) {
-        res.status(404).json({
-          message: "Role not found",
+      if (!id) {
+        res.status(400).json({
+          message: "Missing role ID",
         });
         return;
       }
+
+      const deletedRole = await this.roleService.deleteRole(Number(id));
 
       res.status(204).json({
         message: "Role deleted successfully",
@@ -135,8 +119,7 @@ export class RoleController {
     } catch (error: any) {
       console.error("Error deleting role:", error);
       res.status(500).json({
-        message: "Internal server error",
-        error: error.message,
+        message: error.message || "Internal server error",
       });
     }
   }

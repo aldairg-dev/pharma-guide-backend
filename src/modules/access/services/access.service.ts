@@ -6,11 +6,11 @@ import { RoleService } from "../../role/service/role.service";
 
 const prisma = new PrismaClient();
 const jwtService = new JwtService();
+const roleService = new RoleService();
 
 export class AccessService {
   async createUser(user: User): Promise<User | null> {
     try {
-      const roleService = new RoleService();
       const existingUser = await prisma.user.findFirst({
         where: {
           email: user.email,
@@ -25,19 +25,14 @@ export class AccessService {
 
       if (!user.password) {
         const randomPassword = randomUUID().slice(0, 10);
-        const hashedPassword = await bcryptService.encryptPassword(
-          randomPassword
-        );
-        user.password = hashedPassword;
+        user.password = await bcryptService.encryptPassword(randomPassword);
       } else {
-        const password = await bcryptService.encryptPassword(user.password);
-        user.password = password;
+        user.password = await bcryptService.encryptPassword(user.password);
       }
+
       if (!user.roleId) {
         const roleClient = await roleService.getRoleClient();
         user.roleId = roleClient.id;
-      } else {
-        user.roleId = Number(user.roleId);
       }
 
       const newUser = await prisma.user.create({
@@ -49,7 +44,7 @@ export class AccessService {
       console.error("Error creating user:", error);
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error";
-      throw new Error(`Failed  to create user: ${errorMessage}`);
+      throw new Error(`Failed to create user: ${errorMessage}`);
     }
   }
 
@@ -71,19 +66,16 @@ export class AccessService {
         password,
         user.password
       );
-
       if (!isPasswordValid) {
         console.warn("Invalid password.");
         return null;
       }
 
-      const token = jwtService.createToken({
+      return jwtService.createToken({
         emailUser: user.email ?? "",
         userId: user.id ?? null,
         roleId: user.roleId ?? 2,
       });
-
-      return token;
     } catch (error) {
       console.error("Login error:", error);
       throw new Error("Failed to log in.");
@@ -92,14 +84,12 @@ export class AccessService {
 
   async existUser(email: string): Promise<User | null> {
     try {
-      const user = await prisma.user.findFirst({
+      return await prisma.user.findFirst({
         where: {
           email,
           isDeleted: false,
         },
       });
-
-      return user;
     } catch (error) {
       console.error("Error checking user existence:", error);
       throw new Error("Failed to verify user.");
@@ -109,26 +99,17 @@ export class AccessService {
   async deleteUser(idUser: number): Promise<User | null> {
     try {
       const userData = await prisma.user.findUnique({
-        where: {
-          id: idUser,
-          isDeleted: false,
-        },
+        where: { id: idUser },
       });
 
       if (!userData || userData.isDeleted) {
         throw new Error("User not found or already deleted.");
       }
 
-      const updatedUser = await prisma.user.update({
-        where: {
-          id: userData.id,
-        },
-        data: {
-          isDeleted: true,
-        },
+      return await prisma.user.update({
+        where: { id: idUser },
+        data: { isDeleted: true },
       });
-
-      return updatedUser;
     } catch (error) {
       console.error("Error deleting user:", error);
       throw new Error("An error occurred while deleting the user.");
