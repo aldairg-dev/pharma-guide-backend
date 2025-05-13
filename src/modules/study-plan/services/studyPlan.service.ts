@@ -1,18 +1,14 @@
 import { PrismaClient, StudyPlan } from "@prisma/client";
-import { StatusService } from "../../status/services/status.service";
 
 const prisma = new PrismaClient();
 
 export class StudyPlanService {
-  private readonly statusService = new StatusService();
-  private readonly ACTIVE_STATUS_ID = 1;
-
   async createStudyPlan(studyPlan: StudyPlan): Promise<StudyPlan> {
     try {
       const existingStudyPlan = await prisma.studyPlan.findFirst({
         where: {
           subjet_name: studyPlan.subjet_name,
-          statusId: this.ACTIVE_STATUS_ID,
+          isDeleted: true,
         },
       });
 
@@ -23,7 +19,7 @@ export class StudyPlanService {
       const newStudyPlan = await prisma.studyPlan.create({
         data: {
           ...studyPlan,
-          statusId: this.ACTIVE_STATUS_ID,
+          isDeleted: false,
         },
       });
 
@@ -38,13 +34,12 @@ export class StudyPlanService {
     try {
       const where = {
         ...(userId ? { userId } : {}),
-        statusId: this.ACTIVE_STATUS_ID,
+        isDeleted: false,
       };
 
       const studyPlans = await prisma.studyPlan.findMany({
         where,
         include: {
-          Status: true,
           user: true,
         },
       });
@@ -65,10 +60,9 @@ export class StudyPlanService {
       const studyPlan = await prisma.studyPlan.findFirst({
         where: {
           id: idStudyPlan,
-          statusId: this.ACTIVE_STATUS_ID,
+          isDeleted: false,
         },
         include: {
-          Status: true,
           user: true,
         },
       });
@@ -89,7 +83,7 @@ export class StudyPlanService {
       const existingPlan = await prisma.studyPlan.findFirst({
         where: {
           id: studyPlan.id,
-          statusId: this.ACTIVE_STATUS_ID,
+          isDeleted: false,
         },
       });
 
@@ -116,8 +110,6 @@ export class StudyPlanService {
         throw new Error("Study plan ID is required and must be a number.");
       }
 
-      const deletedStatus = await this.statusService.getDelete();
-
       const existingPlan = await prisma.studyPlan.findUnique({
         where: { id: idStudyPlan },
       });
@@ -128,7 +120,7 @@ export class StudyPlanService {
 
       const updatedStudyPlan = await prisma.studyPlan.update({
         where: { id: idStudyPlan },
-        data: { statusId: deletedStatus.id },
+        data: { isDeleted: true },
       });
 
       return updatedStudyPlan;

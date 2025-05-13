@@ -1,37 +1,8 @@
 import { PrismaClient, Role } from "@prisma/client";
-import { StatusService } from "../../status/services/status.service";
 
 const prisma = new PrismaClient();
 
 export class RoleService {
-  private statusService = new StatusService();
-  private idActive!: number;
-  private idDelete!: number;
-
-  public constructor() {
-    this.init();
-  }
-
-  private async init(): Promise<void> {
-    const [statusActive, statusDelete] = await Promise.all([
-      this.statusService.getActive(),
-      this.statusService.getDelete(),
-    ]);
-
-    if (!statusActive || !statusDelete) {
-      throw new Error("Required statuses (active/delete) not found.");
-    }
-
-    this.idActive = statusActive.id;
-    this.idDelete = statusDelete.id;
-  }
-
-  private ensureInitialized(): void {
-    if (!this.idActive || !this.idDelete) {
-      throw new Error("RoleService not initialized.");
-    }
-  }
-
   public async getRoleClient(): Promise<Role> {
     const roleClient = await prisma.role.findFirst({
       where: { name: "client" },
@@ -45,8 +16,6 @@ export class RoleService {
   }
 
   public async createRole(role: Role): Promise<Role> {
-    this.ensureInitialized();
-
     const existingRole = await prisma.role.findUnique({
       where: { name: role.name },
     });
@@ -58,22 +27,16 @@ export class RoleService {
     return prisma.role.create({
       data: {
         ...role,
-        statusId: this.idActive, // Asignamos el estado 'activo'
+        isDeleted: false,
       },
     });
   }
 
   public async getRole(): Promise<Role[]> {
-    this.ensureInitialized();
-
-    return prisma.role.findMany({
-      include: { status: true },
-    });
+    return prisma.role.findMany({});
   }
 
   public async updateRole($idRol: number, $dataRole: Role): Promise<Role> {
-    this.ensureInitialized();
-
     if (isNaN($idRol) || !$dataRole) {
       throw new Error("Both Role ID and Status ID must be provided.");
     }
@@ -93,8 +56,6 @@ export class RoleService {
   }
 
   public async deleteRole(idRole: number): Promise<Role> {
-    this.ensureInitialized();
-
     if (!idRole) {
       throw new Error("Role ID must be provided for deletion.");
     }
@@ -109,7 +70,7 @@ export class RoleService {
 
     return prisma.role.update({
       where: { id: idRole },
-      data: { statusId: this.idDelete },
+      data: { isDeleted: true },
     });
   }
 }
