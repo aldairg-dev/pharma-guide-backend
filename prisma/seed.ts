@@ -5,25 +5,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   try {
-    // -> Crear un nuevo status
-    const statuses = ["active", "deleted"];
-
-    for (const name of statuses) {
-      const existingStatus = await prisma.status.findUnique({
-        where: { name },
-      });
-
-      if (!existingStatus) {
-        await prisma.status.create({
-          data: { name },
-        });
-        console.log(`Status '${name}' registered successfully.`);
-      } else {
-        console.log(`Status '${name}' already exists.`);
-      }
-    }
-
-    async function createRoleIfNotExists(roleName: string, statusId: number) {
+    async function createRoleIfNotExists(roleName: string) {
       const existingRole = await prisma.role.findUnique({
         where: { name: roleName },
       });
@@ -32,7 +14,7 @@ async function main() {
         await prisma.role.create({
           data: {
             name: roleName,
-            statusId: statusId,
+            isDeleted: false,
           },
         });
         console.log(`Rol '${roleName}' registrado con éxito!`);
@@ -41,8 +23,8 @@ async function main() {
       }
     }
 
-    await createRoleIfNotExists("admin", 1);
-    await createRoleIfNotExists("client", 1);
+    await createRoleIfNotExists("admin");
+    await createRoleIfNotExists("client");
 
     // -> Crear un nuevo usuario
     const hashedPassword = await bcrypt.hash("pharmaGuide", 10);
