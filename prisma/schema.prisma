@@ -21,29 +21,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Status {
-  id        Int         @id @default(autoincrement()) @db.Integer
-  name      String      @unique @db.VarChar(100)
-  role      Role[]
-  studyPlan StudyPlan[]
-
-  isDeleted Boolean @default(false)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 model Role {
   id   Int    @id @default(autoincrement()) @db.Integer
   name String @unique @db.VarChar(100)
 
-  statusId Int?
-  status   Status? @relation(fields: [statusId], references: [id])
-
   user User[]
+
+  isDeleted Boolean  @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  statusId  Int?     @db.Integer
 }
 
 model User {
@@ -58,7 +46,6 @@ model User {
   role Role @relation(fields: [roleId], references: [id])
 
   isDeleted Boolean @default(false)
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -70,10 +57,8 @@ model StudyPlan {
   subjet_name String  @unique @db.VarChar(100)
   total_days  Int     @db.Integer
   daily_hour  Decimal @db.Decimal(10, 2)
-
-  statusId Int? @db.Integer
-
-  Status Status? @relation(fields: [statusId], references: [id])
+  
+  isDeleted Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
