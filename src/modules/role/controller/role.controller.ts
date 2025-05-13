@@ -73,7 +73,7 @@ export class RoleController {
     _next: NextFunction
   ): Promise<void> {
     try {
-      const idRole = Number(req.params);
+      const idRole = Number(req.params.id);
       const dataRole = req.body;
 
       if (isNaN(idRole) || !dataRole) {
@@ -112,7 +112,7 @@ export class RoleController {
         return;
       }
 
-      const deletedRole = await this.roleService.deleteRole(Number(id));
+      await this.roleService.deleteRole(Number(id));
 
       res.status(204).json({
         message: "Role deleted successfully",
