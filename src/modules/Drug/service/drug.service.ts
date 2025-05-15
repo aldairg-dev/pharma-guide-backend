@@ -1,56 +1,55 @@
 import { Drug, PrismaClient } from "@prisma/client/default";
-import { empty } from "@prisma/client/runtime/library";
 const prisma = new PrismaClient();
 
 export class DrugService {
-  async getDrugs() {
+  async getDrugs(): Promise<Drug[]> {
     try {
-      const drugs = await prisma.drug.findMany({});
-      return drugs;
+      return await prisma.drug.findMany({
+        where: { isDeleted: false },
+      });
     } catch (error: any) {
-      console.error("Error fetching drugs: ", error.message);
+      console.error("Error fetching drugs:", error.message);
       throw new Error("An error occurred while fetching drugs.");
     }
   }
 
-  async createDrug(drug: Drug) {
+  async createDrug(
+    data: Omit<Drug, "id" | "createdAt" | "updatedAt">
+  ): Promise<Drug> {
     try {
       const existingDrug = await prisma.drug.findFirst({
         where: {
-          userId: drug.userId,
+          userId: data.userId,
+          name_generic: data.name_generic,
           isDeleted: false,
         },
       });
 
       if (existingDrug) {
         throw new Error("The drug already exists.");
-      } else {
-        const newDrug = await prisma.drug.create({
-          data: drug,
-        });
-        return newDrug;
       }
+
+      const newDrug = await prisma.drug.create({ data });
+      return newDrug;
     } catch (error: any) {
-      console.error("Error creating drug: ", error.message);
+      console.error("Error creating drug:", error.message);
       throw new Error("An error occurred while creating the drug.");
     }
   }
 
-  async findDrugToUser(userId: number) {
+  async getDrugsByUser(userId: number): Promise<Drug[]> {
     try {
       if (!userId) {
         throw new Error("User ID is required.");
       }
-
-      const drugsUser = await prisma.drug.findMany({
+      return await prisma.drug.findMany({
         where: {
-          userId: userId,
+          userId,
           isDeleted: false,
         },
       });
-      return drugsUser;
     } catch (error: any) {
-      console.error("Error fetching drugs for user: ", error.message);
+      console.error("Error fetching drugs for user:", error.message);
       throw new Error("An error occurred while fetching drugs for the user.");
     }
   }
