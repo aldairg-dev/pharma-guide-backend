@@ -14,6 +14,7 @@
  */
 generator client {
   provider = "prisma-client-js"
+  output   = "./node_modules/@prisma/client"
 }
 
 datasource db {
@@ -27,7 +28,7 @@ model Role {
 
   user User[]
 
-  isDeleted Boolean  @default(false)
+  isDeleted Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -43,23 +44,40 @@ model User {
   roleId     Int
   studyPlans StudyPlan[]
 
-  role Role @relation(fields: [roleId], references: [id])
+  role Role   @relation(fields: [roleId], references: [id])
+  drug Drug[]
 
-  isDeleted Boolean @default(false)
+  isDeleted Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model StudyPlan {
   id          Int     @id @default(autoincrement()) @db.Integer
-  user        User    @relation(fields: [userId], references: [id])
   userId      Int
   subjet_name String  @unique @db.VarChar(100)
   total_days  Int     @db.Integer
   daily_hour  Decimal @db.Decimal(10, 2)
-  
+
   isDeleted Boolean @default(false)
 
+  user User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Drug {
+  id                  Int     @id @default(autoincrement()) @db.Integer
+  name_generic        String  @db.VarChar(100)
+  brand_name          String  @db.VarChar(100)
+  mechanism_of_action String  @db.VarChar(255)
+  therapeutic_class   String? @db.VarChar(100)
+  tags                String? @db.Text
+  isDeleted           Boolean @default(false)
+  userId              Int
+
+  user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
