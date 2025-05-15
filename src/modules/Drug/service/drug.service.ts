@@ -35,4 +35,23 @@ export class DrugService {
       throw new Error("An error occurred while creating the drug.");
     }
   }
+
+  async findDrugToUser(userId: number) {
+    try {
+      if (!userId) {
+        throw new Error("User ID is required.");
+      }
+
+      const drugsUser = await prisma.drug.findMany({
+        where: {
+          userId: userId,
+          isDeleted: false,
+        },
+      });
+      return drugsUser;
+    } catch (error: any) {
+      console.error("Error fetching drugs for user: ", error.message);
+      throw new Error("An error occurred while fetching drugs for the user.");
+    }
+  }
 }
