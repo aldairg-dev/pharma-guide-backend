@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { DrugService } from "../service/drug.service";
 import { validateFieldOrRespond } from "../../../utils/helpers/helpers.service";
+import { empty } from "@prisma/client/runtime/library";
 
 export class DrugController {
   private drugService = new DrugService();
@@ -40,6 +41,34 @@ export class DrugController {
         error instanceof Error ? error.message : error
       );
       res.status(500).json({ message: "Error creating drug" });
+    }
+  }
+
+  public async getDrugs(
+    _req: Request,
+    res: Response,
+    _next: NextFunction
+  ): Promise<void> {
+    try {
+      const drugs = await this.drugService.getDrugs();
+      if (!drugs) {
+        res.status(409).json({
+          message: "Not exists drugs",
+        });
+        return;
+      }
+
+      res.status(200).json({
+        message: "Drugs fetched successfully",
+        data: drugs,
+      });
+      return;
+    } catch (error: any) {
+      console.error("An error occurred fetching drugs: ", error.message);
+      res.status(500).json({
+        message: "Error getting drugs",
+      });
+      return;
     }
   }
 }

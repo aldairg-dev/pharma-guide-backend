@@ -2,17 +2,6 @@ import { Drug, PrismaClient } from "@prisma/client/default";
 const prisma = new PrismaClient();
 
 export class DrugService {
-  async getDrugs(): Promise<Drug[]> {
-    try {
-      return await prisma.drug.findMany({
-        where: { isDeleted: false },
-      });
-    } catch (error: any) {
-      console.error("Error fetching drugs:", error.message);
-      throw new Error("An error occurred while fetching drugs.");
-    }
-  }
-
   async createDrug(
     data: Omit<Drug, "id" | "createdAt" | "updatedAt">
   ): Promise<Drug> {
@@ -34,6 +23,17 @@ export class DrugService {
     } catch (error: any) {
       console.error("Error creating drug:", error.message);
       throw new Error("An error occurred while creating the drug.");
+    }
+  }
+
+  async getDrugs(): Promise<Drug[]> {
+    try {
+      return await prisma.drug.findMany({
+        where: { isDeleted: false },
+      });
+    } catch (error: any) {
+      console.error("Error fetching drugs:", error.message);
+      throw new Error("An error occurred while fetching drugs.");
     }
   }
 
