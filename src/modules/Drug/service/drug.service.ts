@@ -77,4 +77,33 @@ export class DrugService {
       throw new Error("An error occurred while updating the drug.");
     }
   }
+
+  async deleteDrug(drugId: number): Promise<Drug | null> {
+    try {
+      const drug = await prisma.drug.findFirst({
+        where: {
+          id: drugId,
+          isDeleted: false,
+        },
+      });
+
+      if (!drug) {
+        throw new Error("Drug not found.");
+      }
+
+      const drugDelete = await prisma.drug.update({
+        where: {
+          id: drugId,
+        },
+        data: {
+          isDeleted: true,
+        },
+      });
+
+      return drugDelete;
+    } catch (error: any) {
+      console.error("Error deleting drug: ", error.message);
+      throw new Error("An error occurred while deleting the drug.");
+    }
+  }
 }
