@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { DrugService } from "../service/drug.service";
 import { validateFieldOrRespond } from "../../../utils/helpers/helpers.service";
-import { empty } from "@prisma/client/runtime/library";
 
 export class DrugController {
   private drugService = new DrugService();
