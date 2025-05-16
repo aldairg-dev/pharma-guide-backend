@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { DrugService } from "../service/drug.service";
 import { validateFieldOrRespond } from "../../../utils/helpers/helpers.service";
-import { Param } from "@prisma/client/runtime/library";
 
 export class DrugController {
   private drugService = new DrugService();
@@ -99,6 +98,36 @@ export class DrugController {
     } catch (error: any) {
       console.error("An error fetching drugs for user:", error.message);
       res.status(500).json({ message: "Error getting drugs for user" });
+    }
+  }
+
+  public async updateDrug(
+    req: Request,
+    res: Response,
+    _next: NextFunction
+  ): Promise<void> {
+    try {
+      const dataDrug = req.body;
+      const drugId = Number(req.params.id);
+
+      if (isNaN(drugId)) {
+        res.status(400).json({ message: "Invalid drug ID" });
+        return;
+      }
+
+      const drugUpdate = await this.drugService.updateDrug(dataDrug, drugId);
+
+      if (!drugUpdate) {
+        res.status(404).json({
+          message: "Drug not found or could not be updated",
+        });
+        return;
+      }
+
+      res.status(200).json({ message: "Drug updated successfully" });
+    } catch (error: any) {
+      console.error("Error updating drug:", error.message);
+      res.status(500).json({ message: "Internal server error" });
     }
   }
 
