@@ -53,4 +53,28 @@ export class DrugService {
       throw new Error("An error occurred while fetching drugs for the user.");
     }
   }
+
+  async updateDrug(drug: Drug, drugId: number): Promise<Drug | null> {
+    try {
+      const drugOld = await prisma.drug.findFirst({
+        where: { id: drugId, isDeleted: false },
+      });
+
+      if (!drugOld) {
+        throw new Error("Drug not found.");
+      }
+
+      const drugUpdate = await prisma.drug.update({
+        where: {
+          id: drugId,
+        },
+        data: drug,
+      });
+
+      return drugUpdate;
+    } catch (error: any) {
+      console.error("Error updating drug:", error.message);
+      throw new Error("An error occurred while updating the drug.");
+    }
+  }
 }
