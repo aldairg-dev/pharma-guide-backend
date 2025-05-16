@@ -5,6 +5,7 @@ import routerStudyPlan from "./modules/study-plan/router/studyPlan.router";
 import { JwtService } from "./utils/jwt/jwt.service";
 import routerUser from "./modules/user/router/user.router";
 import routerRole from "./modules/role/router/role.router";
+import routerDrug from "./modules/drug/router/drug.router";
 
 const app = express();
 const jwtService = new JwtService();
@@ -16,13 +17,13 @@ app.use(express.json());
 app.use("/api/access/pharma-guide", routerAccess);
 
 app.use(
-  "/api/pharma-guide/",
+  "/api/pharma-guide",
   jwtService.verifyTokenMiddleware.bind(jwtService),
   routerStudyPlan
 );
 
 app.use(
-  "/api/pharma-guide/",
+  "/api/pharma-guide",
   jwtService.verifyTokenMiddleware.bind(jwtService),
   routerUser
 );
@@ -33,6 +34,12 @@ app.use(
   "/api/pharma-guide/setting",
   jwtService.verifyTokenMiddleware.bind(jwtService),
   routerRole
+);
+
+app.use(
+  "/api/pharma-guide",
+  jwtService.verifyTokenMiddleware.bind(jwtService),
+  routerDrug
 );
 
 export default app;
