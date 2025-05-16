@@ -71,4 +71,34 @@ export class DrugController {
       return;
     }
   }
+
+  public async getDrugUser(
+    req: Request,
+    res: Response,
+    _next: NextFunction
+  ): Promise<void> {
+    try {
+      const userId = Number(req.params.id);
+
+      if (isNaN(userId)) {
+        res.status(400).json({ message: "Invalid user ID" });
+        return;
+      }
+
+      const drugUser = await this.drugService.getDrugsByUser(userId);
+
+      if (!drugUser || drugUser.length === 0) {
+        res.status(404).json({ message: "No drugs found for this user" });
+        return;
+      }
+
+      res.status(200).json({
+        message: "Drugs retrieved successfully",
+        data: drugUser,
+      });
+    } catch (error: any) {
+      console.error("An error fetching drugs for user:", error.message);
+      res.status(500).json({ message: "Error getting drugs for user" });
+    }
+  }
 }
