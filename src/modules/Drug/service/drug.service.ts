@@ -73,7 +73,7 @@ export class DrugService {
 
       return drugUpdate;
     } catch (error: any) {
-      console.error("Error updating drug:", error.message);
+      console.error("Error updating drug: ", error.message);
       throw new Error("An error occurred while updating the drug.");
     }
   }
