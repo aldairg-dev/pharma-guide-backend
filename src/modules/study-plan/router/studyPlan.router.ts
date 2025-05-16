@@ -10,7 +10,7 @@ routerStudyPlan.post(
 );
 
 routerStudyPlan.get(
-  "/study-plans/me",
+  "/study-plans",
   studyPlanController.getStudyPlan.bind(studyPlanController)
 );
 
