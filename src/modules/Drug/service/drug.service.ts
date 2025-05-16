@@ -1,4 +1,4 @@
-import { Drug, PrismaClient } from "@prisma/client/default";
+import { Drug, PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export class DrugService {
