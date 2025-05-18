@@ -39,7 +39,10 @@ export class DrugController {
         "Error creating drug:",
         error instanceof Error ? error.message : error
       );
-      res.status(500).json({ message: "Error creating drug" });
+      res.status(500).json({
+        message: "Error creating drug:",
+        error: error instanceof Error ? error.message : String(error),
+      });
     }
   }
 

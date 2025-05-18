@@ -22,7 +22,9 @@ export class DrugService {
       return newDrug;
     } catch (error: any) {
       console.error("Error creating drug:", error.message);
-      throw new Error("An error occurred while creating the drug.");
+      throw new Error(
+        `An error occurred while creating the drug. ${error?.message ?? ""}`
+      );
     }
   }
 
@@ -30,6 +32,7 @@ export class DrugService {
     try {
       return await prisma.drug.findMany({
         where: { isDeleted: false },
+        include: { user: true },
       });
     } catch (error: any) {
       console.error("Error fetching drugs:", error.message);
