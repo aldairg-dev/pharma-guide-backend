@@ -6,7 +6,7 @@ const drugController = new DrugController();
 
 routerDrug.post("/drug", drugController.createDrug.bind(drugController));
 
-routerDrug.get("/drugs", drugController.getDrugs.bind(drugController));
+routerDrug.get("/drug", drugController.getDrugs.bind(drugController));
 
 routerDrug.get("/drug/:id", drugController.getDrugUser.bind(drugController));
 
