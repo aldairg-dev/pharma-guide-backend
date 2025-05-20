@@ -82,7 +82,10 @@ model Drug {
 }
 
 model Prompt {
-  id          Int    @id @default(autoincrement()) @db.Integer
-  name        String @db.text
-  description String @db.text
+  name   String @db.VarChar(100)
+  prompt String @db.Text
+
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
