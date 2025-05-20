@@ -29,4 +29,15 @@ export class IaManagementService {
       throw new Error("Error creating new management IA");
     }
   }
+
+  public async getManagement(): Promise<ManagementIa[]> {
+    try {
+      const managementList = await prisma.managementIa.findMany();
+
+      return managementList;
+    } catch (error: any) {
+      console.error("Error fetching management IA:", error?.message);
+      throw new Error("Error fetching management IA");
+    }
+  }
 }
