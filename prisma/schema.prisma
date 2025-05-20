@@ -82,6 +82,7 @@ model Drug {
 }
 
 model Prompt {
+  id     Int    @id @default(autoincrement()) @db.Integer
   name   String @db.VarChar(100)
   prompt String @db.Text
 
