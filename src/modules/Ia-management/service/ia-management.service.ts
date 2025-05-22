@@ -40,4 +40,19 @@ export class IaManagementService {
       throw new Error("Error fetching management IA");
     }
   }
+
+  public async getOneMaganegement(
+    manegementId: number
+  ): Promise<ManagementIa | null> {
+    try {
+      return await prisma.managementIa.findFirst({
+        where: {
+          id: manegementId,
+        },
+      });
+    } catch (error: any) {
+      console.error("Errro fetching the manegement IA :", error?.message);
+      throw new Error("Error fetching the management IA");
+    }
+  }
 }
