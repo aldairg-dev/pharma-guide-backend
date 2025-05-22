@@ -44,4 +44,26 @@ export class ManagementIaController {
       });
     }
   }
+
+  public async getManegement(
+    _req: Request,
+    res: Response,
+    _next: NextFunction
+  ): Promise<void> {
+    try {
+      const managements = await this.managementService.getManagement();
+      res.status(200).json({
+        data: managements,
+      });
+    } catch (error: any) {
+      console.error(
+        "A error ocurred fetching managment IA:",
+        error instanceof Error ? error.message : error
+      );
+      res.status(500).json({
+        message: "Error getting management: ",
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
 }
