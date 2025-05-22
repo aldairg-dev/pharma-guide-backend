@@ -55,4 +55,20 @@ export class IaManagementService {
       throw new Error("Error fetching the management IA");
     }
   }
+
+  public async updateManegement(
+    managementId: number,
+    management: ManagementIa
+  ): Promise<ManagementIa> {
+    try {
+      const updatedManagement = await prisma.managementIa.update({
+        where: { id: managementId },
+        data: management,
+      });
+      return updatedManagement;
+    } catch (error: any) {
+      console.error("Error updating the management IA:", error?.message);
+      throw new Error("Error updating the management IA");
+    }
+  }
 }
