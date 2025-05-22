@@ -52,6 +52,7 @@ export class ManagementIaController {
   ): Promise<void> {
     try {
       const managements = await this.managementService.getManagement();
+
       res.status(200).json({
         data: managements,
       });
@@ -62,6 +63,38 @@ export class ManagementIaController {
       );
       res.status(500).json({
         message: "Error getting management: ",
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
+  public async getOneManagement(
+    req: Request,
+    res: Response,
+    _next: NextFunction
+  ): Promise<void> {
+    try {
+      const managementId = Number(req.params.id);
+
+      if (isNaN(managementId)) {
+        res.status(400).json({ message: "Invalid user ID" });
+        return;
+      }
+
+      const management = await this.managementService.getOneMaganegement(
+        managementId
+      );
+
+      res.status(200).json({
+        data: management,
+      });
+    } catch (error: any) {
+      console.error(
+        "A error ocurred fetching the management IA :",
+        error instanceof Error ? error.message : error
+      );
+      res.status(500).json({
+        message: "Error getting the management: ",
         error: error instanceof Error ? error.message : String(error),
       });
     }
