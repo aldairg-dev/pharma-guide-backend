@@ -71,4 +71,21 @@ export class IaManagementService {
       throw new Error("Error updating the management IA");
     }
   }
+
+  public async deleteManegement(
+    managementId: number
+  ): Promise<ManagementIa | null> {
+    try {
+      const deletedManagement = await prisma.managementIa.update({
+        where: { id: managementId },
+        data: {
+          isDeleted: true,
+        },
+      });
+      return deletedManagement;
+    } catch (error: any) {
+      console.error("Error deleting the management IA:", error?.message);
+      return null;
+    }
+  }
 }
