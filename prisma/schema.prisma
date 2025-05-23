@@ -94,12 +94,13 @@ model Prompt {
 }
 
 model ManagementIa {
-  id       Int    @id @default(autoincrement()) @db.Integer
-  name     String @db.VarChar(100)
-  provider String @db.VarChar(100)
-  api_key  String @db.Text
-  model    String @db.VarChar(100)
-  base_url String @db.VarChar(255)
+  id       Int     @id @default(autoincrement()) @db.Integer
+  name     String  @db.VarChar(100)
+  provider String  @db.VarChar(100)
+  api_key  String  @db.Text
+  model    String  @db.VarChar(100)
+  base_url String  @db.VarChar(255)
+  status   Boolean @default(false)
 
   promptId Int
   prompt   Prompt @relation(fields: [promptId], references: [id])
