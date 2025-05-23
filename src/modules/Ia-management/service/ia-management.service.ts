@@ -1,4 +1,5 @@
 import { ManagementIa, PrismaClient } from ".prisma/client";
+import { error } from "node:console";
 
 const prisma = new PrismaClient();
 
@@ -61,11 +62,22 @@ export class IaManagementService {
     management: ManagementIa
   ): Promise<ManagementIa> {
     try {
-      const updatedManagement = await prisma.managementIa.update({
-        where: { id: managementId },
-        data: management,
+      const existingActiveManagement = await prisma.managementIa.findFirst({
+        where: {
+          status: true,
+        },
       });
-      return updatedManagement;
+      if (management.status === true && existingActiveManagement !== null) {
+        throw new Error(
+          "A management record is already active. Only one active management is allowed at a time."
+        );
+      } else {
+        const updatedManagement = await prisma.managementIa.update({
+          where: { id: managementId },
+          data: management,
+        });
+        return updatedManagement;
+      }
     } catch (error: any) {
       console.error("Error updating the management IA:", error?.message);
       throw new Error("Error updating the management IA");
