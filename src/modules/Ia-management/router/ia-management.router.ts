@@ -18,3 +18,13 @@ routerManagementIA.get(
   "ia-management/:id",
   managementIaController.getOneManagement.bind(managementIaController)
 );
+
+routerManagementIA.put(
+  "ia-management/:id",
+  managementIaController.updateManagement.bind(managementIaController)
+);
+
+routerManagementIA.delete(
+  "ia-management/:id",
+  managementIaController.deleteManagement.bind(managementIaController)
+);
