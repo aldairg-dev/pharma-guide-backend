@@ -2,7 +2,7 @@
 
 **PharmaGuide** es una API REST avanzada desarrollada con Node.js, Express, TypeScript y Prisma ORM, diseñada para respaldar la aplicación móvil _PharmaGuide_. Esta plataforma educativa innovadora está dirigida a estudiantes de Química Farmacéutica, proporcionando herramientas inteligentes para optimizar su aprendizaje.
 
-El backend gestiona usuarios, contenido educativo, planificación académica adaptativa y comunicación con herramientas de inteligencia artificial especializadas.
+El backend gestiona usuarios, contenido educativo, planificación académica adaptativa y comunicación con herramientas de inteligencia artificial integradas y gestionables.
 
 ---
 
@@ -10,7 +10,7 @@ El backend gestiona usuarios, contenido educativo, planificación académica ada
 
 - 🌐 **API REST** robusta, escalable y eficiente.
 - 🔐 **Autenticación segura** mediante JWT.
-- 🧠 **Integración con IA** (DeepSeek API) para consultas contextuales avanzadas.
+- 🧠 **Gestor de Inteligencias Artificiales**: módulo CRUD para registrar múltiples IA, activarlas o desactivarlas según necesidad.
 - 📚 **Planificación académica adaptativa** para optimizar el tiempo de estudio.
 - 🗂 **Gestión documental** con soporte OCR (en desarrollo).
 - 🔔 **Notificaciones push** a través de Firebase Cloud Messaging.
@@ -27,7 +27,7 @@ El backend gestiona usuarios, contenido educativo, planificación académica ada
 | ORM            | Prisma                   |
 | Base de Datos  | PostgreSQL               |
 | Notificaciones | Firebase Cloud Messaging |
-| IA             | CRUD for IA          |
+| IA             | Módulo CRUD de IA        |
 | Desarrollo     | ts-node-dev + nodemon    |
 
 ---
@@ -44,11 +44,11 @@ El backend gestiona usuarios, contenido educativo, planificación académica ada
 
 ## 🧪 Requisitos Previos
 
-- **Node.js** >= 18.x
-- **PostgreSQL** >= 14
-- **Prisma CLI** (`npx prisma`)
-- Cuenta activa en [Supabase](https://supabase.com/)
-- API Key de [DeepSeek](https://deepseek.com/)
+- **Node.js** >= 18.x  
+- **PostgreSQL** >= 14  
+- **Prisma CLI** (`npx prisma`)  
+- Cuenta activa en [Supabase](https://supabase.com/)  
+- API Keys de las IA que desees registrar (ej. DeepSeek, OpenAI, etc.)
 
 ---
 
@@ -59,7 +59,7 @@ El backend gestiona usuarios, contenido educativo, planificación académica ada
    ```bash
    git clone https://github.com/2A2G/pharma-guide-backend.git
    cd pharma-guide-backend
-   ```
+
 
 2. **Instala las dependencias:**
 
