@@ -27,7 +27,7 @@ El backend gestiona usuarios, contenido educativo, planificación académica ada
 | ORM            | Prisma                   |
 | Base de Datos  | PostgreSQL               |
 | Notificaciones | Firebase Cloud Messaging |
-| IA             | DeepSeek API             |
+| IA             | CRUD for IA          |
 | Desarrollo     | ts-node-dev + nodemon    |
 
 ---
