@@ -28,3 +28,5 @@ routerManagementIA.delete(
   "ia-management/:id",
   managementIaController.deleteManagement.bind(managementIaController)
 );
+
+export default routerManagementIA;
