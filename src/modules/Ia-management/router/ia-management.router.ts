@@ -5,7 +5,7 @@ const routerManagementIA = Router();
 const managementIaController = new ManagementIaController();
 
 routerManagementIA.get(
-  "ia-managemenet",
+  "ia-management",
   managementIaController.getManegement.bind(managementIaController)
 );
 
