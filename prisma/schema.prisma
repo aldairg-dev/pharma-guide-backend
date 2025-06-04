@@ -81,31 +81,20 @@ model Drug {
   updatedAt DateTime @updatedAt
 }
 
-model Prompt {
-  id     Int    @id @default(autoincrement()) @db.Integer
-  name   String @db.VarChar(100)
-  prompt String @db.Text
-
-  managementIa ManagementIa[]
-
-  isDeleted Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 model ManagementIa {
-  id       Int     @id @default(autoincrement()) @db.Integer
-  name     String  @db.VarChar(100)
-  provider String  @db.VarChar(100)
-  api_key  String  @db.Text
-  model    String  @db.VarChar(100)
-  base_url String  @db.VarChar(255)
-  status   Boolean @default(false)
+  id                 Int      @id @default(autoincrement()) @db.Integer
+  name               String   @db.VarChar(100)
+  provider           String   @db.VarChar(100)
+  model              String   @db.VarChar(100)
+  version            String?  @db.VarChar(50)
+  api_key            String   @db.Text
+  url_api            String   @db.Text
+  prompt_description String   @db.Text
+  status             Boolean  @default(false) // IA activa o no
 
-  promptId Int
-  prompt   Prompt @relation(fields: [promptId], references: [id])
+  isDeleted          Boolean  @default(false) // Eliminación lógica
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
-  isDeleted Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  @@unique([provider, model, version])
 }
