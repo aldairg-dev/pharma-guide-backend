@@ -1,5 +1,4 @@
 import { ManagementIa, PrismaClient } from ".prisma/client";
-import { error } from "node:console";
 
 const prisma = new PrismaClient();
 
