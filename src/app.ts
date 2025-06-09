@@ -6,7 +6,7 @@ import { JwtService } from "./utils/jwt/jwt.service";
 import routerUser from "./modules/user/router/user.router";
 import routerRole from "./modules/role/router/role.router";
 import routerDrug from "./modules/drug/router/drug.router";
-import routerIaManagement from "./modules/Ia-management/router/ia-management.router";
+import routerIaManagement from "./modules/ia-management/router/ia-management.router";
 
 const app = express();
 const jwtService = new JwtService();
