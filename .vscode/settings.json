@@ -15,6 +15,9 @@
         "*": true,
         "plaintext": false,
         "markdown": false,
-        "scminput": false
+        "scminput": false,
+        "typescript": true,
+        "php": true,
+        "blade": true
     }
 }
