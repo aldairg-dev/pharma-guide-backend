@@ -3,6 +3,7 @@ import { bcryptService } from "../../../utils/bcryp/bcryp.service";
 import { JwtService } from "../../../utils/jwt/jwt.service";
 import { randomUUID } from "node:crypto";
 import { RoleService } from "../../role/service/role.service";
+import { parse } from "date-fns";
 
 const prisma = new PrismaClient();
 const jwtService = new JwtService();
@@ -32,11 +33,15 @@ export class AccessService {
 
       if (!user.roleId) {
         const roleClient = await roleService.getRoleClient();
-        if (roleClient && roleClient.id) {
+        if (roleClient?.id) {
           user.roleId = Number(roleClient.id);
         } else {
           throw new Error("Role not found");
         }
+      }
+
+      if (typeof user.birth_date === "string") {
+        user.birth_date = parse(user.birth_date, "dd/MM/yyyy", new Date());
       }
 
       const newUser = await prisma.user.create({
