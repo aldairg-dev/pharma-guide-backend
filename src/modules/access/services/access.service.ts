@@ -52,7 +52,14 @@ export class AccessService {
     }
   }
 
-  async loginUser(email: string, password: string): Promise<string | null> {
+  async loginUser(
+    email: string,
+    password: string
+  ): Promise<{
+    token: string;
+    full_name: string | null;
+    userId: number | null;
+  } | null> {
     try {
       const user = await prisma.user.findFirst({
         where: {
@@ -75,13 +82,19 @@ export class AccessService {
         return null;
       }
 
-      return jwtService.createToken({
+      const token = jwtService.createToken({
         emailUser: user.email ?? "",
         userId: user.id ?? null,
         roleId: user.roleId ?? 2,
       });
+
+      return {
+        token,
+        full_name: user.full_name ?? "",
+        userId: user.id ?? null,
+      };
     } catch (error) {
-      // console.error("Login error:", error); 
+      // console.error("Login error:", error);
       throw new Error("Failed to log in.");
     }
   }

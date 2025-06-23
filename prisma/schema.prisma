@@ -35,10 +35,12 @@ model Role {
 }
 
 model User {
-  id        Int    @id @default(autoincrement()) @db.Integer
-  full_name String @db.VarChar(100)
-  email     String @unique
-  password  String @db.VarChar(100)
+  id              Int    @id @default(autoincrement()) @db.Integer
+  number_identity String @unique @db.VarChar(20)
+  full_name       String @db.VarChar(100)
+  sexo            String @db.VarChar(10) // 'M' para masculino, 'F' para femenino, 'O' para otro
+  email           String @unique
+  password        String @db.VarChar(100)
 
   roleId     Int
   studyPlans StudyPlan[]
@@ -51,7 +53,7 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
-model StudyPlan {
+  model StudyPlan {
   id          Int     @id @default(autoincrement()) @db.Integer
   userId      Int
   subjet_name String  @unique @db.VarChar(100)
@@ -82,19 +84,19 @@ model Drug {
 }
 
 model ManagementIa {
-  id                 Int      @id @default(autoincrement()) @db.Integer
-  name               String   @db.VarChar(100)
-  provider           String   @db.VarChar(100)
-  model              String   @db.VarChar(100)
-  version            String?  @db.VarChar(50)
-  api_key            String   @db.Text
-  url_api            String   @db.Text
-  prompt_description String   @db.Text
-  status             Boolean  @default(false) // IA activa o no
+  id                 Int     @id @default(autoincrement()) @db.Integer
+  name               String  @db.VarChar(100)
+  provider           String  @db.VarChar(100)
+  model              String  @db.VarChar(100)
+  version            String? @db.VarChar(50)
+  api_key            String  @db.Text
+  url_api            String  @db.Text
+  prompt_description String  @db.Text
+  status             Boolean @default(false) // IA activa o no
 
-  isDeleted          Boolean  @default(false) // Eliminación lógica
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  isDeleted Boolean  @default(false) // Eliminación lógica
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([provider, model, version])
 }
