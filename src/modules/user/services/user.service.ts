@@ -48,10 +48,7 @@ export class UserService {
         throw new Error("El email ya está en uso por otro usuario.");
       }
 
-      if (!user.password) {
-        const randomPassword = randomUUID().slice(0, 10);
-        user.password = await bcryptService.encryptPassword(randomPassword);
-      } else {
+      if (user.password) {
         user.password = await bcryptService.encryptPassword(user.password);
       }
 
