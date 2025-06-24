@@ -1,4 +1,7 @@
 import { PrismaClient, User } from "@prisma/client";
+import { bcryptService } from "../../../utils/bcryp/bcryp.service";
+import { randomUUID } from "node:crypto";
+
 const prisma = new PrismaClient();
 
 export class UserService {
@@ -43,6 +46,13 @@ export class UserService {
 
       if (emailExists) {
         throw new Error("El email ya está en uso por otro usuario.");
+      }
+
+      if (!user.password) {
+        const randomPassword = randomUUID().slice(0, 10);
+        user.password = await bcryptService.encryptPassword(randomPassword);
+      } else {
+        user.password = await bcryptService.encryptPassword(user.password);
       }
 
       if (typeof user.birth_date === "string") {

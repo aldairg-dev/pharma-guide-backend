@@ -45,7 +45,7 @@ async function main() {
           roleId: 1,
           isDeleted: false,
           country: "Colombia",
-          sex: "M",
+          sex: "Hombre",
           phone: "1234567890",
           birth_date: birthDate,
           number_identity: "123456789",
