@@ -34,6 +34,21 @@ export class UserService {
         throw new Error("User not found or already deleted.");
       }
 
+      const emailExists = await prisma.user.findFirst({
+        where: {
+          email: user.email,
+          id: { not: userId },
+        },
+      });
+
+      if (emailExists) {
+        throw new Error("El email ya está en uso por otro usuario.");
+      }
+
+      if (typeof user.birth_date === "string") {
+        user.birth_date = new Date(user.birth_date);
+      }
+
       const updatedUser = await prisma.user.update({
         where: { id: existingUser.id },
         data: user,
