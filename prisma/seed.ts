@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
+import { parse } from "date-fns";
 
 const prisma = new PrismaClient();
 
@@ -34,6 +35,8 @@ async function main() {
     });
 
     if (!existingUser) {
+      const birthDate = parse("23/06/1990", "dd/MM/yyyy", new Date());
+
       await prisma.user.create({
         data: {
           full_name: "Test pharmaGuide",
@@ -41,6 +44,11 @@ async function main() {
           password: hashedPassword,
           roleId: 1,
           isDeleted: false,
+          country: "Colombia",
+          sex: "Hombre",
+          phone: "1234567890",
+          birth_date: birthDate,
+          number_identity: "123456789",
         },
       });
       console.log("Seed de usuario registrado con éxito!");

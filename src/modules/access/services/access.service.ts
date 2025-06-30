@@ -3,6 +3,7 @@ import { bcryptService } from "../../../utils/bcryp/bcryp.service";
 import { JwtService } from "../../../utils/jwt/jwt.service";
 import { randomUUID } from "node:crypto";
 import { RoleService } from "../../role/service/role.service";
+import { parse } from "date-fns";
 
 const prisma = new PrismaClient();
 const jwtService = new JwtService();
@@ -32,11 +33,15 @@ export class AccessService {
 
       if (!user.roleId) {
         const roleClient = await roleService.getRoleClient();
-        if (roleClient && roleClient.id) {
+        if (roleClient?.id) {
           user.roleId = Number(roleClient.id);
         } else {
           throw new Error("Role not found");
         }
+      }
+
+      if (typeof user.birth_date === "string") {
+        user.birth_date = parse(user.birth_date, "dd/MM/yyyy", new Date());
       }
 
       const newUser = await prisma.user.create({
@@ -52,7 +57,14 @@ export class AccessService {
     }
   }
 
-  async loginUser(email: string, password: string): Promise<string | null> {
+  async loginUser(
+    email: string,
+    password: string
+  ): Promise<{
+    token: string;
+    full_name: string | null;
+    userId: number | null;
+  } | null> {
     try {
       const user = await prisma.user.findFirst({
         where: {
@@ -75,13 +87,19 @@ export class AccessService {
         return null;
       }
 
-      return jwtService.createToken({
+      const token = jwtService.createToken({
         emailUser: user.email ?? "",
         userId: user.id ?? null,
         roleId: user.roleId ?? 2,
       });
+
+      return {
+        token,
+        full_name: user.full_name ?? "",
+        userId: user.id ?? null,
+      };
     } catch (error) {
-      // console.error("Login error:", error); 
+      // console.error("Login error:", error);
       throw new Error("Failed to log in.");
     }
   }
