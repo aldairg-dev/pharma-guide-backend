@@ -31,7 +31,6 @@ export class DrugService {
   async getDrugs(): Promise<Drug[]> {
     try {
       return await prisma.drug.findMany({
-        where: { isDeleted: false },
         include: { user: true },
       });
     } catch (error: any) {
