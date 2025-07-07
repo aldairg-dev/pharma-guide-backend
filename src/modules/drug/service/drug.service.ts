@@ -39,21 +39,36 @@ export class DrugService {
     }
   }
 
-  async getDrugById(drugId: number): Promise<Drug | null> {
+  async getDrugById(drugId: number): Promise<{
+    name_generic: string;
+    brand_name: string;
+    mechanism_of_action: string;
+    therapeutic_class: string;
+    tags: string;
+  } | null> {
     try {
-      if (!drugId) {
-        throw new Error("Drug ID is required.");
+      if (!drugId || typeof drugId !== "number") {
+        throw new Error("Invalid Drug ID.");
       }
+
       const drug = await prisma.drug.findFirst({
         where: {
           id: drugId,
           isDeleted: false,
         },
+        select: {
+          name_generic: true,
+          brand_name: true,
+          mechanism_of_action: true,
+          therapeutic_class: true,
+          tags: true,
+        },
       });
+
       return drug;
     } catch (error: any) {
-      console.error("Error fetching drug by ID:", error.message);
-      throw new Error("An error occurred while fetching the drug.");
+      console.error(`Error fetching drug with ID ${drugId}:`, error.message);
+      throw new Error("Failed to retrieve drug data.");
     }
   }
 

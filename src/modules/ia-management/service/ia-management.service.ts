@@ -3,14 +3,16 @@ import { ManagementIa, PrismaClient } from ".prisma/client";
 const prisma = new PrismaClient();
 
 export class IaManagementService {
-  async createManagement(managementIa: ManagementIa): Promise<ManagementIa> {
+  async createManagement(
+    managementIa: ManagementIa,
+    type: number
+  ): Promise<ManagementIa> {
     try {
       const existingManagement = await prisma.managementIa.findFirst({
         where: {
           name: managementIa.name,
           provider: managementIa.provider,
           model: managementIa.model,
-          type: managementIa.type,
         },
       });
 
@@ -21,7 +23,6 @@ export class IaManagementService {
       const newManagement = await prisma.managementIa.create({
         data: {
           name: managementIa.name,
-          type: managementIa.type,
           provider: managementIa.provider,
           api_key: managementIa.api_key,
           model: managementIa.model,
@@ -31,8 +32,8 @@ export class IaManagementService {
           headers_template: managementIa.headers_template as any,
           body_template: managementIa.body_template as any,
           prompt_description: managementIa.prompt_description,
-          status: managementIa.status,
           isDeleted: managementIa.isDeleted,
+          typeIAId: type,
         },
       });
 
@@ -54,12 +55,36 @@ export class IaManagementService {
     }
   }
 
-  async getManagementType(type: number): Promise<ManagementIa | null> {
+  async getManagementType(type: number): Promise<{
+    [x: string]: any;
+    name: string;
+    provider: string;
+    api_key: string;
+    model: string;
+    version: string | null;
+    url_api: string;
+    method: string;
+    headers_template: any;
+    body_template: any;
+    prompt_description: string;
+  } | null> {
     try {
       return await prisma.managementIa.findFirst({
         where: {
           typeIAId: type,
           isDeleted: false,
+        },
+        select: {
+          name: true,
+          provider: true,
+          api_key: true,
+          model: true,
+          version: true,
+          url_api: true,
+          method: true,
+          headers_template: true,
+          body_template: true,
+          prompt_description: true,
         },
       });
     } catch (error: any) {

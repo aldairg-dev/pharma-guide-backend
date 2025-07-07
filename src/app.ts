@@ -7,6 +7,7 @@ import routerUser from "./modules/user/router/user.router";
 import routerRole from "./modules/role/router/role.router";
 import routerDrug from "./modules/drug/router/drug.router";
 import routerIaManagement from "./modules/ia-management/router/ia-management.router";
+import routerIaExecution from "./modules/ia-execution/router/ia-execution.router";
 
 const app = express();
 const jwtService = new JwtService();
@@ -47,6 +48,13 @@ app.use(
   "/api/pharma-guide",
   jwtService.verifyTokenMiddleware.bind(jwtService),
   routerIaManagement
+);
+
+//  -> IA Execution
+app.use(
+  "/api/pharma-guide/ia",
+  jwtService.verifyTokenMiddleware.bind(jwtService),
+  routerIaExecution
 );
 
 export default app;

@@ -16,69 +16,69 @@ datasource db {
 ///  * npx prisma studio  -> Abre una interfaz gráfica en el navegador para interactuar con la base de datos a través de Prisma Studio, donde puedes visualizar y modificar los datos.
 
 model Role {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique @db.VarChar(100)
-  statusId  Int?
-  user      User[]
+  id       Int    @id @default(autoincrement())
+  name     String @unique @db.VarChar(100)
+  statusId Int?
+  user     User[]
 
-  isDeleted Boolean  @default(false)
+  isDeleted Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model User {
-  id              Int         @id @default(autoincrement())
+  id              Int      @id @default(autoincrement())
   full_name       String
-  email           String      @unique
+  email           String   @unique
   password        String
   roleId          Int
-  birth_date      DateTime    @db.Date
+  birth_date      DateTime @db.Date
   country         String?
-  number_identity String      @unique
+  number_identity String   @unique
   phone           String?
   sex             String
 
-  role            Role        @relation(fields: [roleId], references: [id])
-  studyPlans      StudyPlan[]
-  drug            Drug[]
+  role       Role        @relation(fields: [roleId], references: [id])
+  studyPlans StudyPlan[]
+  drug       Drug[]
 
-  isDeleted       Boolean     @default(false)
+  isDeleted Boolean @default(false)
 
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model StudyPlan {
-  id          Int      @id @default(autoincrement())
+  id          Int     @id @default(autoincrement())
   userId      Int
-  subjet_name String   @unique @db.VarChar(100)
+  subjet_name String  @unique @db.VarChar(100)
   total_days  Int
-  daily_hour  Decimal  @db.Decimal(10, 2)
-  
-  user        User     @relation(fields: [userId], references: [id])
+  daily_hour  Decimal @db.Decimal(10, 2)
 
-  isDeleted   Boolean  @default(false)
+  user User @relation(fields: [userId], references: [id])
 
-  updatedAt   DateTime @updatedAt
-  createdAt   DateTime @default(now())
+  isDeleted Boolean @default(false)
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
 }
 
 model Drug {
-  id                  Int      @id @default(autoincrement())
-  name_generic        String   @db.VarChar(100)
-  brand_name          String   @db.VarChar(100)
-  mechanism_of_action String   @db.VarChar(255)
-  therapeutic_class   String?  @db.VarChar(100)
-  tags                String?
+  id                  Int    @id @default(autoincrement())
+  name_generic        String @db.VarChar(100)
+  brand_name          String @db.VarChar(100)
+  mechanism_of_action String @db.VarChar(255)
+  therapeutic_class   String @db.Text
+  tags                String @db.Text
 
-  userId              Int
+  userId Int
 
-  isDeleted           Boolean  @default(false)
+  isDeleted Boolean @default(false)
 
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
-  user                User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model TypeIa {
@@ -88,9 +88,9 @@ model TypeIa {
 
   managementIa ManagementIa[]
 
-  isDeleted    Boolean        @default(false)
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ManagementIa {
@@ -109,8 +109,8 @@ model ManagementIa {
   output_type        String? @db.VarChar(50)
   prompt_description String
 
-  TypeIA    TypeIa   @relation(fields: [typeIAId], references: [id])
-  isDeleted Boolean  @default(false)
+  TypeIA    TypeIa  @relation(fields: [typeIAId], references: [id])
+  isDeleted Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

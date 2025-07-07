@@ -1,10 +1,10 @@
-import { PrismaClient } from "@prisma/client/scripts/default-index";
+import { PrismaClient } from "@prisma/client";
 import { DrugService } from "../../drug/service/drug.service";
 import { IaManagementService } from "../../ia-management/service/ia-management.service";
 import * as _ from "lodash";
 import axios from "axios";
 
-const prisma = PrismaClient();
+const prisma = new PrismaClient();
 
 export class IaExecutionService {
   async getDataDrug(drugId: number) {
@@ -60,6 +60,6 @@ export class IaExecutionService {
       data: body,
     });
 
-    return _.get(response.data, ia.response_path);
+    return response.data;
   }
 }
