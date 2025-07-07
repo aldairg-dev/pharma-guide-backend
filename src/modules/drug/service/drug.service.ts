@@ -39,6 +39,24 @@ export class DrugService {
     }
   }
 
+  async getDrugById(drugId: number): Promise<Drug | null> {
+    try {
+      if (!drugId) {
+        throw new Error("Drug ID is required.");
+      }
+      const drug = await prisma.drug.findFirst({
+        where: {
+          id: drugId,
+          isDeleted: false,
+        },
+      });
+      return drug;
+    } catch (error: any) {
+      console.error("Error fetching drug by ID:", error.message);
+      throw new Error("An error occurred while fetching the drug.");
+    }
+  }
+
   async getDrugsByUser(userId: number): Promise<Drug[]> {
     try {
       if (!userId) {

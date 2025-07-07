@@ -3,15 +3,14 @@ import { ManagementIa, PrismaClient } from ".prisma/client";
 const prisma = new PrismaClient();
 
 export class IaManagementService {
-  public async createManagement(
-    managementIa: ManagementIa
-  ): Promise<ManagementIa> {
+  async createManagement(managementIa: ManagementIa): Promise<ManagementIa> {
     try {
       const existingManagement = await prisma.managementIa.findFirst({
         where: {
           name: managementIa.name,
           provider: managementIa.provider,
           model: managementIa.model,
+          type: managementIa.type,
         },
       });
 
@@ -44,7 +43,7 @@ export class IaManagementService {
     }
   }
 
-  public async getManagement(): Promise<ManagementIa[]> {
+  async getManagement(): Promise<ManagementIa[]> {
     try {
       const managementList = await prisma.managementIa.findMany();
 
@@ -55,9 +54,21 @@ export class IaManagementService {
     }
   }
 
-  public async getOneMaganegement(
-    manegementId: number
-  ): Promise<ManagementIa | null> {
+  async getManagementType(type: number): Promise<ManagementIa | null> {
+    try {
+      return await prisma.managementIa.findFirst({
+        where: {
+          typeIAId: type,
+          isDeleted: false,
+        },
+      });
+    } catch (error: any) {
+      console.error("Error fetching management IA by type:", error?.message);
+      throw new Error("Error fetching management IA by type");
+    }
+  }
+
+  async getOneMaganegement(manegementId: number): Promise<ManagementIa | null> {
     try {
       return await prisma.managementIa.findFirst({
         where: {
@@ -70,7 +81,7 @@ export class IaManagementService {
     }
   }
 
-  public async updateManegement(
+  async updateManegement(
     managementId: number,
     management: ManagementIa
   ): Promise<ManagementIa> {
@@ -102,9 +113,7 @@ export class IaManagementService {
     }
   }
 
-  public async deleteManegement(
-    managementId: number
-  ): Promise<ManagementIa | null> {
+  async deleteManegement(managementId: number): Promise<ManagementIa | null> {
     try {
       const deletedManagement = await prisma.managementIa.update({
         where: { id: managementId },

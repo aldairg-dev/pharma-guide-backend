@@ -19,10 +19,12 @@ model Role {
   id        Int      @id @default(autoincrement())
   name      String   @unique @db.VarChar(100)
   statusId  Int?
+  user      User[]
+
+  isDeleted Boolean  @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  isDeleted Boolean  @default(false)
-  user      User[]
 }
 
 model User {
@@ -31,17 +33,20 @@ model User {
   email           String      @unique
   password        String
   roleId          Int
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-  isDeleted       Boolean     @default(false)
   birth_date      DateTime    @db.Date
   country         String?
   number_identity String      @unique
   phone           String?
   sex             String
+
   role            Role        @relation(fields: [roleId], references: [id])
   studyPlans      StudyPlan[]
   drug            Drug[]
+
+  isDeleted       Boolean     @default(false)
+
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
 }
 
 model StudyPlan {
@@ -50,10 +55,13 @@ model StudyPlan {
   subjet_name String   @unique @db.VarChar(100)
   total_days  Int
   daily_hour  Decimal  @db.Decimal(10, 2)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  isDeleted   Boolean  @default(false)
+  
   user        User     @relation(fields: [userId], references: [id])
+
+  isDeleted   Boolean  @default(false)
+
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
 }
 
 model Drug {
@@ -63,22 +71,37 @@ model Drug {
   mechanism_of_action String   @db.VarChar(255)
   therapeutic_class   String?  @db.VarChar(100)
   tags                String?
-  isDeleted           Boolean  @default(false)
+
   userId              Int
+
+  isDeleted           Boolean  @default(false)
+
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
   user                User     @relation(fields: [userId], references: [id])
 }
 
+model TypeIa {
+  id             Int    @id @default(autoincrement())
+  name           String @unique @db.VarChar(100) //-> Diagrama, texto, imagen, etc.
+  managementIaId Int
+
+  managementIa ManagementIa[]
+
+  isDeleted    Boolean        @default(false)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
 model ManagementIa {
   id                 Int     @id @default(autoincrement())
-  name               String  @db.VarChar(100)
-  type               String  @db.VarChar(50) //-> Debe ser unico
-  provider           String  @db.VarChar(100)
-  api_key            String
-  model              String  @db.VarChar(100)
-  version            String? @db.VarChar(50)
-  url_api            String
+  name               String  @db.Text
+  typeIAId           Int
+  provider           String  @db.Text
+  api_key            String  @db.Text
+  model              String  @db.Text
+  version            String? @db.Text
+  url_api            String  @db.Text
   method             String  @default("POST")
   headers_template   Json
   body_template      Json
@@ -86,8 +109,9 @@ model ManagementIa {
   output_type        String? @db.VarChar(50)
   prompt_description String
 
-  status    Boolean  @default(false)
+  TypeIA    TypeIa   @relation(fields: [typeIAId], references: [id])
   isDeleted Boolean  @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
