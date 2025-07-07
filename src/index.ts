@@ -15,7 +15,7 @@ const BASE_URL =
 
 app.get("/", (req, res) => {
   res.json({
-    message: "API funcionando correctamente desde cualquier origen.",
+    message: "API de Pharma Guide funcionando.",
   });
 });
 
