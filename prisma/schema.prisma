@@ -71,19 +71,25 @@ model Drug {
 }
 
 model ManagementIa {
-  id                 Int      @id @default(autoincrement())
-  name               String   @db.VarChar(100)
-  type               String   @db.VarChar(50)
-  provider           String   @db.VarChar(100)
+  id                 Int     @id @default(autoincrement())
+  name               String  @db.VarChar(100)
+  type               String  @db.VarChar(50) //-> Debe ser unico
+  provider           String  @db.VarChar(100)
   api_key            String
-  model              String   @db.VarChar(100)
-  isDeleted          Boolean  @default(false)
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-  status             Boolean  @default(false)
-  prompt_description String
+  model              String  @db.VarChar(100)
+  version            String? @db.VarChar(50)
   url_api            String
-  version            String?  @db.VarChar(50)
+  method             String  @default("POST")
+  headers_template   Json
+  body_template      Json
+  response_path      String  @default("result")
+  output_type        String? @db.VarChar(50)
+  prompt_description String
+
+  status    Boolean  @default(false)
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([provider, model, version])
 }

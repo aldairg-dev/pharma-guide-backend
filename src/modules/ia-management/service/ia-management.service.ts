@@ -20,7 +20,21 @@ export class IaManagementService {
       }
 
       const newManagement = await prisma.managementIa.create({
-        data: managementIa,
+        data: {
+          name: managementIa.name,
+          type: managementIa.type,
+          provider: managementIa.provider,
+          api_key: managementIa.api_key,
+          model: managementIa.model,
+          version: managementIa.version,
+          url_api: managementIa.url_api,
+          method: managementIa.method,
+          headers_template: managementIa.headers_template as any,
+          body_template: managementIa.body_template as any,
+          prompt_description: managementIa.prompt_description,
+          status: managementIa.status,
+          isDeleted: managementIa.isDeleted,
+        },
       });
 
       return newManagement;
@@ -71,9 +85,14 @@ export class IaManagementService {
           "A management record is already active. Only one active management is allowed at a time."
         );
       } else {
+        const { id, createdAt, updatedAt, ...updateData } = management;
         const updatedManagement = await prisma.managementIa.update({
           where: { id: managementId },
-          data: management,
+          data: {
+            ...updateData,
+            headers_template: updateData.headers_template as any,
+            body_template: updateData.body_template as any,
+          },
         });
         return updatedManagement;
       }
