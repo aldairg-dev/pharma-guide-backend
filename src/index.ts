@@ -19,5 +19,9 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.listen(PORT, () => {
   const host = process.env.HOST || "localhost";
-  console.log(`Servidor corriendo en https://${host}:${PORT}`);
+  if (process.env.NODE_ENV === "production") {
+    console.log(`Servidor corriendo en https://${host}:${PORT}`);
+  } else {
+    console.log(`Servidor corriendo en http://${host}:${PORT}`);
+  }
 });
