@@ -55,19 +55,7 @@ export class IaManagementService {
     }
   }
 
-  async getManagementType(type: number): Promise<{
-    [x: string]: any;
-    name: string;
-    provider: string;
-    api_key: string;
-    model: string;
-    version: string | null;
-    url_api: string;
-    method: string;
-    headers_template: any;
-    body_template: any;
-    prompt_description: string;
-  } | null> {
+  async getManagementType(type: number): Promise<ManagementIa | null> {
     try {
       return await prisma.managementIa.findFirst({
         where: {
@@ -75,6 +63,8 @@ export class IaManagementService {
           isDeleted: false,
         },
         select: {
+          id: true,
+          typeIAId: true,
           name: true,
           provider: true,
           api_key: true,
@@ -85,6 +75,11 @@ export class IaManagementService {
           headers_template: true,
           body_template: true,
           prompt_description: true,
+          response_path: true,
+          output_type: true,
+          isDeleted: true,
+          createdAt: true,
+          updatedAt: true,
         },
       });
     } catch (error: any) {
@@ -113,10 +108,10 @@ export class IaManagementService {
     try {
       const existingActiveManagement = await prisma.managementIa.findFirst({
         where: {
-          status: true,
+          isDeleted: false,
         },
       });
-      if (management.status === true && existingActiveManagement !== null) {
+      if (management.isDeleted === true && existingActiveManagement !== null) {
         throw new Error(
           "A management record is already active. Only one active management is allowed at a time."
         );
