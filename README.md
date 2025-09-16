@@ -559,7 +559,7 @@ SOFTWARE.
 
 ## 👥 Autores
 
-- **2A2G** - *Desarrollo inicial* - [GitHub Profile](https://github.com/2A2G)
+- **aldairg-dev** - *Desarrollo inicial* - [GitHub Profile](https://github.com/aldairg-dev)
 
 ## 🙏 Agradecimientos
 
@@ -574,7 +574,7 @@ Para preguntas, sugerencias o reportar bugs:
 
 - **GitHub Issues**: [Crear Issue](https://github.com/2A2G/pharma-guide-backend/issues)
 - **Email**: [aldairgguer@gmail.com](mailto:aldairgguer@gmail.com)
-- **GitHub Profile**: [@2A2G](https://github.com/2A2G)
+- **GitHub Profile**: [@aldairg-dev](https://github.com/aldairg-dev)
 
 ---
 
