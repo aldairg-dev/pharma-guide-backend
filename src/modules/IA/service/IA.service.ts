@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import dotenv from "dotenv";
+import PromptLoader from "../utils/loaderPrompt";
 
 dotenv.config();
 
@@ -36,6 +37,25 @@ class IAService {
   }
 
   /**
+   * Genera el prompt personalizado usando el PromptLoader y la información del medicamento
+   * @param drugInfo Información del medicamento
+   * @returns string con el prompt completo
+   */
+  private generatePrompt(drugInfo: DrugInfo): string {
+    const promptPath = './prompts/drug.contraindications.md';
+    
+    const variables = {
+      'drugInfo.name_generic': drugInfo.name_generic,
+      'drugInfo.brand_name': drugInfo.brand_name,
+      'drugInfo.mechanism_of_action': drugInfo.mechanism_of_action,
+      'drugInfo.therapeutic_class': drugInfo.therapeutic_class,
+      'drugInfo.tags': drugInfo.tags || 'No especificadas'
+    };
+
+    return PromptLoader.loadAndGenerate(promptPath, variables);
+  }
+
+  /**
    * Obtiene las contraindicaciones de un medicamento usando Gemini AI
    * @param drugInfo Información del medicamento
    * @returns Promise<ContraindicationResponse>
@@ -48,40 +68,7 @@ class IAService {
         model: "gemini-2.5-flash",
       });
 
-      const prompt = `
-Eres un farmacólogo clínico especializado en seguridad farmacológica. Analiza la información del medicamento y proporciona contraindicaciones clínicamente relevantes para profesionales de la salud.
-
-INFORMACIÓN DEL FÁRMACO:
-- Principio activo: ${drugInfo.name_generic}
-- Marca comercial: ${drugInfo.brand_name}
-- Mecanismo de acción: ${drugInfo.mechanism_of_action}
-- Clase terapéutica: ${drugInfo.therapeutic_class}
-- Características: ${drugInfo.tags}
-
-DIRECTRICES CLÍNICAS:
-1. Identifica el fármaco por principio activo y mecanismo
-2. Proporciona contraindicaciones basadas en evidencia científica
-3. Incluye parámetros clínicos específicos cuando sea relevante
-4. Responde "NOT_FOUND" solo si no hay información útil
-
-FORMATO OBLIGATORIO (usa JSON válido):
-{
-  "absolutas": [
-    "Contraindicación específica con criterio clínico"
-  ],
-  "relativas": [
-    "Precaución con parámetro clínico específico"
-  ]
-}
-
-REQUISITOS:
-- Cada contraindicación debe ser específica y accionable
-- Incluye valores de referencia cuando aplique (ej: TFG <30 mL/min/1.73m²)
-- Menciona interacciones farmacológicas críticas
-- Usa terminología médica estándar
-- Máximo 6 contraindicaciones por categoría para mantener relevancia clínica
-
-Respuesta en JSON:`;
+      const prompt = this.generatePrompt(drugInfo);
 
       const result = await model.generateContent(prompt);
       const response = await result.response;
