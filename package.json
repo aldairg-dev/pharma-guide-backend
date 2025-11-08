@@ -37,6 +37,7 @@
   },
   "homepage": "https://github.com/2A2G/pharma-guide-backend#readme",
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@prisma/client": "^6.8.2",
     "@prisma/extension-accelerate": "^1.3.0",
     "@types/bcrypt": "^5.0.2",

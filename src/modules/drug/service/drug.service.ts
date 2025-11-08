@@ -1,5 +1,8 @@
 import { Drug, PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+
+const prisma = new PrismaClient({
+  log: ["error", "warn"],
+});
 
 export class DrugService {
   async createDrug(
@@ -40,6 +43,7 @@ export class DrugService {
   }
 
   async getDrugById(drugId: number): Promise<{
+    id: number;
     name_generic: string;
     brand_name: string;
     mechanism_of_action: string;
@@ -51,12 +55,12 @@ export class DrugService {
         throw new Error("Invalid Drug ID.");
       }
 
-      const drug = await prisma.drug.findFirst({
+      const drug = await prisma.drug.findUnique({
         where: {
           id: drugId,
-          isDeleted: false,
         },
         select: {
+          id: true,
           name_generic: true,
           brand_name: true,
           mechanism_of_action: true,
@@ -65,10 +69,19 @@ export class DrugService {
         },
       });
 
+      if (!drug) {
+        return null;
+      }
+
       return drug;
     } catch (error: any) {
-      console.error(`Error fetching drug with ID ${drugId}:`, error.message);
-      throw new Error("Failed to retrieve drug data.");
+      console.error(`Error fetching drug with ID ${drugId}:`, error);
+      console.error("Error details:", {
+        message: error.message,
+        code: error.code,
+        meta: error.meta,
+      });
+      throw new Error(`Failed to retrieve drug data: ${error.message}`);
     }
   }
 

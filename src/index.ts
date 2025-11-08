@@ -20,14 +20,14 @@ app.get("/", (req, res) => {
 });
 
 app.post("/webhooks/github", (req, res) => {
-  console.log("✅ Webhook recibido desde GitHub:", req.body);
+  console.log("Webhook recibido desde GitHub:", req.body);
   res.status(200).send("OK");
 });
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en modo ${NODE_ENV}`);
-  console.log(`🌐 API disponible en: ${BASE_URL}`);
-  console.log(`📘 Documentación Swagger: ${BASE_URL}/api-docs`);
+  console.log(`Servidor corriendo en modo ${NODE_ENV}`);
+  console.log(`API disponible en: ${BASE_URL}`);
+  console.log(`Documentación Swagger: ${BASE_URL}/api-docs`);
 });
