@@ -13,25 +13,28 @@ class PromptLoader {
    */
   static loadTemplate(filePath: string): string {
     try {
-      // Si la ruta es relativa, la resolvemos desde el directorio actual del módulo
-      const resolvedPath = path.isAbsolute(filePath) 
-        ? filePath 
+      const resolvedPath = path.isAbsolute(filePath)
+        ? filePath
         : path.resolve(__dirname, filePath);
 
       if (!fs.existsSync(resolvedPath)) {
         throw new Error(`El archivo de prompt no existe: ${resolvedPath}`);
       }
 
-      const content = fs.readFileSync(resolvedPath, 'utf-8');
-      
+      const content = fs.readFileSync(resolvedPath, "utf-8");
+
       if (!content || content.trim().length === 0) {
         throw new Error(`El archivo de prompt está vacío: ${resolvedPath}`);
       }
 
       return content;
     } catch (error) {
-      console.error('Error al cargar el template del prompt:', error);
-      throw new Error(`No se pudo cargar el template del prompt: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+      console.error("Error al cargar el template del prompt:", error);
+      throw new Error(
+        `No se pudo cargar el template del prompt: ${
+          error instanceof Error ? error.message : "Error desconocido"
+        }`
+      );
     }
   }
 
@@ -44,16 +47,17 @@ class PromptLoader {
   static generatePrompt(template: string, variables: PromptVariables): string {
     let processedTemplate = template;
 
-    // Reemplaza todas las variables del formato ${variable} en el template
     Object.entries(variables).forEach(([key, value]) => {
-      const regex = new RegExp(`\\$\\{${key}\\}`, 'g');
-      processedTemplate = processedTemplate.replace(regex, value || '');
+      const regex = new RegExp(`\\$\\{${key}\\}`, "g");
+      processedTemplate = processedTemplate.replace(regex, value || "");
     });
 
-    // Verifica si quedan variables sin reemplazar
     const unreplacedVariables = processedTemplate.match(/\$\{[^}]+\}/g);
     if (unreplacedVariables) {
-      console.warn('Variables sin reemplazar encontradas:', unreplacedVariables);
+      console.warn(
+        "Variables sin reemplazar encontradas:",
+        unreplacedVariables
+      );
     }
 
     return processedTemplate;
@@ -76,7 +80,10 @@ class PromptLoader {
    * @param variables Variables proporcionadas
    * @returns object con el resultado de la validación
    */
-  static validateVariables(template: string, variables: PromptVariables): {
+  static validateVariables(
+    template: string,
+    variables: PromptVariables
+  ): {
     isValid: boolean;
     missingVariables: string[];
     unrequiredVariables: string[];
@@ -84,25 +91,26 @@ class PromptLoader {
     // Extrae todas las variables requeridas del template
     const requiredVariables = Array.from(
       new Set(
-        (template.match(/\$\{([^}]+)\}/g) || [])
-          .map(match => match.replace(/\$\{|\}/g, ''))
+        (template.match(/\$\{([^}]+)\}/g) || []).map((match) =>
+          match.replace(/\$\{|\}/g, "")
+        )
       )
     );
 
     // Identifica variables faltantes
     const missingVariables = requiredVariables.filter(
-      variable => !variables.hasOwnProperty(variable) || !variables[variable]
+      (variable) => !variables.hasOwnProperty(variable) || !variables[variable]
     );
 
     // Identifica variables no requeridas
     const unrequiredVariables = Object.keys(variables).filter(
-      variable => !requiredVariables.includes(variable)
+      (variable) => !requiredVariables.includes(variable)
     );
 
     return {
       isValid: missingVariables.length === 0,
       missingVariables,
-      unrequiredVariables
+      unrequiredVariables,
     };
   }
 }

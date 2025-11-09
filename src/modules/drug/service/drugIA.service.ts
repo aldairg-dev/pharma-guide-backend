@@ -56,7 +56,6 @@ export class DrugIAService {
         throw new Error("Invalid Drug ID.");
       }
 
-      // Usar retry logic para la operación de base de datos
       const dataDrug = await this.retryOperation(
         () => this.drugService.getDrugById(drugId),
         3,
@@ -109,9 +108,6 @@ export class DrugIAService {
     }
   }
 
-  /**
-   * Formatea las contraindicaciones en un formato legible con saltos de línea y espaciado apropiado
-   */
   private formatContraindications(
     contraindications: ContraindicationData
   ): string {

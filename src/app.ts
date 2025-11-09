@@ -7,7 +7,7 @@ import { JwtService } from "./utils/jwt/jwt.service";
 import routerUser from "./modules/user/router/user.router";
 import routerRole from "./modules/role/router/role.router";
 import routerDrug from "./modules/drug/router/drug.router";
-import { timeoutMiddleware } from "./utils/middlewares/errorHandling.middleware";
+import { RateLimit } from "./utils/middlewares/rateLimiter.middleware";
 
 const app = express();
 const jwtService = new JwtService();
@@ -19,14 +19,14 @@ app.use("/api/access/pharma-guide", routerAccess);
 
 app.use(
   "/api/pharma-guide",
-  timeoutMiddleware(30000),
+  RateLimit,
   jwtService.verifyTokenMiddleware.bind(jwtService),
   routerStudyPlan
 );
 
 app.use(
   "/api/pharma-guide",
-  timeoutMiddleware(30000),
+  RateLimit,
   jwtService.verifyTokenMiddleware.bind(jwtService),
   routerUser
 );
@@ -34,14 +34,14 @@ app.use(
 //  -> Setting Role
 app.use(
   "/api/pharma-guide/setting",
-  timeoutMiddleware(30000),
+  RateLimit,
   jwtService.verifyTokenMiddleware.bind(jwtService),
   routerRole
 );
 
 app.use(
   "/api/pharma-guide",
-  timeoutMiddleware(40000),
+  RateLimit,
   jwtService.verifyTokenMiddleware.bind(jwtService),
   routerDrug
 );

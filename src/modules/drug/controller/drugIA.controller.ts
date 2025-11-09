@@ -1,8 +1,5 @@
 import { Request, Response } from "express";
-import {
-  DrugIAService,
-  DrugContraindicationResponse,
-} from "../service/drugIA.service";
+import { DrugIAService } from "../service/drugIA.service";
 
 export class DrugIAController {
   private drugIAService = new DrugIAService();
@@ -40,27 +37,11 @@ export class DrugIAController {
       }
     } catch (error: any) {
       console.error("Error en getContraindicationsByDrugId:", error);
-      
-      // Identificar el tipo de error para dar una respuesta más específica
-      let statusCode = 500;
-      let message = "Error interno del servidor";
-      
-      if (error.code === 'P5010' || error.message?.includes('fetch failed')) {
-        statusCode = 503;
-        message = "Servicio temporalmente no disponible. Por favor, inténtelo de nuevo en unos momentos.";
-      } else if (error.message?.includes('Invalid Drug ID')) {
-        statusCode = 400;
-        message = "ID de medicamento inválido";
-      } else if (error.message?.includes('Failed to retrieve drug data')) {
-        statusCode = 404;
-        message = "Medicamento no encontrado";
-      }
-      
-      res.status(statusCode).json({
+
+      res.status(500).json({
         success: false,
-        message,
+        message: "Error processing request for drug contraindications",
         contraindications: null,
-        ...(process.env.NODE_ENV === 'development' && { error: error.message })
       });
     }
   }

@@ -16,7 +16,6 @@ routerDrug.put("/drug/:id", drugController.updateDrug.bind(drugController));
 
 routerDrug.delete("/drug/:id", drugController.deleteDrug.bind(drugController));
 
-// Rutas de IA para medicamentos
 routerDrug.get(
   "/drug/contraindications/:id",
   drugIAController.getContraindicationsByDrugId.bind(drugIAController)
