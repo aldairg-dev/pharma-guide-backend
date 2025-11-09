@@ -579,7 +579,7 @@ Para preguntas, sugerencias o reportar bugs:
 
 - **GitHub Issues**: [Crear Issue](https://github.com/aldairg-dev/pharma-guide-backend/issues)
 - **Email**: [aldairgguer@gmail.com](mailto:aldairgguer@gmail.com)
-- **GitHub Profile**: [@2A2G](https://github.com/aldairg-dev)
+- **GitHub Profile**: [@aldairg-dev](https://github.com/aldairg-dev)
 
 ---
 
