@@ -1,5 +1,3 @@
-// swagger.ts
-
 import swaggerAutogen from "swagger-autogen";
 
 const doc = {

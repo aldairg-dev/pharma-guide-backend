@@ -50,12 +50,16 @@ El backend gestiona usuarios, contenido educativo, planificación académica ada
 - **Roles de usuario** (Admin, Cliente)
 - **Sesiones persistentes** con tokens de larga duración
 
-### 🧠 Gestor de Inteligencias Artificiales
+### 🧠 Inteligencia Artificial Integrada
 - **CRUD completo** para múltiples proveedores de IA
 - **Activación/desactivación** dinámica de modelos
 - **Configuración de prompts** personalizados
-- **Soporte para múltiples proveedores** (DeepSeek, OpenAI, etc.)
+- **Soporte para múltiples proveedores** (DeepSeek, OpenAI, Gemini, etc.)
 - **Versionado de modelos** y APIs
+- **🩺 Contraindicaciones con Gemini AI**: Obtención automatizada de contraindicaciones de medicamentos
+  - Validación de contenido médico confiable
+  - Respuestas consistentes sin texto adicional
+  - Manejo inteligente de casos sin información disponible
 
 ### 📚 Planificación Académica Adaptativa
 - **Planes de estudio personalizados** por usuario
@@ -82,6 +86,7 @@ El backend gestiona usuarios, contenido educativo, planificación académica ada
 ```json
 {
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
     "@prisma/client": "^6.8.2",
     "@prisma/extension-accelerate": "^1.3.0",
     "bcrypt": "^5.1.1",
@@ -536,7 +541,7 @@ Este proyecto está licenciado bajo la **Licencia MIT**. Ver el archivo [LICENSE
 ```
 MIT License
 
-Copyright (c) 2025 2A2G
+Copyright (c) 2025 aldairg-dev
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -572,7 +577,7 @@ SOFTWARE.
 
 Para preguntas, sugerencias o reportar bugs:
 
-- **GitHub Issues**: [Crear Issue](https://github.com/2A2G/pharma-guide-backend/issues)
+- **GitHub Issues**: [Crear Issue](https://github.com/aldairg-dev/pharma-guide-backend/issues)
 - **Email**: [aldairgguer@gmail.com](mailto:aldairgguer@gmail.com)
 - **GitHub Profile**: [@aldairg-dev](https://github.com/aldairg-dev)
 
@@ -580,5 +585,5 @@ Para preguntas, sugerencias o reportar bugs:
 
 <div align="center">
   <p><strong>© 2025 PharmaGuide Backend - Todos los derechos reservados</strong></p>
-  <p>Desarrollado por <a href="https://github.com/2A2G">2A2G</a></p>
+  <p>Desarrollado por <a href="https://github.com/aldairg-dev">aldairg-dev</a></p>
 </div>
