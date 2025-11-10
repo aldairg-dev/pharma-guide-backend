@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development ts-node-dev --respawn --transpile-only src/index.ts",
     "test": "cross-env NODE_ENV=test ts-node-dev --respawn --transpile-only src/index.ts",
-    "build": "tsc",
+    "build": "tsc && npm run copy-prompts",
+    "copy-prompts": "cp -r src/modules/IA/utils/prompts dist/modules/IA/utils/ || xcopy /E /I src\\modules\\IA\\utils\\prompts dist\\modules\\IA\\utils\\prompts",
     "start": "cross-env NODE_ENV=production node dist/index.js",
     "prestart": "npm run build",
     "lint": "eslint 'src/**/*.ts' --fix",

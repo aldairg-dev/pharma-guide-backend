@@ -70,7 +70,25 @@ class PromptLoader {
    * @returns string con el prompt personalizado
    */
   static loadAndGenerate(fileName: string, variables: PromptVariables): string {
-    const promptsPath = path.resolve(__dirname, "prompts", fileName);
+    // Intenta múltiples rutas para encontrar el archivo de prompt
+    const possiblePaths = [
+      path.resolve(__dirname, "prompts", fileName), // Para desarrollo
+      path.resolve(__dirname, "..", "..", "..", "..", "src", "modules", "IA", "utils", "prompts", fileName), // Para producción desde dist
+      path.resolve(process.cwd(), "src", "modules", "IA", "utils", "prompts", fileName), // Ruta desde el directorio raíz
+    ];
+
+    let promptsPath = "";
+    for (const possiblePath of possiblePaths) {
+      if (fs.existsSync(possiblePath)) {
+        promptsPath = possiblePath;
+        break;
+      }
+    }
+
+    if (!promptsPath) {
+      throw new Error(`No se pudo encontrar el archivo de prompt: ${fileName}. Rutas intentadas: ${possiblePaths.join(", ")}`);
+    }
+
     const template = this.loadTemplate(promptsPath);
     return this.generatePrompt(template, variables);
   }
