@@ -3,13 +3,13 @@ import { Request, Response, NextFunction } from "express";
 
 const rateLimitConfig = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minuto
-  max: 5, // Máximo 10 peticiones por ventana de tiempo
+  max: 15, // Máximo 15 peticiones por ventana de tiempo
   standardHeaders: true, // Incluir headers RateLimit-*
   legacyHeaders: false,
   handler: (req: Request, res: Response) => {
     res.status(429).json({
       success: false,
-      message: "Demasiadas peticiones desde esta IP. Máximo 5 por minuto.",
+      message: "Demasiadas peticiones desde esta IP. Máximo 15 por minuto.",
       code: "RATE_LIMIT_EXCEEDED",
       retryAfter: 60,
     });
