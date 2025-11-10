@@ -2,19 +2,20 @@
   "name": "pharma-guide-backend",
   "version": "1.0.0",
   "description": "API REST para la aplicación móvil PharmaGuide, una herramienta académica para estudiantes de Química Farmacéutica.",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development ts-node-dev --respawn --transpile-only src/index.ts",
     "test": "cross-env NODE_ENV=test ts-node-dev --respawn --transpile-only src/index.ts",
-    "build": "tsc",
+    "build": "tsc && copyfiles -u 1 src/swagger.json dist/",
     "start": "cross-env NODE_ENV=production node dist/index.js",
+    "start:prod": "npx prisma migrate deploy && npm start",
     "prestart": "npm run build",
     "lint": "eslint 'src/**/*.ts' --fix",
     "postinstall": "npx prisma generate --no-engine"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/2A2G/pharma-guide-backend.git"
+    "url": "git+https://github.com/aldairg-dev/pharma-guide-backend.git"
   },
   "keywords": [
     "API",
@@ -30,12 +31,12 @@
     "REST",
     "API REST"
   ],
-  "author": "2A2G",
+  "author": "aldairg-dev",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/2A2G/pharma-guide-backend/issues"
+    "url": "https://github.com/aldairg-dev/pharma-guide-backend/issues"
   },
-  "homepage": "https://github.com/2A2G/pharma-guide-backend#readme",
+  "homepage": "https://github.com/aldairg-dev/pharma-guide-backend#readme",
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@prisma/client": "^6.8.2",
