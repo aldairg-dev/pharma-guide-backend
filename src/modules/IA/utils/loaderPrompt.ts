@@ -65,12 +65,13 @@ class PromptLoader {
 
   /**
    * Carga un template y genera el prompt en una sola operación
-   * @param filePath Ruta del archivo de prompt
+   * @param fileName Nombre del archivo de prompt, se busca en prompts
    * @param variables Objeto con las variables a reemplazar
    * @returns string con el prompt personalizado
    */
-  static loadAndGenerate(filePath: string, variables: PromptVariables): string {
-    const template = this.loadTemplate(filePath);
+  static loadAndGenerate(fileName: string, variables: PromptVariables): string {
+    const promptsPath = path.resolve(__dirname, "prompts", fileName);
+    const template = this.loadTemplate(promptsPath);
     return this.generatePrompt(template, variables);
   }
 

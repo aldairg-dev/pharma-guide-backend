@@ -42,7 +42,7 @@ class IAService {
    * @returns string con el prompt completo
    */
   private generatePrompt(drugInfo: DrugInfo): string {
-    const promptPath = './prompts/drug.contraindications.md';
+    const promptName = 'drug.contraindications.md';
     
     const variables = {
       'drugInfo.name_generic': drugInfo.name_generic,
@@ -52,7 +52,7 @@ class IAService {
       'drugInfo.tags': drugInfo.tags || 'No especificadas'
     };
 
-    return PromptLoader.loadAndGenerate(promptPath, variables);
+    return PromptLoader.loadAndGenerate(promptName, variables);
   }
 
   /**
