@@ -64,7 +64,29 @@ class PromptLoader {
   }
 
   /**
-   * Carga un template y genera el prompt en una sola operación
+   * Carga un template desde un módulo TypeScript y genera el prompt
+   * @param moduleName Nombre del módulo sin extensión (ej: 'drug.contraindications')
+   * @param variables Objeto con las variables a reemplazar
+   * @returns string con el prompt personalizado
+   */
+  static loadAndGenerateFromModule(moduleName: string, variables: PromptVariables): string {
+    try {
+      const promptModule = require(`./prompts/${moduleName}`);
+      
+      const template = promptModule.default || promptModule[`${moduleName.replace(/\./g, '')}Prompt`] || promptModule;
+      
+      if (typeof template !== 'string') {
+        throw new Error(`El módulo ${moduleName} no exporta un string válido`);
+      }
+      
+      return this.generatePrompt(template, variables);
+    } catch (error) {
+      throw new Error(`No se pudo cargar el módulo de prompt: ${moduleName}. Error: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+    }
+  }
+
+  /**
+   * Carga un template y genera el prompt en una sola operación (para archivos)
    * @param fileName Nombre del archivo de prompt, se busca en prompts
    * @param variables Objeto con las variables a reemplazar
    * @returns string con el prompt personalizado
