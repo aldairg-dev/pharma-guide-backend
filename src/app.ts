@@ -10,6 +10,8 @@ import routerDrug from "./modules/drug/router/drug.router";
 import { RateLimit } from "./utils/middlewares/rateLimiter.middleware";
 
 const app = express();
+
+app.set("trust proxy", 1);
 const jwtService = new JwtService();
 
 app.use(cors());
