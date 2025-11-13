@@ -65,12 +65,10 @@ model StudyPlan {
 }
 
 model Drug {
-  id                  Int    @id @default(autoincrement())
-  name_generic        String @db.VarChar(100)
-  brand_name          String @db.VarChar(100)
-  mechanism_of_action String @db.VarChar(255)
-  therapeutic_class   String @db.Text
-  tags                String @db.Text
+  id           Int    @id @default(autoincrement())
+  name_generic String @db.VarChar(100)
+  brand_name   String @db.VarChar(100)
+  tags         String @db.Text
 
   userId Int
 
