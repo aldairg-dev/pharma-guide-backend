@@ -70,8 +70,6 @@ export class DrugIAService {
         id: dataDrug.id,
         name_generic: dataDrug.name_generic,
         brand_name: dataDrug.brand_name,
-        mechanism_of_action: dataDrug.mechanism_of_action,
-        therapeutic_class: dataDrug.therapeutic_class,
         tags: dataDrug.tags || "",
       };
 

@@ -6,8 +6,6 @@ Eres un farmacólogo clínico especializado en seguridad farmacológica. Analiza
 
 - **Principio activo**: \${drugInfo.name_generic}
 - **Marca comercial**: \${drugInfo.brand_name}
-- **Mecanismo de acción**: \${drugInfo.mechanism_of_action}
-- **Clase terapéutica**: \${drugInfo.therapeutic_class}
 - **Características**: \${drugInfo.tags}
 
 ## Directrices Clínicas

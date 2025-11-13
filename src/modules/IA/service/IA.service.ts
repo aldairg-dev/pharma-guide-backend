@@ -7,8 +7,6 @@ dotenv.config();
 interface DrugInfo {
   name_generic: string;
   brand_name: string;
-  mechanism_of_action: string;
-  therapeutic_class: string;
   tags: string;
 }
 
@@ -42,14 +40,12 @@ class IAService {
    * @returns string con el prompt completo
    */
   private generatePrompt(drugInfo: DrugInfo): string {
-    const moduleName = 'drug.contraindications';
-    
+    const moduleName = "drug.contraindications";
+
     const variables = {
-      'drugInfo.name_generic': drugInfo.name_generic,
-      'drugInfo.brand_name': drugInfo.brand_name,
-      'drugInfo.mechanism_of_action': drugInfo.mechanism_of_action,
-      'drugInfo.therapeutic_class': drugInfo.therapeutic_class,
-      'drugInfo.tags': drugInfo.tags || 'No especificadas'
+      "drugInfo.name_generic": drugInfo.name_generic,
+      "drugInfo.brand_name": drugInfo.brand_name,
+      "drugInfo.tags": drugInfo.tags || "No especificadas",
     };
 
     return PromptLoader.loadAndGenerateFromModule(moduleName, variables);
@@ -194,8 +190,7 @@ class IAService {
     return !!(
       drugInfo.name_generic?.trim() &&
       drugInfo.brand_name?.trim() &&
-      drugInfo.mechanism_of_action?.trim() &&
-      drugInfo.therapeutic_class?.trim()
+      drugInfo.tags?.trim()
     );
   }
 
