@@ -46,8 +46,6 @@ export class DrugService {
     id: number;
     name_generic: string;
     brand_name: string;
-    mechanism_of_action: string;
-    therapeutic_class: string;
     tags: string;
   } | null> {
     try {
@@ -63,8 +61,6 @@ export class DrugService {
           id: true,
           name_generic: true,
           brand_name: true,
-          mechanism_of_action: true,
-          therapeutic_class: true,
           tags: true,
         },
       });
