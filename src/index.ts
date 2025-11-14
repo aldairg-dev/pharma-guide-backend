@@ -4,7 +4,7 @@ dotenv.config();
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "../swagger.json";
 import app from "./app";
-import { initializeRedis } from "./modules/cache/config/initializeRedis";
+import { initializeRedis } from "./modules/cache/service/initializeRedis";
 
 const PORT = Number(process.env.PORT) || 8080;
 const HOST = process.env.HOST || "0.0.0.0";
