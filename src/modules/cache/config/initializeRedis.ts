@@ -1,4 +1,4 @@
-import { createClient } from 'redis';
+import { createClient } from "redis";
 
 export async function initializeRedis() {
   try {
@@ -15,22 +15,22 @@ export async function initializeRedis() {
     });
 
     clientRedis.on("connect", () => {
-      console.log("Conectando a Redis...");
+      // console.log("Cliente de Redis conectado");
     });
 
     clientRedis.on("ready", () => {
-      console.log("Conectado a Redis correctamente");
+      // console.log("Cliente de Redis listo para usar");
     });
 
     await clientRedis.connect();
 
     process.on("SIGTERM", async () => {
-      console.log("Cerrando conexión Redis...");
+      // console.log("Cerrando conexión Redis...");
       await clientRedis.disconnect();
     });
 
     process.on("SIGINT", async () => {
-      console.log("🛑 Cerrando conexión Redis...");
+      // console.log("Cerrando conexión Redis...");
       await clientRedis.disconnect();
     });
 

@@ -16,11 +16,6 @@ const BASE_URL =
 async function startServer() {
   try {
     const redisClient = await initializeRedis();
-    if (redisClient) {
-      console.log("Redis inicializado correctamente");
-    } else {
-      console.log("Servidor iniciando sin Redis");
-    }
 
     if (NODE_ENV !== "production") {
       app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
@@ -32,18 +27,27 @@ async function startServer() {
     });
 
     app.get("/", (req, res) => {
-      res.json({ message: "API de Pharma Guide funcionando." });
+      const baseMessage =
+        "API de Pharma Guide en modo " +
+        NODE_ENV +
+        ". Redis " +
+        (redisClient ? "conectado" : "no conectado");
+
+      const response = {
+        message: baseMessage,
+        ...(NODE_ENV !== "production" && {
+          swagger: "Documentación disponible: " + `${BASE_URL}/api-docs`,
+        }),
+      };
+
+      res.json(response);
     });
 
     app.listen(PORT, HOST, () => {
-      console.log(`Servidor corriendo en modo ${NODE_ENV} en ${HOST}:${PORT}`);
-      if (NODE_ENV !== "production") {
-        console.log(`API: ${BASE_URL}`);
-        console.log(`Swagger: ${BASE_URL}/api-docs`);
-      }
+      console.log(`Servidor corriendo en ${BASE_URL}`);
     });
   } catch (error) {
-    console.error("Error al iniciar el servidor:", error);
+    console.error("Error al iniciar el servidor: ", error);
     process.exit(1);
   }
 }
