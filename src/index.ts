@@ -45,6 +45,8 @@ async function startServer() {
 
     app.listen(PORT, HOST, () => {
       console.log(`Servidor corriendo en ${BASE_URL}`);
+      console.log(`Redis: ${redisClient ? " Conectado" : " Desconectado"}`);
+      console.log(`Entorno: ${NODE_ENV}`);
     });
   } catch (error) {
     console.error("Error al iniciar el servidor: ", error);
