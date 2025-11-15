@@ -1,8 +1,13 @@
 import { Request, Response } from "express";
 import { DrugIAService } from "../service/drugIA.service";
+import { DrugCacheService } from "../../cache/service/drug/drugCache.service";
+import { DrugService } from "../service/drug.service";
+import { getRedisClient } from "../../cache/service/initializeRedis";
 
 export class DrugIAController {
   private drugIAService = new DrugIAService();
+  private drugCache = new DrugCacheService();
+  private drugService = new DrugService();
 
   async getContraindicationsByDrugId(
     req: Request,
@@ -20,7 +25,20 @@ export class DrugIAController {
         return;
       }
 
+      const data = await this.drugService.getDrugById(Number(id));
       const result = await this.drugIAService.DrugContradications(Number(id));
+
+      if (data) {
+        await this.drugCache.addDrugCache({
+          userId: data.userId,
+          drugId: Number(id),
+          contraindications: result?.contraindications,
+        });
+      } else {
+        console.log(
+          "[Controller] No se puede guardar en caché - no hay datos del drug"
+        );
+      }
 
       if (result && result.contraindications) {
         res.status(200).json({
