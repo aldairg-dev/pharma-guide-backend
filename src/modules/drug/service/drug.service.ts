@@ -44,6 +44,7 @@ export class DrugService {
 
   async getDrugById(drugId: number): Promise<{
     id: number;
+    userId: number;
     name_generic: string;
     brand_name: string;
     tags: string;
@@ -59,6 +60,7 @@ export class DrugService {
         },
         select: {
           id: true,
+          userId: true,
           name_generic: true,
           brand_name: true,
           tags: true,

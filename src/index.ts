@@ -4,7 +4,7 @@ dotenv.config();
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "../swagger.json";
 import app from "./app";
-import { initializeRedis } from "./modules/cache/service/initializeRedis";
+import { initializeRedis, isRedisConnected } from "./modules/cache/service/initializeRedis";
 
 const PORT = Number(process.env.PORT) || 8080;
 const HOST = process.env.HOST || "0.0.0.0";
@@ -15,7 +15,8 @@ const BASE_URL =
 
 async function startServer() {
   try {
-    const redisClient = await initializeRedis();
+    // Inicializar Redis una sola vez
+    await initializeRedis();
 
     if (NODE_ENV !== "production") {
       app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
@@ -31,7 +32,7 @@ async function startServer() {
         "API de Pharma Guide en modo " +
         NODE_ENV +
         ". Redis " +
-        (redisClient ? "conectado" : "no conectado");
+        (isRedisConnected() ? "conectado" : "no conectado");
 
       const response = {
         message: baseMessage,
@@ -45,7 +46,7 @@ async function startServer() {
 
     app.listen(PORT, HOST, () => {
       console.log(`Servidor corriendo en ${BASE_URL}`);
-      console.log(`Redis: ${redisClient ? " Conectado" : " Desconectado"}`);
+      console.log(`Redis: ${isRedisConnected() ? " Conectado" : " Desconectado"}`);
       console.log(`Entorno: ${NODE_ENV}`);
     });
   } catch (error) {
