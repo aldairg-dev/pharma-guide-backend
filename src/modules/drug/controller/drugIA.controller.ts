@@ -25,25 +25,40 @@ export class DrugIAController {
         return;
       }
 
+      let contraindications = null;
       const data = await this.drugService.getDrugById(Number(id));
-      const result = await this.drugIAService.DrugContradications(Number(id));
 
       if (data) {
-        await this.drugCache.addDrugCache({
-          userId: data.userId,
-          drugId: Number(id),
-          contraindications: result?.contraindications,
-        });
-      } else {
-        console.log(
-          "[Controller] No se puede guardar en caché - no hay datos del drug"
+        const cachedData = await this.drugCache.getDrugCache(
+          data.userId,
+          Number(id)
         );
+
+        if (cachedData && cachedData.contraindications) {
+          contraindications = cachedData.contraindications;
+          console.log("[Controller] Contraindicaciones obtenidas de caché");
+        } else {
+          const result = await this.drugIAService.DrugContradications(
+            Number(id)
+          );
+          console.log(
+            "[Controller] Contraindicaciones obtenidas de servicio externo"
+          );
+          contraindications = result?.contraindications;
+          await this.drugCache.addDrugCache({
+            userId: data.userId,
+            drugId: Number(id),
+            contraindications: result?.contraindications,
+          });
+        }
+      } else {
+        console.log("[Controller] No hay datos del drug");
       }
 
-      if (result && result.contraindications) {
+      if (contraindications) {
         res.status(200).json({
-          id: result.id,
-          contraindications: result.contraindications,
+          id: id,
+          contraindications: contraindications,
         });
       } else {
         res.status(404).json({
