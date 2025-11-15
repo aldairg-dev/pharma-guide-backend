@@ -48,4 +48,21 @@ export class DrugCacheService {
       return false;
     }
   }
+
+  async getDrugCache(
+    userId: number,
+    drugId: number
+  ): Promise<interfaceDrugCache | null> {
+    await this.redisConnection.conexion();
+    const client = this.getClient();
+
+    const dataDrugCache = await client.hGetAll(`drug:${userId}:${drugId}`);
+    if (Object.keys(dataDrugCache).length === 0) {
+      console.log(
+        `[DrugCache] No se encontraron datos en caché para userId: ${userId}, drugId: ${drugId}`
+      );
+      return null;
+    }
+    return dataDrugCache;
+  }
 }
