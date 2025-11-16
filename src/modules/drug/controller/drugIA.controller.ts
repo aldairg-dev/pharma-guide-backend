@@ -34,7 +34,7 @@ export class DrugIAController {
           Number(id)
         );
 
-        if (cachedData && cachedData.contraindications) {
+        if (cachedData  ) {
           contraindications = cachedData.contraindications;
           console.log("[Controller] Contraindicaciones obtenidas de caché");
         } else {
