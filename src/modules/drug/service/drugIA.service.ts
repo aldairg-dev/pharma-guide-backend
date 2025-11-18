@@ -15,10 +15,18 @@ export interface DrugContraindicationResponse {
   message?: string;
 }
 
+interface TherapeuticClassData {
+  clase_principal: string;
+  subclases: string[];
+  codigo_atc?: string;
+  indicaciones_principales: string[];
+}
+
 export interface DrugTherapeuticClassResponse {
   id: number;
   therapeuticClass: {
-    contend: string;
+    content: string;
+    structured: TherapeuticClassData;
   };
   message?: string;
 }
@@ -28,7 +36,7 @@ export class DrugIAService {
 
   private async retryOperation<T>(operation: () => Promise<T>): Promise<T> {
     let maxRetries = 3;
-    const delay = 500;
+    let delay = 500;
     for (let i = 0; i < maxRetries; i++) {
       try {
         return await operation();
@@ -71,7 +79,8 @@ export class DrugIAService {
       };
 
       const result = await this.retryOperation(() =>
-        IAService.getValidatedContraindications(drugInfo));
+        IAService.getValidatedContraindications(drugInfo)
+      );
 
       if (result.success && result.contraindications) {
         const formattedContent = this.formatContraindications(
@@ -120,7 +129,76 @@ export class DrugIAService {
     return formatted.trim();
   }
 
+  private formatTherapeuticClass(
+    therapeuticClass: TherapeuticClassData
+  ): string {
+    let formatted = "";
+
+    formatted += `CLASE TERAPÉUTICA PRINCIPAL: ${therapeuticClass.clase_principal}\n\n`;
+
+    if (therapeuticClass.codigo_atc) {
+      formatted += `CÓDIGO ATC: ${therapeuticClass.codigo_atc}\n\n`;
+    }
+
+    if (therapeuticClass.subclases && therapeuticClass.subclases.length > 0) {
+      formatted += "SUBCLASES TERAPÉUTICAS:\n\n";
+      therapeuticClass.subclases.forEach((item, index) => {
+        formatted += `${index + 1}. ${item}\n\n`;
+      });
+    }
+
+    if (therapeuticClass.indicaciones_principales && therapeuticClass.indicaciones_principales.length > 0) {
+      formatted += "INDICACIONES PRINCIPALES:\n\n";
+      therapeuticClass.indicaciones_principales.forEach((item, index) => {
+        formatted += `${index + 1}. ${item}\n\n`;
+      });
+    }
+
+    return formatted.trim();
+  }
+
   async TherapeuticClass(
     drugId: number
-  ): Promise<DrugTherapeuticClassResponse | null> {}
+  ): Promise<DrugTherapeuticClassResponse | null> {
+    try {
+      const dataDrug = await this.retryOperation(() =>
+        this.drugService.getDrugById(drugId)
+      );
+
+      if (!dataDrug || dataDrug == null) {
+        throw new Error("Failed to retrieve drug data.");
+      }
+
+      const drugInfo = {
+        id: dataDrug.id,
+        name_generic: dataDrug.name_generic,
+        brand_name: dataDrug.brand_name,
+        tags: dataDrug.tags || "",
+      };
+
+      const result = await this.retryOperation(() =>
+        IAService.getValidatedTherapeuticClass(drugInfo)
+      );
+
+      if (result.success && result.therapeuticClass) {
+        const formattedContent = this.formatTherapeuticClass(
+          result.therapeuticClass
+        );
+
+        return {
+          id: Number(dataDrug.id),
+          therapeuticClass: {
+            content: formattedContent,
+            structured: result.therapeuticClass,
+          },
+          message: result.message,
+        };
+      }
+
+      return null;
+    } catch (error) {
+      console.log("[DrugIA.service] Errror en Therapeutic Class: ", error);
+      return null;
+    }
+  }
 }

@@ -1,37 +1,23 @@
 import { DrugModel } from "./drug.model";
 import { DrugInfo, GeminiAIUtils } from "../geminiAI/geminiAI.utils";
-
-export interface TherapeuticClassData {
-  clase_principal: string;
-  subclases: string[];
-  mecanismo_accion: string;
-  indicaciones_principales: string[];
-}
-
-export interface TherapeuticClassResponse {
-  success: boolean;
-  therapeuticClass: TherapeuticClassData | null;
-  message?: string;
-}
-
-export interface FormattedTherapeuticClassResponse {
-  success: boolean;
-  therapeuticClass: string | null;
-  structuredData?: TherapeuticClassData | null;
-  message?: string;
-}
+import {
+  TherapeuticClassData,
+  TherapeuticClassResponse,
+  FormattedTherapeuticClassResponse,
+} from "../../types/therapeuticClass.types";
 
 export class TherapeuticClassModel extends DrugModel {
   static validateStructure(data: any): boolean {
     return !!(
-      data.clase_principal &&
-      data.subclases &&
-      data.mecanismo_accion &&
-      data.indicaciones_principales &&
-      typeof data.clase_principal === "string" &&
-      Array.isArray(data.subclases) &&
-      typeof data.mecanismo_accion === "string" &&
-      Array.isArray(data.indicaciones_principales)
+      (
+        data.clase_principal &&
+        data.subclases &&
+        data.indicaciones_principales &&
+        typeof data.clase_principal === "string" &&
+        Array.isArray(data.subclases) &&
+        Array.isArray(data.indicaciones_principales)
+      )
+      // codigo_atc es opcional, no requiere validación
     );
   }
 
@@ -41,7 +27,7 @@ export class TherapeuticClassModel extends DrugModel {
       subclases: data.subclases.filter(
         (item: any) => typeof item === "string" && item.trim().length > 0
       ),
-      mecanismo_accion: data.mecanismo_accion.trim(),
+      codigo_atc: data.codigo_atc ? data.codigo_atc.trim() : undefined,
       indicaciones_principales: data.indicaciones_principales.filter(
         (item: any) => typeof item === "string" && item.trim().length > 0
       ),
@@ -50,7 +36,6 @@ export class TherapeuticClassModel extends DrugModel {
     if (
       !therapeuticClassData.clase_principal ||
       therapeuticClassData.subclases.length === 0 ||
-      !therapeuticClassData.mecanismo_accion ||
       therapeuticClassData.indicaciones_principales.length === 0
     ) {
       throw new Error("No se encontraron datos válidos de clase terapéutica");
@@ -58,7 +43,7 @@ export class TherapeuticClassModel extends DrugModel {
 
     const allContent = [
       therapeuticClassData.clase_principal,
-      therapeuticClassData.mecanismo_accion,
+      therapeuticClassData.codigo_atc || "",
       ...therapeuticClassData.subclases,
       ...therapeuticClassData.indicaciones_principales,
     ].join(" ");
@@ -77,15 +62,17 @@ export class TherapeuticClassModel extends DrugModel {
 
     formatted += `CLASE TERAPÉUTICA PRINCIPAL: ${therapeuticClass.clase_principal}\n\n`;
 
+    if (therapeuticClass.codigo_atc) {
+      formatted += `CÓDIGO ATC: ${therapeuticClass.codigo_atc}\n\n`;
+    }
+
     if (therapeuticClass.subclases.length > 0) {
-      formatted += "SUBCLASES:\n";
+      formatted += "SUBCLASES TERAPÉUTICAS:\n";
       therapeuticClass.subclases.forEach((item, index) => {
         formatted += `${index + 1}. ${item}\n`;
       });
       formatted += "\n";
     }
-
-    formatted += `MECANISMO DE ACCIÓN: ${therapeuticClass.mecanismo_accion}\n\n`;
 
     if (therapeuticClass.indicaciones_principales.length > 0) {
       formatted += "INDICACIONES PRINCIPALES:\n";
