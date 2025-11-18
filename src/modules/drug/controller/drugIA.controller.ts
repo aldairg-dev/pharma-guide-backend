@@ -1,8 +1,7 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { DrugIAService } from "../service/drugIA.service";
 import { DrugCacheService } from "../../cache/service/drug/drugCache.service";
 import { DrugService } from "../service/drug.service";
-import { getRedisClient } from "../../cache/service/initializeRedis";
 
 export class DrugIAController {
   private drugIAService = new DrugIAService();
@@ -11,7 +10,8 @@ export class DrugIAController {
 
   async getContraindicationsByDrugId(
     req: Request,
-    res: Response
+    res: Response,
+    _next: NextFunction
   ): Promise<void> {
     try {
       const { id } = req.params;
@@ -34,7 +34,7 @@ export class DrugIAController {
           Number(id)
         );
 
-        if (cachedData  ) {
+        if (cachedData) {
           contraindications = cachedData.contraindications;
           console.log("[Controller] Contraindicaciones obtenidas de caché");
         } else {
@@ -69,12 +69,41 @@ export class DrugIAController {
         });
       }
     } catch (error: any) {
-      console.error("Error en getContraindicationsByDrugId:", error);
+      console.error("Error en getContraindicationsByDrugId: ", error);
 
       res.status(500).json({
         success: false,
         message: "Error processing request for drug contraindications",
         contraindications: null,
+      });
+    }
+  }
+
+  async getTherapeuticClassByDrugId(
+    req: Request,
+    res: Response,
+    _next: NextFunction
+  ): Promise<void> {
+    try {
+      const { id } = req.params;
+
+      if (!id || isNaN(Number(id))) {
+        res.json({
+          status: false,
+          message: "ID de medicamento inválido",
+        });
+        return;
+      }
+
+      let therappeuticClass = null;
+
+      const resul = await this.drugIAService.TherapeuticClass(Number(id));
+      
+    } catch (error: any) {
+      console.log("Error en getTherapeuticClassByDrugId: ", error);
+      res.json({
+        status: false,
+        message: "",
       });
     }
   }

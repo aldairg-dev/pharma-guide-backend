@@ -12,12 +12,13 @@
     ],
     "postman.settings.dotenv-detection-notification-visibility": false,
     "github.copilot.enable": {
-        "*": true,
+        "*": false,
         "plaintext": false,
         "markdown": false,
         "scminput": false,
-        "typescript": true,
+        "typescript": false,
         "php": true,
-        "blade": true
+        "blade": true,
+        "typescriptreact": false
     }
 }

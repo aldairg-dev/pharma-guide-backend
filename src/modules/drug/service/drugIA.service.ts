@@ -15,17 +15,20 @@ export interface DrugContraindicationResponse {
   message?: string;
 }
 
+export interface DrugTherapeuticClassResponse {
+  id: number;
+  therapeuticClass: {
+    contend: string;
+  };
+  message?: string;
+}
+
 export class DrugIAService {
   private drugService = new DrugService();
 
-  /**
-   * Retry logic for database operations
-   */
-  private async retryOperation<T>(
-    operation: () => Promise<T>,
-    maxRetries: number = 3,
-    delay: number = 1000
-  ): Promise<T> {
+  private async retryOperation<T>(operation: () => Promise<T>): Promise<T> {
+    let maxRetries = 3;
+    const delay = 500;
     for (let i = 0; i < maxRetries; i++) {
       try {
         return await operation();
@@ -52,14 +55,8 @@ export class DrugIAService {
     drugId: number
   ): Promise<DrugContraindicationResponse | null> {
     try {
-      if (!drugId || typeof drugId !== "number") {
-        throw new Error("Invalid Drug ID.");
-      }
-
-      const dataDrug = await this.retryOperation(
-        () => this.drugService.getDrugById(drugId),
-        3,
-        500
+      const dataDrug = await this.retryOperation(() =>
+        this.drugService.getDrugById(drugId)
       );
 
       if (!dataDrug || dataDrug == null) {
@@ -73,17 +70,8 @@ export class DrugIAService {
         tags: dataDrug.tags || "",
       };
 
-      const result = await this.retryOperation(
-        () =>
-          Promise.race([
-            IAService.getValidatedContraindications(drugInfo),
-            new Promise((_, reject) =>
-              setTimeout(() => reject(new Error("IA service timeout")), 30000)
-            ),
-          ]) as Promise<any>,
-        2,
-        2000
-      );
+      const result = await this.retryOperation(() =>
+        IAService.getValidatedContraindications(drugInfo));
 
       if (result.success && result.contraindications) {
         const formattedContent = this.formatContraindications(
@@ -131,4 +119,8 @@ export class DrugIAService {
 
     return formatted.trim();
   }
+
+  async TherapeuticClass(
+    drugId: number
+  ): Promise<DrugTherapeuticClassResponse | null> {}
 }
