@@ -33,12 +33,12 @@ export class DrugCacheService {
 
       await client.hSet(cacheKey, dataToUpdate);
       console.log(
-        `[DrugCache] Contraindicaciones almacenadas en caché para userId: ${userId}, drugId: ${drugId}`
+        `[drugCacheService] Contraindicaciones almacenadas en caché para userId: ${userId}, drugId: ${drugId}`
       );
       return true;
     } catch (error) {
       console.error(
-        "[DrugCache] Error al agregar contraindicaciones a caché:",
+        "[drugCacheService] Error al agregar contraindicaciones a caché:",
         error
       );
       return false;
@@ -69,12 +69,12 @@ export class DrugCacheService {
 
       await client.hSet(cacheKey, dataToUpdate);
       console.log(
-        `[DrugCache] Clase terapéutica almacenada en caché para userId: ${userId}, drugId: ${drugId}`
+        `[drugCacheService] Clase terapéutica almacenada en caché para userId: ${userId}, drugId: ${drugId}`
       );
       return true;
     } catch (error) {
       console.error(
-        "[DrugCache] Error al agregar clase terapéutica a caché:",
+        "[drugCacheService] Error al agregar clase terapéutica a caché:",
         error
       );
       return false;
@@ -112,11 +112,11 @@ export class DrugCacheService {
 
       await client.hSet(cacheKey, dataToStore);
       console.log(
-        `[DrugCache] Datos almacenados correctamente en caché. Key: ${cacheKey}`
+        `[drugCacheService] Datos almacenados correctamente en caché. Key: ${cacheKey}`
       );
       return true;
     } catch (error) {
-      console.error("[DrugCache] Error al agregar a caché:", error);
+      console.error("[drugCacheService] Error al agregar a caché:", error);
       return false;
     }
   }
@@ -138,7 +138,7 @@ export class DrugCacheService {
 
       if (expiresAt > 0 && now > expiresAt) {
         console.log(
-          `[DrugCache] Caché expirado para userId: ${userId}, drugId: ${drugId}`
+          `[drugCacheService] Caché expirado para userId: ${userId}, drugId: ${drugId}`
         );
         await client.del(cacheKey);
         return true;
@@ -146,7 +146,7 @@ export class DrugCacheService {
 
       return false;
     } catch (error) {
-      console.error("[DrugCache] Error verificando expiración:", error);
+      console.error("[drugCacheService] Error verificando expiración:", error);
       return true; // Asumir expirado en caso de error
     }
   }
@@ -168,7 +168,7 @@ export class DrugCacheService {
 
       if (!contraindicationsStr || contraindicationsStr === "null") {
         console.log(
-          `[DrugCache] No se encontraron contraindicaciones en caché para userId: ${userId}, drugId: ${drugId}`
+          `[drugCacheService] No se encontraron contraindicaciones en caché para userId: ${userId}, drugId: ${drugId}`
         );
         return null;
       }
@@ -176,19 +176,19 @@ export class DrugCacheService {
       try {
         const contraindications = JSON.parse(contraindicationsStr);
         console.log(
-          `[DrugCache] Contraindicaciones encontradas en caché para userId: ${userId}, drugId: ${drugId}`
+          `[drugCacheService] Contraindicaciones encontradas en caché para userId: ${userId}, drugId: ${drugId}`
         );
         return contraindications;
       } catch (parseError) {
         console.warn(
-          "[DrugCache] Error parseando contraindicaciones:",
+          "[drugCacheService] Error parseando contraindicaciones:",
           parseError
         );
         return null;
       }
     } catch (error) {
       console.error(
-        "[DrugCache] Error al obtener contraindicaciones de caché:",
+        "[drugCacheService] Error al obtener contraindicaciones de caché:",
         error
       );
       return null;
@@ -212,7 +212,7 @@ export class DrugCacheService {
 
       if (!therapeuticClassStr || therapeuticClassStr === "null") {
         console.log(
-          `[DrugCache] No se encontró clase terapéutica en caché para userId: ${userId}, drugId: ${drugId}`
+          `[drugCacheService] No se encontró clase terapéutica en caché para userId: ${userId}, drugId: ${drugId}`
         );
         return null;
       }
@@ -220,19 +220,19 @@ export class DrugCacheService {
       try {
         const therapeuticClass = JSON.parse(therapeuticClassStr);
         console.log(
-          `[DrugCache] Clase terapéutica encontrada en caché para userId: ${userId}, drugId: ${drugId}`
+          `[drugCacheService] Clase terapéutica encontrada en caché para userId: ${userId}, drugId: ${drugId}`
         );
         return therapeuticClass;
       } catch (parseError) {
         console.warn(
-          "[DrugCache] Error parseando clase terapéutica:",
+          "[drugCacheService] Error parseando clase terapéutica:",
           parseError
         );
         return null;
       }
     } catch (error) {
       console.error(
-        "[DrugCache] Error al obtener clase terapéutica de caché:",
+        "[drugCacheService] Error al obtener clase terapéutica de caché:",
         error
       );
       return null;
@@ -255,7 +255,7 @@ export class DrugCacheService {
 
       if (Object.keys(dataDrugCache).length === 0) {
         console.log(
-          `[DrugCache] No se encontraron datos en caché para userId: ${userId}, drugId: ${drugId}`
+          `[drugCacheService] No se encontraron datos en caché para userId: ${userId}, drugId: ${drugId}`
         );
         return null;
       }
@@ -275,7 +275,7 @@ export class DrugCacheService {
           );
         } catch (parseError) {
           console.warn(
-            "[DrugCache] Error parseando contraindications:",
+            "[drugCacheService] Error parseando contraindications:",
             parseError
           );
         }
@@ -289,19 +289,19 @@ export class DrugCacheService {
           result.therapeuticClass = JSON.parse(dataDrugCache.therapeuticClass);
         } catch (parseError) {
           console.warn(
-            "[DrugCache] Error parseando therapeuticClass:",
+            "[drugCacheService] Error parseando therapeuticClass:",
             parseError
           );
         }
       }
 
       console.log(
-        `[DrugCache] Registro completo encontrado en caché para userId: ${userId}, drugId: ${drugId}`
+        `[drugCacheService] Registro completo encontrado en caché para userId: ${userId}, drugId: ${drugId}`
       );
       return result;
     } catch (error) {
       console.error(
-        "[DrugCache] Error al obtener datos completos de caché:",
+        "[drugCacheService] Error al obtener datos completos de caché:",
         error
       );
       return null;
@@ -315,7 +315,7 @@ export class DrugCacheService {
       const cacheKey = `drug:${userId}:${drugId}`;
       return await client.ttl(cacheKey);
     } catch (error) {
-      console.error("[DrugCache] Error al obtener TTL:", error);
+      console.error("[drugCacheService] Error al obtener TTL:", error);
       return -1;
     }
   }
@@ -327,11 +327,11 @@ export class DrugCacheService {
       const cacheKey = `drug:${userId}:${drugId}`;
       const result = await client.del(cacheKey);
       console.log(
-        `[DrugCache] Caché eliminado para userId: ${userId}, drugId: ${drugId}`
+        `[drugCacheService] Caché eliminado para userId: ${userId}, drugId: ${drugId}`
       );
       return result > 0;
     } catch (error) {
-      console.error("[DrugCache] Error al eliminar caché:", error);
+      console.error("[drugCacheService] Error al eliminar caché:", error);
       return false;
     }
   }

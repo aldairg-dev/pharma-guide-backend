@@ -35,16 +35,18 @@ export class DrugIAController {
         );
 
         if (contraindications) {
-          console.log("[Controller] Contraindicaciones obtenidas de caché");
+          console.log(
+            "[drugIAController] Contraindicaciones obtenidas de caché"
+          );
         } else {
           const result = await this.drugIAService.DrugContradications(
             Number(id)
           );
           console.log(
-            "[Controller] Contraindicaciones obtenidas de servicio externo"
+            "[drugIAController] Contraindicaciones obtenidas de servicio externo"
           );
           contraindications = result?.contraindications;
-          
+
           if (contraindications) {
             await this.drugCache.addDrugContraindications(
               data.userId,
@@ -54,7 +56,7 @@ export class DrugIAController {
           }
         }
       } else {
-        console.log("[Controller] No hay datos del drug");
+        console.log("[drugIAController] No hay datos del drug");
       }
 
       if (contraindications) {
@@ -108,11 +110,11 @@ export class DrugIAController {
         );
 
         if (therapeuticClass) {
-          console.log("[Controller] Clase terapéutica obtenida de caché");
+          console.log("[drugIAController] Clase terapéutica obtenida de caché");
         } else {
           const result = await this.drugIAService.TherapeuticClass(Number(id));
           console.log(
-            "[Controller] Clase terapéutica obtenida de servicio externo"
+            "[drugIAController] Clase terapéutica obtenida de servicio externo"
           );
           therapeuticClass = result?.therapeuticClass;
 
@@ -125,7 +127,7 @@ export class DrugIAController {
           }
         }
       } else {
-        console.log("[Controller] No hay datos del medicamento");
+        console.log("[drugIAController] No hay datos del medicamento");
       }
 
       if (therapeuticClass) {
