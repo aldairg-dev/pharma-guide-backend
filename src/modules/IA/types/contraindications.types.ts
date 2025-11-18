@@ -1,4 +1,3 @@
-// Interfaces específicas para contraindicaciones
 export interface ContraindicationData {
   absolutas: string[];
   relativas: string[];

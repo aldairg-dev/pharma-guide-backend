@@ -21,4 +21,9 @@ routerDrug.get(
   drugIAController.getContraindicationsByDrugId.bind(drugIAController)
 );
 
+routerDrug.get(
+  "/drug/therapeutic-class/:id",
+  drugIAController.getTherapeuticClassByDrugId.bind(drugIAController)
+);
+
 export default routerDrug;

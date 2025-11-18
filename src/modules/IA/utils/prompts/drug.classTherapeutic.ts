@@ -10,18 +10,20 @@ Eres un farmacólogo clínico especializado en clasificación terapéutica. Anal
 
 ## Directrices Clínicas
 
-1. Identifica la clase terapéutica principal por mecanismo de acción
-2. Usa clasificación ATC (Anatomical Therapeutic Chemical) cuando sea posible
-3. Proporciona subclases específicas para mayor precisión clínica
-4. Responde "NOT_FOUND" solo si el fármaco no es identificable
+1. Identifica la clase terapéutica principal según clasificación ATC
+2. Proporciona el código ATC específico si está disponible
+3. Incluye subclases terapéuticas para mayor precisión clínica
+4. Lista las indicaciones terapéuticas principales
+5. Responde "NOT_FOUND" solo si el fármaco no es identificable
 
 ## Formato de Respuesta Obligatorio
 
 \`\`\`json
 {
-  "clase_terapeutica_principal": "Clase principal según ATC o mecanismo",
-  "subclase_especifica": "Subclasificación más específica",
-  "codigo_atc": "Código ATC si disponible (opcional)"
+  "clase_principal": "Clase terapéutica principal según ATC",
+  "subclases": ["Subclase 1", "Subclase 2", "etc."],
+  "codigo_atc": "Código ATC si está disponible (opcional)",
+  "indicaciones_principales": ["Indicación 1", "Indicación 2", "etc."]
 }
 \`\`\`
 

@@ -29,13 +29,12 @@ export class DrugIAController {
       const data = await this.drugService.getDrugById(Number(id));
 
       if (data) {
-        const cachedData = await this.drugCache.getDrugCache(
+        contraindications = await this.drugCache.getDrugContraindications(
           data.userId,
           Number(id)
         );
 
-        if (cachedData) {
-          contraindications = cachedData.contraindications;
+        if (contraindications) {
           console.log("[Controller] Contraindicaciones obtenidas de caché");
         } else {
           const result = await this.drugIAService.DrugContradications(
@@ -45,11 +44,14 @@ export class DrugIAController {
             "[Controller] Contraindicaciones obtenidas de servicio externo"
           );
           contraindications = result?.contraindications;
-          await this.drugCache.addDrugCache({
-            userId: data.userId,
-            drugId: Number(id),
-            contraindications: result?.contraindications,
-          });
+          
+          if (contraindications) {
+            await this.drugCache.addDrugContraindications(
+              data.userId,
+              Number(id),
+              contraindications
+            );
+          }
         }
       } else {
         console.log("[Controller] No hay datos del drug");
@@ -88,22 +90,64 @@ export class DrugIAController {
       const { id } = req.params;
 
       if (!id || isNaN(Number(id))) {
-        res.json({
-          status: false,
+        res.status(400).json({
+          success: false,
           message: "ID de medicamento inválido",
+          therapeuticClass: null,
         });
         return;
       }
 
-      let therappeuticClass = null;
+      let therapeuticClass = null;
+      const data = await this.drugService.getDrugById(Number(id));
 
-      const resul = await this.drugIAService.TherapeuticClass(Number(id));
-      
+      if (data) {
+        therapeuticClass = await this.drugCache.getDrugTherapeuticClass(
+          data.userId,
+          Number(id)
+        );
+
+        if (therapeuticClass) {
+          console.log("[Controller] Clase terapéutica obtenida de caché");
+        } else {
+          const result = await this.drugIAService.TherapeuticClass(Number(id));
+          console.log(
+            "[Controller] Clase terapéutica obtenida de servicio externo"
+          );
+          therapeuticClass = result?.therapeuticClass;
+
+          if (therapeuticClass) {
+            await this.drugCache.addDrugTherapeuticClass(
+              data.userId,
+              Number(id),
+              therapeuticClass
+            );
+          }
+        }
+      } else {
+        console.log("[Controller] No hay datos del medicamento");
+      }
+
+      if (therapeuticClass) {
+        res.status(200).json({
+          id: id,
+          therapeuticClass: therapeuticClass,
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          message:
+            "No se encontró información de clase terapéutica para este medicamento o el medicamento no existe",
+          therapeuticClass: null,
+        });
+      }
     } catch (error: any) {
-      console.log("Error en getTherapeuticClassByDrugId: ", error);
-      res.json({
-        status: false,
-        message: "",
+      console.error("Error en getTherapeuticClassByDrugId: ", error);
+
+      res.status(500).json({
+        success: false,
+        message: "Error processing request for drug therapeutic class",
+        therapeuticClass: null,
       });
     }
   }
