@@ -57,37 +57,4 @@ export class AccessController {
       return res.status(500).json({ message: "Error al iniciar sesión" });
     }
   }
-
-  public async deleteUser(
-    req: Request,
-    res: Response
-  ): Promise<Response | void> {
-    try {
-      const { id } = req.params;
-
-      if (!id) {
-        return res.status(400).json({
-          message: "Debe proporcionar un ID de usuario.",
-        });
-      }
-
-      const deleted = await this.accessService.deleteUser(Number(id));
-
-      if (!deleted) {
-        return res.status(404).json({
-          message: "Usuario no encontrado o ya eliminado.",
-        });
-      }
-
-      return res.status(200).json({
-        message: "Usuario eliminado correctamente.",
-      });
-    } catch (error: any) {
-      console.error("Error deleting user:", error);
-      return res.status(500).json({
-        message: "Error al eliminar usuario.",
-        error: error.message,
-      });
-    }
-  }
 }

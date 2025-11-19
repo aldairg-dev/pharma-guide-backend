@@ -11,11 +11,6 @@ routerStudyPlan.post(
 
 routerStudyPlan.get(
   "/study-plans",
-  studyPlanController.getStudyPlan.bind(studyPlanController)
-);
-
-routerStudyPlan.get(
-  "/study-plans",
   studyPlanController.getAllStudyPlan.bind(studyPlanController)
 );
 
