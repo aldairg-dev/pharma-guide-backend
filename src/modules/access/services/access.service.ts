@@ -99,7 +99,6 @@ export class AccessService {
         userId: user.id ?? null,
       };
     } catch (error) {
-      // console.error("Login error:", error);
       throw new Error("Failed to log in.");
     }
   }
@@ -118,20 +117,22 @@ export class AccessService {
     }
   }
 
-  async deleteUser(idUser: number): Promise<User | null> {
+  async deleteUser(idUser: number): Promise<boolean> {
     try {
       const userData = await prisma.user.findUnique({
         where: { id: idUser },
       });
 
       if (!userData || userData.isDeleted) {
-        throw new Error("User not found or already deleted.");
+        return false;
       }
 
-      return await prisma.user.update({
+      await prisma.user.update({
         where: { id: idUser },
         data: { isDeleted: true },
       });
+
+      return true;
     } catch (error) {
       console.error("Error deleting user:", error);
       throw new Error("An error occurred while deleting the user.");
