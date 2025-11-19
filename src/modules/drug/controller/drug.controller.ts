@@ -74,7 +74,7 @@ export class DrugController {
     }
   }
 
-  public async getDrugUser(
+  public async getDrugsByUserId(
     req: Request,
     res: Response,
     _next: NextFunction

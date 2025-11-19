@@ -10,8 +10,6 @@ routerDrug.post("/drugs", drugController.createDrug.bind(drugController));
 
 routerDrug.get("/drugs", drugController.getDrugs.bind(drugController));
 
-routerDrug.get("/drugs/:id", drugController.getDrugUser.bind(drugController));
-
 routerDrug.put("/drugs/:id", drugController.updateDrug.bind(drugController));
 
 routerDrug.delete("/drugs/:id", drugController.deleteDrug.bind(drugController));
