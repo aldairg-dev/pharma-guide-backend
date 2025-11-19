@@ -6,23 +6,23 @@ const routerDrug = Router();
 const drugController = new DrugController();
 const drugIAController = new DrugIAController();
 
-routerDrug.post("/drug", drugController.createDrug.bind(drugController));
+routerDrug.post("/drugs", drugController.createDrug.bind(drugController));
 
-routerDrug.get("/drug", drugController.getDrugs.bind(drugController));
+routerDrug.get("/drugs", drugController.getDrugs.bind(drugController));
 
-routerDrug.get("/drug/:id", drugController.getDrugUser.bind(drugController));
+routerDrug.get("/drugs/:id", drugController.getDrugUser.bind(drugController));
 
-routerDrug.put("/drug/:id", drugController.updateDrug.bind(drugController));
+routerDrug.put("/drugs/:id", drugController.updateDrug.bind(drugController));
 
-routerDrug.delete("/drug/:id", drugController.deleteDrug.bind(drugController));
+routerDrug.delete("/drugs/:id", drugController.deleteDrug.bind(drugController));
 
 routerDrug.get(
-  "/drug/contraindications/:id",
+  "/drugs/:id/contraindications",
   drugIAController.getContraindicationsByDrugId.bind(drugIAController)
 );
 
 routerDrug.get(
-  "/drug/therapeutic-class/:id",
+  "/drugs/:id/therapeutic-class",
   drugIAController.getTherapeuticClassByDrugId.bind(drugIAController)
 );
 
