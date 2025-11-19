@@ -42,6 +42,7 @@ export class DrugService {
     }
   }
 
+  // Método original - mantener para compatibilidad con rutas admin
   async getDrugById(drugId: number): Promise<{
     id: number;
     userId: number;
@@ -83,7 +84,46 @@ export class DrugService {
     }
   }
 
-  async getDrugsByUser(userId: number): Promise<Drug[]> {
+  // Nuevo método con validación de ownership
+  async getMyDrugById(userId: number, drugId: number): Promise<{
+    id: number;
+    userId: number;
+    name_generic: string;
+    brand_name: string;
+    tags: string;
+  } | null> {
+    try {
+      if (!userId || typeof userId !== "number") {
+        throw new Error("Invalid User ID.");
+      }
+      
+      if (!drugId || typeof drugId !== "number") {
+        throw new Error("Invalid Drug ID.");
+      }
+
+      const drug = await prisma.drug.findUnique({
+        where: {
+          id: drugId,
+          userId: userId, // Validación directa en la consulta
+          isDeleted: false,
+        },
+        select: {
+          id: true,
+          userId: true,
+          name_generic: true,
+          brand_name: true,
+          tags: true,
+        },
+      });
+
+      return drug; // Retorna null si no encuentra o no pertenece al usuario
+    } catch (error: any) {
+      console.error(`Error fetching drug with ID ${drugId} for user ${userId}:`, error);
+      throw new Error(`Failed to retrieve drug data: ${error.message}`);
+    }
+  }
+
+  async getMyDrugs(userId: number): Promise<Drug[]> {
     try {
       if (!userId) {
         throw new Error("User ID is required.");
@@ -100,7 +140,8 @@ export class DrugService {
     }
   }
 
-  async updateDrug(drug: Drug, drugId: number): Promise<Drug | null> {
+  // Método original - mantener para compatibilidad
+  async updateMyDrug(drug: Drug, drugId: number): Promise<Drug | null> {
     try {
       const drugOld = await prisma.drug.findFirst({
         where: { id: drugId, isDeleted: false },
@@ -124,7 +165,46 @@ export class DrugService {
     }
   }
 
-  async deleteDrug(drugId: number): Promise<Drug | null> {
+  // Nuevo método con validación de ownership
+  async updateMyDrugById(userId: number, drug: Drug, drugId: number): Promise<Drug | null> {
+    try {
+      if (!userId || typeof userId !== "number") {
+        throw new Error("Invalid User ID.");
+      }
+      
+      if (!drugId || typeof drugId !== "number") {
+        throw new Error("Invalid Drug ID.");
+      }
+
+      // Buscar y validar ownership en una sola consulta
+      const drugOld = await prisma.drug.findFirst({
+        where: { 
+          id: drugId, 
+          userId: userId, // Validación de ownership
+          isDeleted: false 
+        },
+      });
+
+      if (!drugOld) {
+        return null; // No encontrado o no pertenece al usuario
+      }
+
+      const drugUpdate = await prisma.drug.update({
+        where: {
+          id: drugId,
+        },
+        data: drug,
+      });
+
+      return drugUpdate;
+    } catch (error: any) {
+      console.error("Error updating drug: ", error.message);
+      throw new Error("An error occurred while updating the drug.");
+    }
+  }
+
+  // Método original - mantener para compatibilidad
+  async deleteMyDrug(drugId: number): Promise<Drug | null> {
     try {
       const drug = await prisma.drug.findFirst({
         where: {
@@ -135,6 +215,46 @@ export class DrugService {
 
       if (!drug) {
         throw new Error("Drug not found.");
+      }
+
+      const drugDelete = await prisma.drug.update({
+        where: {
+          id: drugId,
+        },
+        data: {
+          isDeleted: true,
+        },
+      });
+
+      return drugDelete;
+    } catch (error: any) {
+      console.error("Error deleting drug: ", error.message);
+      throw new Error("An error occurred while deleting the drug.");
+    }
+  }
+
+  // Nuevo método con validación de ownership
+  async deleteMyDrugById(userId: number, drugId: number): Promise<Drug | null> {
+    try {
+      if (!userId || typeof userId !== "number") {
+        throw new Error("Invalid User ID.");
+      }
+      
+      if (!drugId || typeof drugId !== "number") {
+        throw new Error("Invalid Drug ID.");
+      }
+
+      // Buscar y validar ownership en una sola consulta
+      const drug = await prisma.drug.findFirst({
+        where: {
+          id: drugId,
+          userId: userId, // Validación de ownership
+          isDeleted: false,
+        },
+      });
+
+      if (!drug) {
+        return null; // No encontrado o no pertenece al usuario
       }
 
       const drugDelete = await prisma.drug.update({

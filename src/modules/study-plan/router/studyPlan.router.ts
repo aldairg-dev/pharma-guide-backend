@@ -4,19 +4,9 @@ import { StudyPlanController } from "../controller/studyPlan.controller";
 const routerStudyPlan = Router();
 const studyPlanController = new StudyPlanController();
 
-routerStudyPlan.post(
-  "/study-plans",
-  studyPlanController.createStudyPlan.bind(studyPlanController)
-);
-
 routerStudyPlan.get(
   "/study-plans",
-  studyPlanController.getAllStudyPlan.bind(studyPlanController)
-);
-
-routerStudyPlan.get(
-  "/study-plans/:id",
-  studyPlanController.getOneStudyPlan.bind(studyPlanController)
+  studyPlanController.getStudyPlan.bind(studyPlanController)
 );
 
 routerStudyPlan.put(
@@ -27,6 +17,11 @@ routerStudyPlan.put(
 routerStudyPlan.delete(
   "/study-plans/:id",
   studyPlanController.deleteStudyPlan.bind(studyPlanController)
+);
+
+routerStudyPlan.get(
+  "/study-plans/:id",
+  studyPlanController.getStudyPlanById.bind(studyPlanController)
 );
 
 export default routerStudyPlan;

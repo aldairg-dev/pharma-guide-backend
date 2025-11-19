@@ -14,7 +14,17 @@ export class DrugIAController {
     _next: NextFunction
   ): Promise<void> {
     try {
+      const userId = (req as any).user.userId;
       const { id } = req.params;
+
+      if (!userId) {
+        res.status(400).json({
+          success: false,
+          message: "User ID not found in token.",
+          contraindications: null,
+        });
+        return;
+      }
 
       if (!id || isNaN(Number(id))) {
         res.status(400).json({
@@ -26,37 +36,38 @@ export class DrugIAController {
       }
 
       let contraindications = null;
-      const data = await this.drugService.getDrugById(Number(id));
+      const data = await this.drugService.getMyDrugById(Number(userId), Number(id));
 
-      if (data) {
-        contraindications = await this.drugCache.getDrugContraindications(
-          data.userId,
-          Number(id)
+      if (!data) {
+        res.status(404).json({
+          success: false,
+          message: "Drug not found or you are not authorized to access it.",
+          contraindications: null,
+        });
+        return;
+      }
+
+      contraindications = await this.drugCache.getDrugContraindications(
+        data.userId,
+        Number(id)
+      );
+
+      if (contraindications) {
+        console.log("[drugIAController] Contraindicaciones obtenidas de caché");
+      } else {
+        const result = await this.drugIAService.DrugContradications(Number(id));
+        console.log(
+          "[drugIAController] Contraindicaciones obtenidas de servicio externo"
         );
+        contraindications = result?.contraindications;
 
         if (contraindications) {
-          console.log(
-            "[drugIAController] Contraindicaciones obtenidas de caché"
+          await this.drugCache.addDrugContraindications(
+            data.userId,
+            Number(id),
+            contraindications
           );
-        } else {
-          const result = await this.drugIAService.DrugContradications(
-            Number(id)
-          );
-          console.log(
-            "[drugIAController] Contraindicaciones obtenidas de servicio externo"
-          );
-          contraindications = result?.contraindications;
-
-          if (contraindications) {
-            await this.drugCache.addDrugContraindications(
-              data.userId,
-              Number(id),
-              contraindications
-            );
-          }
         }
-      } else {
-        console.log("[drugIAController] No hay datos del drug");
       }
 
       if (contraindications) {
@@ -89,7 +100,17 @@ export class DrugIAController {
     _next: NextFunction
   ): Promise<void> {
     try {
+      const userId = (req as any).user.userId;
       const { id } = req.params;
+
+      if (!userId) {
+        res.status(400).json({
+          success: false,
+          message: "User ID not found in token.",
+          therapeuticClass: null,
+        });
+        return;
+      }
 
       if (!id || isNaN(Number(id))) {
         res.status(400).json({
@@ -101,33 +122,38 @@ export class DrugIAController {
       }
 
       let therapeuticClass = null;
-      const data = await this.drugService.getDrugById(Number(id));
+      const data = await this.drugService.getMyDrugById(Number(userId), Number(id));
 
-      if (data) {
-        therapeuticClass = await this.drugCache.getDrugTherapeuticClass(
-          data.userId,
-          Number(id)
+      if (!data) {
+        res.status(404).json({
+          success: false,
+          message: "Drug not found or you are not authorized to access it.",
+          therapeuticClass: null,
+        });
+        return;
+      }
+
+      therapeuticClass = await this.drugCache.getDrugTherapeuticClass(
+        data.userId,
+        Number(id)
+      );
+
+      if (therapeuticClass) {
+        console.log("[drugIAController] Clase terapéutica obtenida de caché");
+      } else {
+        const result = await this.drugIAService.TherapeuticClass(Number(id));
+        console.log(
+          "[drugIAController] Clase terapéutica obtenida de servicio externo"
         );
+        therapeuticClass = result?.therapeuticClass;
 
         if (therapeuticClass) {
-          console.log("[drugIAController] Clase terapéutica obtenida de caché");
-        } else {
-          const result = await this.drugIAService.TherapeuticClass(Number(id));
-          console.log(
-            "[drugIAController] Clase terapéutica obtenida de servicio externo"
+          await this.drugCache.addDrugTherapeuticClass(
+            data.userId,
+            Number(id),
+            therapeuticClass
           );
-          therapeuticClass = result?.therapeuticClass;
-
-          if (therapeuticClass) {
-            await this.drugCache.addDrugTherapeuticClass(
-              data.userId,
-              Number(id),
-              therapeuticClass
-            );
-          }
         }
-      } else {
-        console.log("[drugIAController] No hay datos del medicamento");
       }
 
       if (therapeuticClass) {

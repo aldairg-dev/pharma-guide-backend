@@ -19,18 +19,19 @@ app.use(express.json());
 
 app.use("/api/access/pharma-guide", routerAccess);
 
-app.use(
-  "/api/pharma-guide",
-  RateLimit,
-  jwtService.verifyTokenMiddleware.bind(jwtService),
-  routerStudyPlan
-);
 
 app.use(
   "/api/pharma-guide",
   RateLimit,
   jwtService.verifyTokenMiddleware.bind(jwtService),
   routerUser
+);
+
+app.use(
+  "/api/pharma-guide",
+  RateLimit,
+  jwtService.verifyTokenMiddleware.bind(jwtService),
+  routerStudyPlan
 );
 
 //  -> Setting Role
