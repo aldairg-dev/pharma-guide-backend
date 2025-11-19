@@ -5,8 +5,6 @@ import { validateFieldOrRespond } from "../../../utils/helpers/helpers.service";
 export class DrugController {
   private drugService = new DrugService();
 
-  // ==================== MÉTODOS PARA USUARIOS AUTENTICADOS (/me/drugs) ====================
-
   public async createMyDrug(
     req: Request,
     res: Response,
@@ -33,7 +31,7 @@ export class DrugController {
       )
         return;
 
-      const drugCreated = await this.drugService.createDrug({
+      const drugCreated = await this.drugService.createMyDrug({
         ...dataDrug,
         userId,
       });
@@ -119,8 +117,8 @@ export class DrugController {
       const drug = await this.drugService.getMyDrugById(Number(userId), drugId);
 
       if (!drug) {
-        res.status(404).json({ 
-          message: "Drug not found or you are not authorized to access it." 
+        res.status(404).json({
+          message: "Drug not found or you are not authorized to access it.",
         });
         return;
       }
@@ -168,7 +166,11 @@ export class DrugController {
         return;
       }
 
-      const drugUpdate = await this.drugService.updateMyDrugById(Number(userId), dataDrug, drugId);
+      const drugUpdate = await this.drugService.updateMyDrugById(
+        Number(userId),
+        dataDrug,
+        drugId
+      );
 
       if (!drugUpdate) {
         res.status(404).json({
@@ -211,7 +213,10 @@ export class DrugController {
         return;
       }
 
-      const deleted = await this.drugService.deleteMyDrugById(Number(userId), drugId);
+      const deleted = await this.drugService.deleteMyDrugById(
+        Number(userId),
+        drugId
+      );
 
       if (!deleted) {
         res.status(404).json({
@@ -227,7 +232,6 @@ export class DrugController {
     }
   }
 
-  // ==================== MÉTODOS ADMINISTRATIVOS (/users/:id/drugs) ====================
 
   public async getDrugs(
     _req: Request,

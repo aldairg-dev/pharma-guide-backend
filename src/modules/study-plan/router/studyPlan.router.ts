@@ -9,16 +9,6 @@ routerStudyPlan.get(
   studyPlanController.getStudyPlan.bind(studyPlanController)
 );
 
-routerStudyPlan.put(
-  "/study-plans/:id",
-  studyPlanController.updateStudyPlan.bind(studyPlanController)
-);
-
-routerStudyPlan.delete(
-  "/study-plans/:id",
-  studyPlanController.deleteStudyPlan.bind(studyPlanController)
-);
-
 routerStudyPlan.get(
   "/study-plans/:id",
   studyPlanController.getStudyPlanById.bind(studyPlanController)

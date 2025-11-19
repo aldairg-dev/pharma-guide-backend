@@ -19,7 +19,6 @@ app.use(express.json());
 
 app.use("/api/access/pharma-guide", routerAccess);
 
-
 app.use(
   "/api/pharma-guide",
   RateLimit,
@@ -34,19 +33,18 @@ app.use(
   routerStudyPlan
 );
 
-//  -> Setting Role
-app.use(
-  "/api/pharma-guide/setting",
-  RateLimit,
-  jwtService.verifyTokenMiddleware.bind(jwtService),
-  routerRole
-);
-
 app.use(
   "/api/pharma-guide",
   RateLimit,
   jwtService.verifyTokenMiddleware.bind(jwtService),
   routerDrug
+);
+
+app.use(
+  "/api/pharma-guide/setting",
+  RateLimit,
+  jwtService.verifyTokenMiddleware.bind(jwtService),
+  routerRole
 );
 
 export default app;
