@@ -4,17 +4,17 @@ import { RoleController } from "../controller/role.controller";
 const routerStudyPlan = Router();
 const roleController = new RoleController();
 
-routerStudyPlan.post("/role", roleController.createRole.bind(roleController));
+routerStudyPlan.post("/roles", roleController.createRole.bind(roleController));
 
-routerStudyPlan.get("/role", roleController.getRole.bind(roleController));
+routerStudyPlan.get("/roles", roleController.getRole.bind(roleController));
 
 routerStudyPlan.put(
-  "/role/:id",
+  "/roles/:id",
   roleController.updateRole.bind(roleController)
 );
 
 routerStudyPlan.delete(
-  "/role/:id",
+  "/roles/:id",
   roleController.deleteRole.bind(roleController)
 );
 

@@ -23,6 +23,13 @@ app.use(
   "/api/pharma-guide",
   RateLimit,
   jwtService.verifyTokenMiddleware.bind(jwtService),
+  routerUser
+);
+
+app.use(
+  "/api/pharma-guide",
+  RateLimit,
+  jwtService.verifyTokenMiddleware.bind(jwtService),
   routerStudyPlan
 );
 
@@ -30,22 +37,14 @@ app.use(
   "/api/pharma-guide",
   RateLimit,
   jwtService.verifyTokenMiddleware.bind(jwtService),
-  routerUser
+  routerDrug
 );
 
-//  -> Setting Role
 app.use(
   "/api/pharma-guide/setting",
   RateLimit,
   jwtService.verifyTokenMiddleware.bind(jwtService),
   routerRole
-);
-
-app.use(
-  "/api/pharma-guide",
-  RateLimit,
-  jwtService.verifyTokenMiddleware.bind(jwtService),
-  routerDrug
 );
 
 export default app;

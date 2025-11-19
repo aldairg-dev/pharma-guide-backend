@@ -2,11 +2,10 @@ import { Router } from "express";
 import { AccessController } from "../controller/access.controller";
 
 const routerUser = Router();
-const userController = new AccessController();
+const controlAccess = new AccessController();
 
+routerUser.post("/register", controlAccess.register.bind(controlAccess));
 
-routerUser.post("/register", userController.register.bind(userController));
-
-routerUser.post("/login", userController.login.bind(userController));
+routerUser.post("/login", controlAccess.login.bind(controlAccess));
 
 export default routerUser;

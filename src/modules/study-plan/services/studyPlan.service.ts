@@ -3,7 +3,7 @@ import { PrismaClient, StudyPlan } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export class StudyPlanService {
-  async createStudyPlan(studyPlan: StudyPlan): Promise<StudyPlan> {
+  async createMyStudyPlan(studyPlan: StudyPlan): Promise<StudyPlan> {
     try {
       const existingStudyPlan = await prisma.studyPlan.findFirst({
         where: {
@@ -30,7 +30,7 @@ export class StudyPlanService {
     }
   }
 
-  async getStudyPlans(userId?: number): Promise<StudyPlan[] | null> {
+  async getMyStudyPlans(userId: number): Promise<StudyPlan[] | null> {
     try {
       const where = {
         ...(userId ? { userId } : {}),
@@ -51,15 +51,141 @@ export class StudyPlanService {
     }
   }
 
-  async getOneStudyPlan(idStudyPlan: number): Promise<StudyPlan | null> {
+  async getMyStudyPlanById(
+    userId: number,
+    studyPlanId: number
+  ): Promise<StudyPlan | null> {
     try {
-      if (!idStudyPlan || isNaN(idStudyPlan)) {
+      if (!userId || typeof userId !== "number") {
+        throw new Error("Invalid User ID.");
+      }
+
+      if (!studyPlanId || typeof studyPlanId !== "number") {
+        throw new Error("Invalid Study Plan ID.");
+      }
+
+      const studyPlan = await prisma.studyPlan.findFirst({
+        where: {
+          id: studyPlanId,
+          userId: userId, // Validación directa en la consulta
+          isDeleted: false,
+        },
+        include: {
+          user: true,
+        },
+      });
+
+      return studyPlan; // Retorna null si no encuentra o no pertenece al usuario
+    } catch (error: any) {
+      console.error(
+        `Error fetching study plan with ID ${studyPlanId} for user ${userId}:`,
+        error
+      );
+      throw new Error(`Failed to retrieve study plan: ${error.message}`);
+    }
+  }
+
+  async updateMyStudyPlanById(
+    userId: number,
+    studyPlan: StudyPlan,
+    studyPlanId: number
+  ): Promise<StudyPlan | null> {
+    try {
+      if (!userId || typeof userId !== "number") {
+        throw new Error("Invalid User ID.");
+      }
+
+      if (!studyPlanId || typeof studyPlanId !== "number") {
+        throw new Error("Invalid Study Plan ID.");
+      }
+
+      // Buscar y validar ownership en una sola consulta
+      const existingPlan = await prisma.studyPlan.findFirst({
+        where: {
+          id: studyPlanId,
+          userId: userId, // Validación de ownership
+          isDeleted: false,
+        },
+      });
+
+      if (!existingPlan) {
+        return null; // No encontrado o no pertenece al usuario
+      }
+
+      const updatedStudyPlan = await prisma.studyPlan.update({
+        where: { id: studyPlanId },
+        data: studyPlan,
+      });
+
+      return updatedStudyPlan;
+    } catch (error: any) {
+      console.error("Failed to update study plan:", error);
+      throw new Error(`Unable to update the study plan: ${error.message}`);
+    }
+  }
+
+  async deleteMyStudyPlanById(
+    userId: number,
+    studyPlanId: number
+  ): Promise<StudyPlan | null> {
+    try {
+      if (!userId || typeof userId !== "number") {
+        throw new Error("Invalid User ID.");
+      }
+
+      if (!studyPlanId || typeof studyPlanId !== "number") {
+        throw new Error("Invalid Study Plan ID.");
+      }
+
+      // Buscar y validar ownership en una sola consulta
+      const existingPlan = await prisma.studyPlan.findFirst({
+        where: {
+          id: studyPlanId,
+          userId: userId, // Validación de ownership
+          isDeleted: false,
+        },
+      });
+
+      if (!existingPlan) {
+        return null; // No encontrado o no pertenece al usuario
+      }
+
+      const updatedStudyPlan = await prisma.studyPlan.update({
+        where: { id: studyPlanId },
+        data: { isDeleted: true },
+      });
+
+      return updatedStudyPlan;
+    } catch (error: any) {
+      console.error("Error deleting study plan:", error);
+      throw new Error(`Unable to delete the study plan: ${error.message}`);
+    }
+  }
+
+  async getStudyPlans(): Promise<StudyPlan[] | null> {
+    try {
+      const studyPlans = await prisma.studyPlan.findMany({
+        where: {
+          isDeleted: false,
+        },
+      });
+
+      return studyPlans.length > 0 ? studyPlans : null;
+    } catch (error: any) {
+      console.error("Error fetching study plans:", error);
+      throw new Error(`Failed to fetch study plans: ${error.message}`);
+    }
+  }
+
+  async getStudyPlanById(StudyPlanId: number): Promise<StudyPlan | null> {
+    try {
+      if (!StudyPlanId || isNaN(StudyPlanId)) {
         throw new Error("Study plan ID is required and must be a number.");
       }
 
       const studyPlan = await prisma.studyPlan.findFirst({
         where: {
-          id: idStudyPlan,
+          id: StudyPlanId,
           isDeleted: false,
         },
         include: {
@@ -71,62 +197,6 @@ export class StudyPlanService {
     } catch (error: any) {
       console.error("Failed to get the study plan:", error);
       throw new Error(`Unable to get the study plan: ${error.message}`);
-    }
-  }
-
-  async updateStudyPlan(studyPlan: StudyPlan): Promise<StudyPlan | null> {
-    try {
-      if (!studyPlan.id || isNaN(studyPlan.id)) {
-        throw new Error("Study plan ID is required and must be a number.");
-      }
-
-      const existingPlan = await prisma.studyPlan.findFirst({
-        where: {
-          id: studyPlan.id,
-          isDeleted: false,
-        },
-      });
-
-      if (!existingPlan) {
-        console.warn("No existing study plan found with the given ID.");
-        return null;
-      }
-
-      const updatedStudyPlan = await prisma.studyPlan.update({
-        where: { id: studyPlan.id },
-        data: studyPlan,
-      });
-
-      return updatedStudyPlan;
-    } catch (error: any) {
-      console.error("Failed to update study plan:", error);
-      throw new Error(`Unable to update the study plan: ${error.message}`);
-    }
-  }
-
-  async deleteStudyPlan(idStudyPlan: number): Promise<StudyPlan | null> {
-    try {
-      if (!idStudyPlan || isNaN(idStudyPlan)) {
-        throw new Error("Study plan ID is required and must be a number.");
-      }
-
-      const existingPlan = await prisma.studyPlan.findUnique({
-        where: { id: idStudyPlan },
-      });
-
-      if (!existingPlan) {
-        throw new Error("Study plan not found.");
-      }
-
-      const updatedStudyPlan = await prisma.studyPlan.update({
-        where: { id: idStudyPlan },
-        data: { isDeleted: true },
-      });
-
-      return updatedStudyPlan;
-    } catch (error: any) {
-      console.error("Error deleting study plan:", error);
-      throw new Error(`Unable to delete the study plan: ${error.message}`);
     }
   }
 }

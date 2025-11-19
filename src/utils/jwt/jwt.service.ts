@@ -38,17 +38,12 @@ export class JwtService {
     return jwt.verify(token, secret) as JwtPayload;
   }
 
-  // Token verify Middleware
-  verifyTokenMiddleware: RequestHandler = (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
+  verifyTokenMiddleware: RequestHandler = (req, res, next) => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       res.status(401).json({ message: "Token no proporcionado o inválido" });
-      return undefined;
+      return;
     }
 
     const token = authHeader.split(" ")[1];
@@ -57,10 +52,9 @@ export class JwtService {
       const decoded = this.verifyToken(token);
       (req as any).user = decoded;
       next();
-      // console.log(decoded);
     } catch (error) {
       res.status(401).json({ message: "Token inválido o expirado" });
-      return undefined;
+      return;
     }
   };
 }
