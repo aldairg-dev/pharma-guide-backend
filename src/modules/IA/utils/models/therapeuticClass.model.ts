@@ -9,15 +9,12 @@ import {
 export class TherapeuticClassModel extends DrugModel {
   static validateStructure(data: any): boolean {
     return !!(
-      (
-        data.clase_principal &&
-        data.subclases &&
-        data.indicaciones_principales &&
-        typeof data.clase_principal === "string" &&
-        Array.isArray(data.subclases) &&
-        Array.isArray(data.indicaciones_principales)
-      )
-      // codigo_atc es opcional, no requiere validación
+      data.clase_principal &&
+      data.subclases &&
+      data.indicaciones_principales &&
+      typeof data.clase_principal === "string" &&
+      Array.isArray(data.subclases) &&
+      Array.isArray(data.indicaciones_principales)
     );
   }
 
