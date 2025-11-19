@@ -30,7 +30,7 @@ export class StudyPlanService {
     }
   }
 
-  async getMyStudyPlans(userId?: number): Promise<StudyPlan[] | null> {
+  async getMyStudyPlans(userId: number): Promise<StudyPlan[] | null> {
     try {
       const where = {
         ...(userId ? { userId } : {}),

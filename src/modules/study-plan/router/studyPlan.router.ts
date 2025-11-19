@@ -14,4 +14,9 @@ routerStudyPlan.get(
   studyPlanController.getStudyPlanById.bind(studyPlanController)
 );
 
+routerStudyPlan.get(
+  "/user/:id/study-plan",
+  studyPlanController.getStudyPlanByUserId.bind(studyPlanController)
+);
+
 export default routerStudyPlan;

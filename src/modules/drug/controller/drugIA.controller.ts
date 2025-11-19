@@ -36,9 +36,12 @@ export class DrugIAController {
       }
 
       let contraindications = null;
-      const data = await this.drugService.getMyDrugById(Number(userId), Number(id));
+      const myDrug = await this.drugService.getMyDrugById(
+        Number(userId),
+        Number(id)
+      );
 
-      if (!data) {
+      if (!myDrug) {
         res.status(404).json({
           success: false,
           message: "Drug not found or you are not authorized to access it.",
@@ -48,7 +51,7 @@ export class DrugIAController {
       }
 
       contraindications = await this.drugCache.getDrugContraindications(
-        data.userId,
+        myDrug.userId,
         Number(id)
       );
 
@@ -63,7 +66,7 @@ export class DrugIAController {
 
         if (contraindications) {
           await this.drugCache.addDrugContraindications(
-            data.userId,
+            myDrug.userId,
             Number(id),
             contraindications
           );
@@ -122,9 +125,12 @@ export class DrugIAController {
       }
 
       let therapeuticClass = null;
-      const data = await this.drugService.getMyDrugById(Number(userId), Number(id));
+      const myDrug = await this.drugService.getMyDrugById(
+        Number(userId),
+        Number(id)
+      );
 
-      if (!data) {
+      if (!myDrug) {
         res.status(404).json({
           success: false,
           message: "Drug not found or you are not authorized to access it.",
@@ -134,7 +140,7 @@ export class DrugIAController {
       }
 
       therapeuticClass = await this.drugCache.getDrugTherapeuticClass(
-        data.userId,
+        myDrug.userId,
         Number(id)
       );
 
@@ -149,7 +155,7 @@ export class DrugIAController {
 
         if (therapeuticClass) {
           await this.drugCache.addDrugTherapeuticClass(
-            data.userId,
+            myDrug.userId,
             Number(id),
             therapeuticClass
           );

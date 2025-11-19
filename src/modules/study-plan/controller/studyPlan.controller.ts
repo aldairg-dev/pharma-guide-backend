@@ -4,6 +4,7 @@ import {
   getUserIdOrRespond,
   validateFieldOrRespond,
 } from "../../../utils/helpers/helpers.service";
+import { StudyPlan } from ".prisma/client";
 
 export class StudyPlanController {
   private studyPlanService = new StudyPlanService();
@@ -299,5 +300,33 @@ export class StudyPlanController {
         message: "An error occurred while retrieving the study plan.",
       });
     }
+  };
+
+  public getStudyPlanByUserId = async (
+    req: Request,
+    res: Response,
+    _next: NextFunction
+  ): Promise<void> => {
+    try {
+      const userId = Number(req.params.id);
+
+      if (!userId) {
+        res.status(404).json({
+          success: false,
+          message: "Study Plan Id is required",
+        });
+        return;
+      }
+
+      const studyPlans = await this.studyPlanService.getMyStudyPlans(userId);
+
+      res.status(200).json({
+        message:
+          studyPlans && studyPlans.length > 0
+            ? "Study plans retrieved successfully."
+            : "No study plans found.",
+        studyPlans,
+      });
+    } catch (error) {}
   };
 }
