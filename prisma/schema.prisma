@@ -79,39 +79,3 @@ model Drug {
   user      User     @relation(fields: [userId], references: [id])
 }
 
-model TypeIa {
-  id             Int    @id @default(autoincrement())
-  name           String @unique @db.VarChar(100) //-> Diagrama, texto, imagen, etc.
-  managementIaId Int
-
-  managementIa ManagementIa[]
-
-  isDeleted Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model ManagementIa {
-  id                 Int     @id @default(autoincrement())
-  name               String  @db.Text
-  typeIAId           Int
-  provider           String  @db.Text
-  api_key            String  @db.Text
-  model              String  @db.Text
-  version            String? @db.Text
-  url_api            String  @db.Text
-  method             String  @default("POST")
-  headers_template   Json
-  body_template      Json
-  response_path      String  @default("result")
-  output_type        String? @db.VarChar(50)
-  prompt_description String
-
-  TypeIA    TypeIa  @relation(fields: [typeIAId], references: [id])
-  isDeleted Boolean @default(false)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([provider, model, version])
-}
