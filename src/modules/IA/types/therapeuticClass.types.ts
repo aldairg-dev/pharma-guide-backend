@@ -1,7 +1,7 @@
 export interface TherapeuticClassData {
   clase_principal: string;
   subclases: string[];
-  codigo_atc?: string; // Opcional
+  codigo_atc?: string;
   indicaciones_principales: string[];
 }
 
