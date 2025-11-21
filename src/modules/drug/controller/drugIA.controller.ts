@@ -75,7 +75,6 @@ export class DrugIAController {
 
       if (contraindications) {
         res.status(200).json({
-          id: id,
           contraindications: contraindications,
         });
       } else {
@@ -87,7 +86,10 @@ export class DrugIAController {
         });
       }
     } catch (error: any) {
-      console.error("Error en getContraindicationsByDrugId: ", error);
+      console.error(
+        "[drugIAController] Error en getContraindicationsByDrugId: ",
+        error
+      );
 
       res.status(500).json({
         success: false,
@@ -124,7 +126,6 @@ export class DrugIAController {
         return;
       }
 
-      let therapeuticClass = null;
       const myDrug = await this.drugService.getMyDrugById(
         Number(userId),
         Number(id)
@@ -139,6 +140,7 @@ export class DrugIAController {
         return;
       }
 
+      let therapeuticClass = null;
       therapeuticClass = await this.drugCache.getDrugTherapeuticClass(
         myDrug.userId,
         Number(id)
@@ -164,7 +166,6 @@ export class DrugIAController {
 
       if (therapeuticClass) {
         res.status(200).json({
-          id: id,
           therapeuticClass: therapeuticClass,
         });
       } else {
@@ -182,6 +183,74 @@ export class DrugIAController {
         success: false,
         message: "Error processing request for drug therapeutic class",
         therapeuticClass: null,
+      });
+    }
+  }
+
+  async getDosageByDrugId(
+    req: Request,
+    res: Response,
+    _next: NextFunction
+  ): Promise<void> {
+    try {
+      const userId = (req as any).user.userId;
+      const { id } = req.params;
+
+      if (!userId) {
+        res.status(400).json({
+          sucess: false,
+          message: "User ID not found in token.",
+          dosage: null,
+        });
+        return;
+      }
+
+      if (!id || isNaN(Number(id))) {
+        res.status(400).json({
+          sucess: false,
+          message: "Drug not found or you are not authorized to access it.",
+          dosage: null,
+        });
+        return;
+      }
+
+      const myDrug = this.drugService.getMyDrugById(userId, Number(id));
+      if (!myDrug) {
+        res.status(404).json({
+          success: false,
+          message: "Not found Drug",
+          dosage: null,
+        });
+        return;
+      }
+
+      let dosage = null;
+      dosage = await this.drugCache.getDosages(userId, Number(id));
+
+      if (dosage) {
+        console.log(`[drugIAController] Docificación encontrada en cache`);
+      } else {
+        
+      }
+
+      if (dosage) {
+        res.status(200).json({
+          dosage: dosage,
+        });
+      } else {
+        res.status(404).json({
+          succes: false,
+          message:
+            "No se encontraron docificaciones para este medicamento o el medicamento no existe",
+          dosage: false,
+        });
+      }
+    } catch (error: any) {
+      console.log("[drugIAController] Error en getDosageByDrugId: ", error);
+      res.status(500).json({
+        sucess: false,
+        message: "Error processing request for drug dosage",
+        dosages: null,
       });
     }
   }

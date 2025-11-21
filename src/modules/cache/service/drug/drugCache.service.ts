@@ -9,78 +9,6 @@ export class DrugCacheService {
 
   private redisConnection = new connectToRedis();
 
-  async addDrugContraindications(
-    userId: number,
-    drugId: number,
-    contraindications: any
-  ): Promise<boolean> {
-    try {
-      await this.redisConnection.conexion();
-      const client = this.getClient();
-      const cacheKey = `drug:${userId}:${drugId}`;
-
-      const TTL_SECONDS = this.redisConnection.TIME_EXPIRED || 604800; // 7 días
-      const TTL_MS = TTL_SECONDS * 1000;
-      const now = Date.now();
-
-      const dataToUpdate = {
-        userId: userId.toString(),
-        drugId: drugId.toString(),
-        contraindications: JSON.stringify(contraindications),
-        lastUpdated: now.toString(),
-        expiresAt: (now + TTL_MS).toString(),
-      };
-
-      await client.hSet(cacheKey, dataToUpdate);
-      console.log(
-        `[drugCacheService] Contraindicaciones almacenadas en caché para userId: ${userId}, drugId: ${drugId}`
-      );
-      return true;
-    } catch (error) {
-      console.error(
-        "[drugCacheService] Error al agregar contraindicaciones a caché:",
-        error
-      );
-      return false;
-    }
-  }
-
-  async addDrugTherapeuticClass(
-    userId: number,
-    drugId: number,
-    therapeuticClass: any
-  ): Promise<boolean> {
-    try {
-      await this.redisConnection.conexion();
-      const client = this.getClient();
-      const cacheKey = `drug:${userId}:${drugId}`;
-
-      const TTL_SECONDS = this.redisConnection.TIME_EXPIRED || 604800; // 7 días
-      const TTL_MS = TTL_SECONDS * 1000;
-      const now = Date.now();
-
-      const dataToUpdate = {
-        userId: userId.toString(),
-        drugId: drugId.toString(),
-        therapeuticClass: JSON.stringify(therapeuticClass),
-        lastUpdated: now.toString(),
-        expiresAt: (now + TTL_MS).toString(),
-      };
-
-      await client.hSet(cacheKey, dataToUpdate);
-      console.log(
-        `[drugCacheService] Clase terapéutica almacenada en caché para userId: ${userId}, drugId: ${drugId}`
-      );
-      return true;
-    } catch (error) {
-      console.error(
-        "[drugCacheService] Error al agregar clase terapéutica a caché:",
-        error
-      );
-      return false;
-    }
-  }
-
   async addDrugCache(drugCache: interfaceDrugCache): Promise<boolean> {
     try {
       await this.redisConnection.conexion();
@@ -118,124 +46,6 @@ export class DrugCacheService {
     } catch (error) {
       console.error("[drugCacheService] Error al agregar a caché:", error);
       return false;
-    }
-  }
-
-  private async isCacheExpired(
-    userId: number,
-    drugId: number
-  ): Promise<boolean> {
-    try {
-      await this.redisConnection.conexion();
-      const client = this.getClient();
-      const cacheKey = `drug:${userId}:${drugId}`;
-
-      const expiresAtStr = await client.hGet(cacheKey, "expiresAt");
-      if (!expiresAtStr) return true;
-
-      const now = Date.now();
-      const expiresAt = parseInt(expiresAtStr);
-
-      if (expiresAt > 0 && now > expiresAt) {
-        console.log(
-          `[drugCacheService] Caché expirado para userId: ${userId}, drugId: ${drugId}`
-        );
-        await client.del(cacheKey);
-        return true;
-      }
-
-      return false;
-    } catch (error) {
-      console.error("[drugCacheService] Error verificando expiración:", error);
-      return true; // Asumir expirado en caso de error
-    }
-  }
-
-  async getDrugContraindications(userId: number, drugId: number): Promise<any> {
-    try {
-      if (await this.isCacheExpired(userId, drugId)) {
-        return null;
-      }
-
-      await this.redisConnection.conexion();
-      const client = this.getClient();
-      const cacheKey = `drug:${userId}:${drugId}`;
-
-      const contraindicationsStr = await client.hGet(
-        cacheKey,
-        "contraindications"
-      );
-
-      if (!contraindicationsStr || contraindicationsStr === "null") {
-        console.log(
-          `[drugCacheService] No se encontraron contraindicaciones en caché para userId: ${userId}, drugId: ${drugId}`
-        );
-        return null;
-      }
-
-      try {
-        const contraindications = JSON.parse(contraindicationsStr);
-        console.log(
-          `[drugCacheService] Contraindicaciones encontradas en caché para userId: ${userId}, drugId: ${drugId}`
-        );
-        return contraindications;
-      } catch (parseError) {
-        console.warn(
-          "[drugCacheService] Error parseando contraindicaciones:",
-          parseError
-        );
-        return null;
-      }
-    } catch (error) {
-      console.error(
-        "[drugCacheService] Error al obtener contraindicaciones de caché:",
-        error
-      );
-      return null;
-    }
-  }
-
-  async getDrugTherapeuticClass(userId: number, drugId: number): Promise<any> {
-    try {
-      if (await this.isCacheExpired(userId, drugId)) {
-        return null;
-      }
-
-      await this.redisConnection.conexion();
-      const client = this.getClient();
-      const cacheKey = `drug:${userId}:${drugId}`;
-
-      const therapeuticClassStr = await client.hGet(
-        cacheKey,
-        "therapeuticClass"
-      );
-
-      if (!therapeuticClassStr || therapeuticClassStr === "null") {
-        console.log(
-          `[drugCacheService] No se encontró clase terapéutica en caché para userId: ${userId}, drugId: ${drugId}`
-        );
-        return null;
-      }
-
-      try {
-        const therapeuticClass = JSON.parse(therapeuticClassStr);
-        console.log(
-          `[drugCacheService] Clase terapéutica encontrada en caché para userId: ${userId}, drugId: ${drugId}`
-        );
-        return therapeuticClass;
-      } catch (parseError) {
-        console.warn(
-          "[drugCacheService] Error parseando clase terapéutica:",
-          parseError
-        );
-        return null;
-      }
-    } catch (error) {
-      console.error(
-        "[drugCacheService] Error al obtener clase terapéutica de caché:",
-        error
-      );
-      return null;
     }
   }
 
@@ -308,6 +118,36 @@ export class DrugCacheService {
     }
   }
 
+  private async isCacheExpired(
+    userId: number,
+    drugId: number
+  ): Promise<boolean> {
+    try {
+      await this.redisConnection.conexion();
+      const client = this.getClient();
+      const cacheKey = `drug:${userId}:${drugId}`;
+
+      const expiresAtStr = await client.hGet(cacheKey, "expiresAt");
+      if (!expiresAtStr) return true;
+
+      const now = Date.now();
+      const expiresAt = parseInt(expiresAtStr);
+
+      if (expiresAt > 0 && now > expiresAt) {
+        console.log(
+          `[drugCacheService] Caché expirado para userId: ${userId}, drugId: ${drugId}`
+        );
+        await client.del(cacheKey);
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error("[drugCacheService] Error verificando expiración:", error);
+      return true; // Asumir expirado en caso de error
+    }
+  }
+
   async getCacheTTL(userId: number, drugId: number): Promise<number> {
     try {
       await this.redisConnection.conexion();
@@ -332,6 +172,244 @@ export class DrugCacheService {
       return result > 0;
     } catch (error) {
       console.error("[drugCacheService] Error al eliminar caché:", error);
+      return false;
+    }
+  }
+
+  async addDrugContraindications(
+    userId: number,
+    drugId: number,
+    contraindications: any
+  ): Promise<boolean> {
+    try {
+      await this.redisConnection.conexion();
+      const client = this.getClient();
+      const cacheKey = `drug:${userId}:${drugId}`;
+
+      const TTL_SECONDS = this.redisConnection.TIME_EXPIRED || 604800; // 7 días
+      const TTL_MS = TTL_SECONDS * 1000;
+      const now = Date.now();
+
+      const dataToUpdate = {
+        userId: userId.toString(),
+        drugId: drugId.toString(),
+        contraindications: JSON.stringify(contraindications),
+        lastUpdated: now.toString(),
+        expiresAt: (now + TTL_MS).toString(),
+      };
+
+      await client.hSet(cacheKey, dataToUpdate);
+      console.log(
+        `[drugCacheService] Contraindicaciones almacenadas en caché para userId: ${userId}, drugId: ${drugId}`
+      );
+      return true;
+    } catch (error) {
+      console.error(
+        "[drugCacheService] Error al agregar contraindicaciones a caché:",
+        error
+      );
+      return false;
+    }
+  }
+
+  async getDrugContraindications(
+    userId: number,
+    drugId: number
+  ): Promise<Boolean> {
+    try {
+      if (await this.isCacheExpired(userId, drugId)) {
+        return false;
+      }
+
+      await this.redisConnection.conexion();
+      const client = this.getClient();
+      const cacheKey = `drug:${userId}:${drugId}`;
+
+      const contraindicationsStr = await client.hGet(
+        cacheKey,
+        "contraindications"
+      );
+
+      if (!contraindicationsStr || contraindicationsStr === "null") {
+        console.log(
+          `[drugCacheService] No se encontraron contraindicaciones en caché para userId: ${userId}, drugId: ${drugId}`
+        );
+        return false;
+      }
+
+      try {
+        const contraindications = JSON.parse(contraindicationsStr);
+        console.log(
+          `[drugCacheService] Contraindicaciones encontradas en caché para userId: ${userId}, drugId: ${drugId}`
+        );
+        return contraindications;
+      } catch (parseError) {
+        console.warn(
+          "[drugCacheService] Error parseando contraindicaciones:",
+          parseError
+        );
+        return false;
+      }
+    } catch (error) {
+      console.error(
+        "[drugCacheService] Error al obtener contraindicaciones de caché:",
+        error
+      );
+      return false;
+    }
+  }
+
+  async addDrugTherapeuticClass(
+    userId: number,
+    drugId: number,
+    therapeuticClass: any
+  ): Promise<boolean> {
+    try {
+      await this.redisConnection.conexion();
+      const client = this.getClient();
+      const cacheKey = `drug:${userId}:${drugId}`;
+
+      const TTL_SECONDS = this.redisConnection.TIME_EXPIRED || 604800; // 7 días
+      const TTL_MS = TTL_SECONDS * 1000;
+      const now = Date.now();
+
+      const dataToUpdate = {
+        userId: userId.toString(),
+        drugId: drugId.toString(),
+        therapeuticClass: JSON.stringify(therapeuticClass),
+        lastUpdated: now.toString(),
+        expiresAt: (now + TTL_MS).toString(),
+      };
+
+      await client.hSet(cacheKey, dataToUpdate);
+      console.log(
+        `[drugCacheService] Clase terapéutica almacenada en caché para userId: ${userId}, drugId: ${drugId}`
+      );
+      return true;
+    } catch (error) {
+      console.error(
+        "[drugCacheService] Error al agregar clase terapéutica a caché:",
+        error
+      );
+      return false;
+    }
+  }
+
+  async getDrugTherapeuticClass(
+    userId: number,
+    drugId: number
+  ): Promise<Boolean> {
+    try {
+      if (await this.isCacheExpired(userId, drugId)) {
+        return false;
+      }
+
+      await this.redisConnection.conexion();
+      const client = this.getClient();
+      const cacheKey = `drug:${userId}:${drugId}`;
+
+      const therapeuticClassStr = await client.hGet(
+        cacheKey,
+        "therapeuticClass"
+      );
+
+      if (!therapeuticClassStr || therapeuticClassStr === "null") {
+        console.log(
+          `[drugCacheService] No se encontró clase terapéutica en caché para userId: ${userId}, drugId: ${drugId}`
+        );
+        return false;
+      }
+
+      try {
+        const therapeuticClass = JSON.parse(therapeuticClassStr);
+        console.log(
+          `[drugCacheService] Clase terapéutica encontrada en caché para userId: ${userId}, drugId: ${drugId}`
+        );
+        return therapeuticClass;
+      } catch (parseError) {
+        console.warn(
+          "[drugCacheService] Error parseando clase terapéutica:",
+          parseError
+        );
+        return false;
+      }
+    } catch (error) {
+      console.error(
+        "[drugCacheService] Error al obtener clase terapéutica de caché:",
+        error
+      );
+      return false;
+    }
+  }
+
+  async addDosages(
+    userId: number,
+    drugId: number,
+    dosage: any
+  ): Promise<Boolean> {
+    try {
+      await this.redisConnection.conexion();
+      const client = this.getClient();
+      const cacheKey = `drug:${userId}:${drugId}`;
+
+      const TTL_SECONDS = this.redisConnection.TIME_EXPIRED || 604800; // 7 días
+      const TTL_MS = TTL_SECONDS * 1000;
+      const now = Date.now();
+
+      const dataToUpdate = {
+        userId: userId.toString(),
+        drugId: drugId.toString(),
+        dosage: JSON.stringify(dosage),
+        lastUpdated: now.toString(),
+        expiresAt: (now + TTL_MS).toString(),
+      };
+
+      await client.hSet(cacheKey, dataToUpdate);
+      console.log(
+        `[drugCacheService] Dosificación almacenada en caché para userId: ${userId}, drugId: ${drugId}`
+      );
+      return true;
+    } catch (error) {
+      console.log(
+        `[drugCacheService] Error al agregar la docificación a cache: ${userId}, drugId: ${drugId}`,
+        error
+      );
+      return false;
+    }
+  }
+
+  async getDosages(userId: number, drugId: number): Promise<Boolean> {
+    try {
+      await this.redisConnection.conexion();
+      const client = this.getClient();
+      const cacheKey = `drug:${userId}:${drugId}`;
+
+      const dosageStr = await client.hGet(cacheKey, "dosages");
+
+      if (!dosageStr || dosageStr === "null") {
+        console.log(
+          `[drugCacheService]  No se encontró la docificación en caché para userId: ${userId}, drugId: ${drugId}`
+        );
+        return false;
+      }
+
+      try {
+        const dosage = JSON.parse(dosageStr);
+        console.log(
+          `[drugCacheService] Docificación encontrada en caché para userId: ${userId}, drugId: ${drugId}`
+        );
+        return dosage;
+      } catch (parseError) {
+        console.warn(
+          "[drugCacheService] Error parseando la docifiación:",
+          parseError
+        );
+        return false;
+      }
+    } catch (error) {
+      console.log(
+        "[drugCacheService] Error al obtener la docificación de un farmaco"
+      );
       return false;
     }
   }
