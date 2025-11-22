@@ -5,7 +5,7 @@ const userService = new UserService();
 
 // @author: 2A2G (Aldair Gutierrez Guerrero)
 // @description: Controlador para manejar las operaciones de usuarios
-// @date: 2023-10-01
+// @date: 2025-10-01
 
 export class UserController {
   private userService: UserService;

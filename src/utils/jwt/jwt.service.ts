@@ -10,7 +10,7 @@ interface JwtPayload {
 /**
  * @author "@2A2G (Aldair Gutierrez Guerrero)"
  * @abstract "This class is responsible for creating and verifying JWT tokens."
- * @date "2023-10-01"
+ * @date "2025-10-01"
  */
 export class JwtService {
   // Token creation process
