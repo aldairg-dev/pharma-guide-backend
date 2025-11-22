@@ -350,6 +350,12 @@ export class DrugCacheService {
     try {
       await this.redisConnection.conexion();
       const client = this.getClient();
+      
+      if (!client) {
+        console.warn('[drugCacheService] Redis client not available');
+        return false;
+      }
+      
       const cacheKey = `drug:${userId}:${drugId}`;
 
       const TTL_SECONDS = this.redisConnection.TIME_EXPIRED || 604800; // 7 días
@@ -382,9 +388,15 @@ export class DrugCacheService {
     try {
       await this.redisConnection.conexion();
       const client = this.getClient();
+      
+      if (!client) {
+        console.warn('[drugCacheService] Redis client not available');
+        return false;
+      }
+      
       const cacheKey = `drug:${userId}:${drugId}`;
 
-      const dosageStr = await client.hGet(cacheKey, "dosages");
+      const dosageStr = await client.hGet(cacheKey, "dosage");
 
       if (!dosageStr || dosageStr === "null") {
         console.log(

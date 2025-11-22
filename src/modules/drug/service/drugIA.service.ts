@@ -1,5 +1,6 @@
 import { DrugService } from "./drug.service";
 import IAService from "../../IA/service/IA.service";
+import { DosageResponse } from "../../IA/types/dosage.types";
 
 interface ContraindicationData {
   absolutas: string[];
@@ -12,7 +13,6 @@ export interface DrugContraindicationResponse {
     content: string;
     structured: ContraindicationData;
   };
-  message?: string;
 }
 
 interface TherapeuticClassData {
@@ -28,7 +28,10 @@ export interface DrugTherapeuticClassResponse {
     content: string;
     structured: TherapeuticClassData;
   };
-  message?: string;
+}
+
+export interface DosageClassResponse {
+  dosage: any;
 }
 
 export class DrugIAService {
@@ -82,7 +85,7 @@ export class DrugIAService {
         IAService.getValidatedContraindications(drugInfo)
       );
 
-      if (result.success && result.contraindications) {
+      if (result && result.contraindications) {
         const formattedContent = this.formatContraindications(
           result.contraindications
         );
@@ -147,7 +150,10 @@ export class DrugIAService {
       });
     }
 
-    if (therapeuticClass.indicaciones_principales && therapeuticClass.indicaciones_principales.length > 0) {
+    if (
+      therapeuticClass.indicaciones_principales &&
+      therapeuticClass.indicaciones_principales.length > 0
+    ) {
       formatted += "INDICACIONES PRINCIPALES:\n\n";
       therapeuticClass.indicaciones_principales.forEach((item, index) => {
         formatted += `${index + 1}. ${item}\n\n`;
@@ -157,7 +163,7 @@ export class DrugIAService {
     return formatted.trim();
   }
 
-  async TherapeuticClass(
+  async therapeuticClass(
     drugId: number
   ): Promise<DrugTherapeuticClassResponse | null> {
     try {
@@ -180,7 +186,7 @@ export class DrugIAService {
         IAService.getValidatedTherapeuticClass(drugInfo)
       );
 
-      if (result.success && result.therapeuticClass) {
+      if (result && result.therapeuticClass) {
         const formattedContent = this.formatTherapeuticClass(
           result.therapeuticClass
         );
@@ -191,13 +197,53 @@ export class DrugIAService {
             content: formattedContent,
             structured: result.therapeuticClass,
           },
-          message: result.message,
         };
       }
 
       return null;
     } catch (error) {
       console.log("[DrugIA.service] Errror en Therapeutic Class: ", error);
+      return null;
+    }
+  }
+
+  async dosage(drugId: number): Promise<DosageClassResponse | null> {
+    try {
+      const dataDrug = await this.retryOperation(() =>
+        this.drugService.getDrugById(drugId)
+      );
+
+      if (!dataDrug || dataDrug === null) {
+        throw new Error("Failed to retrieve drug data.");
+      }
+
+      const drugInfo = {
+        id: dataDrug.id,
+        name_generic: dataDrug.name_generic,
+        brand_name: dataDrug.brand_name,
+        tags: dataDrug.tags || "",
+      };
+
+      const result = await this.retryOperation(() =>
+        IAService.getValidatedDosage(drugInfo)
+      );
+
+      if (!result) {
+        throw new Error("Failed to get validated dosage from IA service");
+      }
+
+      if (result && result.dosage) {
+        console.log("[drugIAService] Dosage result structure:", JSON.stringify(result, null, 2));
+        return {
+          dosage: result.dosage,
+        };
+      }
+
+      return null;
+    } catch (error) {
+      console.log(
+        `[drugIAservice] Error al obtener las dosificación, ${error}`
+      );
       return null;
     }
   }

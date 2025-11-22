@@ -9,6 +9,8 @@ import {
   FormattedTherapeuticClassResponse,
 } from "../types/therapeuticClass.types";
 import { DrugInfo } from "../utils/geminiAI/geminiAI.utils";
+import { FormattedDosageResponse, DosageResponse } from "../types/dosage.types";
+import { dosageModel } from "../utils/models/dosage.model";
 class IAService {
   async getValidatedContraindications(
     drugInfo: DrugInfo
@@ -32,6 +34,14 @@ class IAService {
     drugInfo: DrugInfo
   ): Promise<FormattedTherapeuticClassResponse> {
     return TherapeuticClassModel.getFormattedTherapeuticClass(drugInfo);
+  }
+
+  async getValidatedDosage(drugInfo: DrugInfo): Promise<DosageResponse> {
+    return dosageModel.getValidatedDosage(drugInfo);
+  }
+
+  async getFormattedDosage(drugInfo: DrugInfo): Promise<FormattedDosageResponse> {
+    return dosageModel.getFormattedDosage(drugInfo);
   }
 }
 

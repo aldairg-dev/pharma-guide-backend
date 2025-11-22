@@ -72,7 +72,7 @@ routerUser.get(
 
 routerUser.get(
   "/me/drugs/:id/dosages",
-  drugIAController.getDosageByDrugId.bind(drugController)
+  drugIAController.getDosageByDrugId.bind(drugIAController)
 );
 
 routerUser.get("/users", userController.getUsers.bind(userController));

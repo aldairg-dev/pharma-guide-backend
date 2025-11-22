@@ -137,7 +137,6 @@ export class GeminiAIUtils {
       return {
         success: true,
         data: processedData,
-        message: "Información procesada exitosamente",
       };
     } catch (parseError) {
       console.error("Error processing IA response:", parseError);

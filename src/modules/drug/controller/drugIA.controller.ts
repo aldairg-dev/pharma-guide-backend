@@ -8,6 +8,90 @@ export class DrugIAController {
   private drugCache = new DrugCacheService();
   private drugService = new DrugService();
 
+  private formatDosageForDisplay(dosageData: any): string {
+    let formatted = "";
+
+    if (dosageData.indicaciones && dosageData.indicaciones.length > 0) {
+      formatted += "INDICACIONES Y DOSIFICACIÓN:\n\n";
+      dosageData.indicaciones.forEach((indicacion: any, index: number) => {
+        formatted += `${index + 1}. ${indicacion.nombre}:\n`;
+        formatted += `   - Dosis habitual: ${indicacion.dosis_habitual}\n`;
+        if (indicacion.dosis_mg_kg) {
+          formatted += `   - Dosis por peso: ${indicacion.dosis_mg_kg}\n`;
+        }
+        formatted += `   - Frecuencia: ${indicacion.frecuencia}\n`;
+        if (indicacion.duracion) {
+          formatted += `   - Duración: ${indicacion.duracion}\n`;
+        }
+        formatted += "\n";
+      });
+    }
+
+    if (dosageData.poblaciones_especiales) {
+      formatted += "POBLACIONES ESPECIALES:\n\n";
+      const pob = dosageData.poblaciones_especiales;
+      if (pob.pediatrica) {
+        formatted += `Pediátrica: ${pob.pediatrica}\n\n`;
+      }
+      if (pob.geriatrica) {
+        formatted += `Geriátrica: ${pob.geriatrica}\n\n`;
+      }
+      if (pob.embarazo_lactancia) {
+        formatted += `Embarazo y Lactancia: ${pob.embarazo_lactancia}\n\n`;
+      }
+    }
+
+    if (dosageData.ajustes_funcionales) {
+      formatted += "AJUSTES POR FUNCIÓN ORGÁNICA:\n\n";
+      const ajustes = dosageData.ajustes_funcionales;
+      if (ajustes.renal) {
+        formatted += "Función Renal:\n";
+        Object.entries(ajustes.renal).forEach(([key, value]: [string, any]) => {
+          if (value) formatted += `- ${key}: ${value}\n`;
+        });
+        formatted += "\n";
+      }
+      if (ajustes.hepatica) {
+        formatted += "Función Hepática:\n";
+        Object.entries(ajustes.hepatica).forEach(
+          ([key, value]: [string, any]) => {
+            if (value) formatted += `- ${key}: ${value}\n`;
+          }
+        );
+        formatted += "\n";
+      }
+    }
+
+    if (dosageData.dosis_maxima_diaria) {
+      formatted += `DOSIS MÁXIMA DIARIA: ${dosageData.dosis_maxima_diaria}\n\n`;
+    }
+
+    if (
+      dosageData.contraindicaciones &&
+      dosageData.contraindicaciones.length > 0
+    ) {
+      formatted += "CONTRAINDICACIONES RELEVANTES:\n";
+      dosageData.contraindicaciones.forEach((item: string, index: number) => {
+        formatted += `${index + 1}. ${item}\n`;
+      });
+      formatted += "\n";
+    }
+
+    if (
+      dosageData.interacciones_relevantes &&
+      dosageData.interacciones_relevantes.length > 0
+    ) {
+      formatted += "INTERACCIONES RELEVANTES:\n";
+      dosageData.interacciones_relevantes.forEach(
+        (item: string, index: number) => {
+          formatted += `${index + 1}. ${item}\n`;
+        }
+      );
+    }
+
+    return formatted.trim();
+  }
+
   async getContraindicationsByDrugId(
     req: Request,
     res: Response,
@@ -149,7 +233,7 @@ export class DrugIAController {
       if (therapeuticClass) {
         console.log("[drugIAController] Clase terapéutica obtenida de caché");
       } else {
-        const result = await this.drugIAService.TherapeuticClass(Number(id));
+        const result = await this.drugIAService.therapeuticClass(Number(id));
         console.log(
           "[drugIAController] Clase terapéutica obtenida de servicio externo"
         );
@@ -198,7 +282,7 @@ export class DrugIAController {
 
       if (!userId) {
         res.status(400).json({
-          sucess: false,
+          success: false,
           message: "User ID not found in token.",
           dosage: null,
         });
@@ -207,14 +291,14 @@ export class DrugIAController {
 
       if (!id || isNaN(Number(id))) {
         res.status(400).json({
-          sucess: false,
-          message: "Drug not found or you are not authorized to access it.",
+          success: false,
+          message: "ID de medicamento inválido",
           dosage: null,
         });
         return;
       }
 
-      const myDrug = this.drugService.getMyDrugById(userId, Number(id));
+      const myDrug = await this.drugService.getMyDrugById(userId, Number(id));
       if (!myDrug) {
         res.status(404).json({
           success: false,
@@ -224,33 +308,43 @@ export class DrugIAController {
         return;
       }
 
-      let dosage = null;
-      dosage = await this.drugCache.getDosages(userId, Number(id));
+      let cachedResult: any = await this.drugCache.getDosages(
+        userId,
+        Number(id)
+      );
 
-      if (dosage) {
-        console.log(`[drugIAController] Docificación encontrada en cache`);
+      if (cachedResult) {
+        console.log("[drugIAController] Dosificación obtenida de caché");
       } else {
-        
+        const result = await this.drugIAService.dosage(Number(id));
+        console.log(
+          "[drugIAController] Dosificación obtenida de servicio externo"
+        );
+        cachedResult = result?.dosage;
+
+        if (cachedResult) {
+          await this.drugCache.addDosages(userId, Number(id), cachedResult);
+        }
       }
 
-      if (dosage) {
+      if (cachedResult) {
         res.status(200).json({
-          dosage: dosage,
+          dosage: cachedResult,
         });
       } else {
         res.status(404).json({
-          succes: false,
+          success: false,
           message:
-            "No se encontraron docificaciones para este medicamento o el medicamento no existe",
-          dosage: false,
+            "No se encontraron dosificaciones para este medicamento o el medicamento no existe",
+          dosage: null,
         });
       }
     } catch (error: any) {
-      console.log("[drugIAController] Error en getDosageByDrugId: ", error);
+      console.error("[drugIAController] Error en getDosageByDrugId: ", error);
       res.status(500).json({
-        sucess: false,
+        success: false,
         message: "Error processing request for drug dosage",
-        dosages: null,
+        dosage: null,
       });
     }
   }
