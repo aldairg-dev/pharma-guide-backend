@@ -1,34 +1,34 @@
-# 📚 Documentación PharmaGuide Backend
+#  Documentación PharmaGuide Backend
 
 Bienvenido al centro de documentación de PharmaGuide Backend. Aquí encontrarás toda la información detallada sobre el proyecto, organizada por categorías.
 
-## 📋 Índice de Documentación
+##  Índice de Documentación
 
-### 🏗️ Arquitectura y Diseño
+###  Arquitectura y Diseño
 - [**Arquitectura del Sistema**](./architecture/system-architecture.md) - Estructura modular y patrones de diseño
 - [**Arquitectura de IA**](./architecture/ai-architecture.md) - Sistema de inteligencia artificial desacoplado
 - [**Arquitectura de Cache**](./architecture/cache-architecture.md) - Sistema Redis optimizado
 
-### 🚀 Funcionalidades
+###  Funcionalidades
 - [**Sistema de Autenticación**](./features/authentication.md) - JWT, roles y permisos
 - [**Inteligencia Artificial**](./features/artificial-intelligence.md) - Integración con Gemini AI y sistema modular
 - [**Sistema de Cache Redis**](./features/redis-cache.md) - Cache optimizado por funcionalidades
 - [**Gestión de Medicamentos**](./features/drug-management.md) - CRUD y procesamiento de datos
 - [**Planes de Estudio**](./features/study-plans.md) - Sistema adaptativo de aprendizaje
 
-### 📋 API Referencia
+###  API Referencia
 - [**Endpoints de Autenticación**](./api/auth-endpoints.md) - Login, registro y tokens
 - [**Endpoints de Medicamentos**](./api/drug-endpoints.md) - Gestión de medicamentos
 - [**Endpoints de IA**](./api/ai-endpoints.md) - Contraindicaciones y clase terapéutica
 - [**Endpoints de Usuarios**](./api/user-endpoints.md) - Gestión de usuarios y perfiles
 - [**Códigos de Error**](./api/error-codes.md) - Referencia completa de errores
 
-### 🏷️ Versiones y Releases
+###  Versiones y Releases
 - [**Changelog Completo**](./versions/CHANGELOG.md) - Historia completa de versiones
 - [**Versión 1.5.0**](./versions/v1.5.0.md) - Sistema de IA y Redis Cache
 - [**Guía de Migración**](./versions/migration-guide.md) - Actualizaciones entre versiones
 
-### 🛠️ Desarrollo
+###  Desarrollo
 - [**Guía de Configuración**](./setup/development-setup.md) - Configuración del entorno de desarrollo
 - [**Guía de Contribución**](./setup/contributing.md) - Cómo contribuir al proyecto
 - [**Estándares de Código**](./setup/coding-standards.md) - Convenciones y mejores prácticas

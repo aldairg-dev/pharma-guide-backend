@@ -70,6 +70,11 @@ routerUser.get(
   drugIAController.getTherapeuticClassByDrugId.bind(drugIAController)
 );
 
+routerUser.get(
+  "/me/drugs/:id/dosages",
+  drugIAController.getDosageByDrugId.bind(drugIAController)
+);
+
 routerUser.get("/users", userController.getUsers.bind(userController));
 
 routerUser.get("/users/:id", userController.getUserById.bind(userController));

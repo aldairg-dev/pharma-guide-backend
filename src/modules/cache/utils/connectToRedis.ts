@@ -6,13 +6,14 @@ export class connectToRedis {
     return getRedisClient();
   }
 
-  TIME_EXPIRED = 60 * 60 * 24 * 7; // 7 días en segundos
+  TIME_EXPIRED = 604800; // 7 días en segundos
   RENEWAL_TIME_RANGE = 60 * 60 * 24 * 3; // 3 día en segundos
 
   private async ensureConnection(): Promise<boolean> {
     if (isRedisConnected()) {
       return true;
     } else {
+      return false;
     }
 
     const client = this.getClient();

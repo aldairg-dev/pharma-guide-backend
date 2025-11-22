@@ -1,10 +1,10 @@
-# 🧠 Sistema de Inteligencia Artificial
+#  Sistema de Inteligencia Artificial
 
 El sistema de IA de PharmaGuide Backend está diseñado para proporcionar información médica confiable y automatizada sobre medicamentos, utilizando una arquitectura modular y escalable.
 
 ---
 
-## 🎯 Visión General
+##  Visión General
 
 ### **Objetivo**
 Proporcionar información precisa y actualizada sobre medicamentos mediante inteligencia artificial, con un enfoque en:
@@ -20,7 +20,7 @@ Proporcionar información precisa y actualizada sobre medicamentos mediante inte
 
 ---
 
-## 🏗️ Arquitectura del Sistema
+##  Arquitectura del Sistema
 
 ### **Patrón de Diseño: Template Method**
 ```typescript
@@ -76,7 +76,7 @@ export class DosageModel extends DrugModel<DosageResponse>
 
 ---
 
-## 🔧 Implementaciones Actuales
+##  Implementaciones Actuales
 
 ### **1. Contraindicaciones**
 
@@ -139,7 +139,7 @@ const result = await model.getValidatedTherapeuticClass(drugId);
 
 ---
 
-## 🤖 Configuración de Gemini AI
+##  Configuración de Gemini AI
 
 ### **Variables de Entorno**
 ```env
@@ -168,7 +168,7 @@ const model = genAI.getGenerativeModel({
 
 ---
 
-## 📝 Sistema de Prompts
+##  Sistema de Prompts
 
 ### **Estrategia de Prompting**
 - **Prompts estructurados** con contexto médico específico
@@ -234,7 +234,7 @@ Medicamento a analizar: ${drugName}
 
 ---
 
-## ✅ Validación y Procesamiento
+##  Validación y Procesamiento
 
 ### **Validación de Respuesta**
 ```typescript
@@ -276,7 +276,7 @@ protected processData(data: any): ContraindicationsResponse {
 
 ---
 
-## 🚀 Agregar Nueva Funcionalidad
+##  Agregar Nueva Funcionalidad
 
 ### **Paso 1: Crear Interfaces**
 ```typescript
@@ -361,7 +361,7 @@ async getAdverseEffectsByDrugId(req: Request, res: Response, _next: NextFunction
 
 ---
 
-## 📊 Métricas y Monitoring
+##  Métricas y Monitoring
 
 ### **Métricas de Performance**
 - **Tiempo de respuesta promedio**: 800-1200ms (primera consulta)
@@ -428,17 +428,17 @@ describe('Drug IA Integration', () => {
 
 ---
 
-## 🔮 Roadmap Futuro
+##  Roadmap Futuro
 
 ### **Próximas Implementaciones**
-- 💊 **Efectos Adversos** - Clasificación por frecuencia
+-  **Efectos Adversos** - Clasificación por frecuencia
 - 📏 **Dosificación** - Dosis por población y indicación
-- 🔄 **Interacciones** - Medicamento-medicamento y medicamento-alimento  
-- 📊 **Farmacocinética** - Absorción, distribución, metabolismo, excreción
+-  **Interacciones** - Medicamento-medicamento y medicamento-alimento  
+-  **Farmacocinética** - Absorción, distribución, metabolismo, excreción
 
 ### **Mejoras Planificadas**
-- 🤖 **Multi-provider support** (OpenAI, Claude, etc.)
-- 🧠 **Fine-tuning** de modelos para contenido farmacéutico
+-  **Multi-provider support** (OpenAI, Claude, etc.)
+-  **Fine-tuning** de modelos para contenido farmacéutico
 - 📈 **A/B testing** de diferentes prompts
 - 🔍 **Semantic search** en respuestas históricas
 

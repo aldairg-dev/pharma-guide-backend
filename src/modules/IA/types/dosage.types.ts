@@ -35,6 +35,7 @@ export interface DosageData {
   poblaciones_especiales: SpecialPopulations;
   ajustes_funcionales: FunctionalAdjustments;
   dosis_maxima_diaria?: string;
+  contraindicaciones: string[];
   interacciones_relevantes: string[];
 }
 

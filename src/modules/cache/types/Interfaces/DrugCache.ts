@@ -17,6 +17,16 @@ export interface interfaceDrugCache {
       indicaciones_principales: string[];
     };
   };
+  dosages?: {
+    content: string;
+    structured: {
+      poblaciones_especiales: [];
+      indicaciones: [];
+      ajustes_funcionales: [];
+      dosis_maxima_diaria?: string;
+      interacciones_relevantes: [];
+    };
+  };
 }
 
-export type DrugInfoType = "contraindications" | "therapeuticClass";
+export type DrugInfoType = "contraindications" | "therapeuticClass" | "dosages";
