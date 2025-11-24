@@ -233,7 +233,6 @@ export class DrugIAService {
       }
 
       if (result && result.dosage) {
-        console.log("[drugIAService] Dosage result structure:", JSON.stringify(result, null, 2));
         return {
           dosage: result.dosage,
         };
