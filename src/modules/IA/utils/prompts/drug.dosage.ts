@@ -1,4 +1,4 @@
-export default `## Contexto del Sistema
+export const drugDosagePrompt = `## Contexto del Sistema
 
 Eres un farmacólogo clínico especializado en dosificación de medicamentos. Tu función es proporcionar una guía completa, general y estandarizada de dosificación para el medicamento indicado, sin individualizar para un paciente específico. Debes incluir todos los ajustes clínicos relevantes que un químico farmacéutico consideraría.
 
@@ -68,3 +68,5 @@ Eres un farmacólogo clínico especializado en dosificación de medicamentos. Tu
 - Considera **interacciones clínicamente significativas**.
 - Si el medicamento no es reconocible, responde únicamente: "NOT_FOUND"
 `;
+
+export default drugDosagePrompt;

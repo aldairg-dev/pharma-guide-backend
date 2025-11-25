@@ -350,12 +350,12 @@ export class DrugCacheService {
     try {
       await this.redisConnection.conexion();
       const client = this.getClient();
-      
+
       if (!client) {
-        console.warn('[drugCacheService] Redis client not available');
+        console.warn("[drugCacheService] Redis client not available");
         return false;
       }
-      
+
       const cacheKey = `drug:${userId}:${drugId}`;
 
       const TTL_SECONDS = this.redisConnection.TIME_EXPIRED || 604800; // 7 días
@@ -388,12 +388,12 @@ export class DrugCacheService {
     try {
       await this.redisConnection.conexion();
       const client = this.getClient();
-      
+
       if (!client) {
-        console.warn('[drugCacheService] Redis client not available');
+        console.warn("[drugCacheService] Redis client not available");
         return false;
       }
-      
+
       const cacheKey = `drug:${userId}:${drugId}`;
 
       const dosageStr = await client.hGet(cacheKey, "dosage");
@@ -413,14 +413,96 @@ export class DrugCacheService {
         return dosage;
       } catch (parseError) {
         console.warn(
-          "[drugCacheService] Error parseando la docifiación:",
-          parseError
+          `[drugCacheService] Error parseando la docifiación: ${parseError}`
         );
         return false;
       }
     } catch (error) {
       console.log(
-        "[drugCacheService] Error al obtener la docificación de un farmaco"
+        `[drugCacheService] Error al obtener la docificación del farmaco: drug:${userId}:${drugId} `
+      );
+      return false;
+    }
+  }
+
+  async addIndications(
+    userId: number,
+    drugId: number,
+    indications: any
+  ): Promise<Boolean> {
+    try {
+      await this.redisConnection.conexion();
+      const client = this.getClient();
+
+      if (!client) {
+        console.warn(`[drugCacheService] Redis client not available`);
+        return false;
+      }
+
+      const cacheKey = `drug:${userId}:${drugId}`;
+
+      const TTL_SECONDS = this.redisConnection.TIME_EXPIRED || 604800; // 7 días
+      const TTL_MS = TTL_SECONDS * 1000;
+      const now = Date.now();
+
+      const dataToUpdate = {
+        userId: userId.toString(),
+        drugId: drugId.toString(),
+        indications: JSON.stringify(indications),
+        lastUpdated: now.toString(),
+        expiresAt: (now + TTL_MS).toString(),
+      };
+
+      await client.hSet(cacheKey, dataToUpdate);
+      console.log(
+        `[drugCacheService] Indicaciòn almacenada en caché para userId: ${userId}, drugId: ${drugId}`
+      );
+      return true;
+    } catch (error) {
+      console.log(
+        `[drugCacheService] Error al agregar la indicacion a cache: ${userId}: ${drugId}`,
+        error
+      );
+      return false;
+    }
+  }
+
+  async getIndications(userId: number, drugId: number): Promise<Boolean> {
+    try {
+      await this.redisConnection.conexion();
+      const client = this.getClient();
+
+      if (!client) {
+        console.warn("[drugCacheService] Redis client not available");
+        return false;
+      }
+
+      const cacheKey = `drug:${userId}:${drugId}`;
+
+      const indicationStr = await client.hGet(cacheKey, "indications");
+
+      if (!indicationStr || indicationStr == "null") {
+        console.log(
+          `[drugCacheService] No he encontraron indicaiones del fármaco drug:${userId}:${drugId}`
+        );
+        return false;
+      }
+
+      try {
+        const indication = JSON.parse(indicationStr);
+        console.log(
+          `[drugCacheService] Indicacion encontrada en caché para userId: ${userId}, drugId: ${drugId}`
+        );
+        return indication;
+      } catch (parseError) {
+        console.warn(
+          `[drugCacheService] Error parseando la indicacion: ${parseError}`
+        );
+        return false;
+      }
+    } catch (error) {
+      console.log(
+        `[drugCacheService] Error al obtener las indicaiones del fármaco drug:${userId}:${drugId}`
       );
       return false;
     }
