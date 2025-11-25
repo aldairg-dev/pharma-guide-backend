@@ -34,6 +34,20 @@ export interface DosageClassResponse {
   dosage: any;
 }
 
+interface IndicationData {
+  indicaciones_principales: string[];
+  indicaciones_secundaria: string[];
+  otras_indicaciones: string[];
+}
+
+export interface IndicationsResponse {
+  id: number;
+  indications: {
+    content: string;
+    structured: IndicationData;
+  };
+}
+
 export class DrugIAService {
   private drugService = new DrugService();
 
@@ -163,6 +177,39 @@ export class DrugIAService {
     return formatted.trim();
   }
 
+  private formatIndications(indications: IndicationData): string {
+    let formatted = "";
+
+    if (indications.indicaciones_principales && indications.indicaciones_principales.length > 0) {
+      formatted += "INDICACIONES PRINCIPALES:\n\n";
+      indications.indicaciones_principales.forEach((item, index) => {
+        formatted += `${index + 1}. ${item}\n\n`;
+      });
+    }
+
+    if (indications.indicaciones_secundaria && indications.indicaciones_secundaria.length > 0) {
+      if (formatted.length > 0) {
+        formatted += "\n";
+      }
+      formatted += "INDICACIONES SECUNDARIAS:\n\n";
+      indications.indicaciones_secundaria.forEach((item, index) => {
+        formatted += `${index + 1}. ${item}\n\n`;
+      });
+    }
+
+    if (indications.otras_indicaciones && indications.otras_indicaciones.length > 0) {
+      if (formatted.length > 0) {
+        formatted += "\n";
+      }
+      formatted += "OTRAS INDICACIONES (Off-label):\n\n";
+      indications.otras_indicaciones.forEach((item, index) => {
+        formatted += `${index + 1}. ${item}\n\n`;
+      });
+    }
+
+    return formatted.trim();
+  }
+
   async therapeuticClass(
     drugId: number
   ): Promise<DrugTherapeuticClassResponse | null> {
@@ -243,6 +290,50 @@ export class DrugIAService {
       console.log(
         `[drugIAservice] Error al obtener las dosificación, ${error}`
       );
+      return null;
+    }
+  }
+
+  async indications(drugId: number): Promise<IndicationsResponse | null> {
+    try {
+      const dataDrug = await this.retryOperation(() =>
+        this.drugService.getDrugById(drugId)
+      );
+
+      if (!dataDrug || dataDrug === null) {
+        throw new Error("Failed to retrieve drug data.");
+      }
+
+      const drugInfo = {
+        id: dataDrug.id,
+        name_generic: dataDrug.name_generic,
+        brand_name: dataDrug.brand_name,
+        tags: dataDrug.tags || "",
+      };
+
+      const result = await this.retryOperation(() =>
+        IAService.getValidatedIndications(drugInfo)
+      );
+
+      if (!result) {
+        throw new Error("Failed to get validated indications from IA service");
+      }
+
+      if (result && result.indications) {
+        const formattedContent = this.formatIndications(result.indications.structured);
+
+        return {
+          id: Number(dataDrug.id),
+          indications: {
+            content: formattedContent,
+            structured: result.indications.structured,
+          },
+        };
+      }
+
+      return null;
+    } catch (error) {
+      console.log(`[drugIAService] Error en las indicaciones ${error}`);
       return null;
     }
   }

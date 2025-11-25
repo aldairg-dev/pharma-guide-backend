@@ -34,7 +34,7 @@ export interface interfaceDrugCache {
     content: string;
     strutured: {
       indicaciones_principales: [];
-      indicaciones_Secundaria: [];
+      indicaciones_secundaria: [];
       otras_indicaciones: [];
     };
   };

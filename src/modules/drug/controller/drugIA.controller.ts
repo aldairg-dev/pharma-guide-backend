@@ -148,7 +148,7 @@ export class DrugIAController {
         if (therapeuticClass) {
           await this.drugCache.addDrugTherapeuticClass(
             myDrug.userId,
-            Number(id),
+            myDrug.id,
             therapeuticClass
           );
         }
@@ -214,27 +214,21 @@ export class DrugIAController {
         return;
       }
 
-      let cachedResult: any = await this.drugCache.getDosages(
-        userId,
-        Number(id)
-      );
+      let dosageData = null;
+      dosageData = await this.drugCache.getDosages(userId, Number(id));
 
-      if (!cachedResult) {
+      if (!dosageData || dosageData === null) {
         const result = await this.drugIAService.dosage(Number(id));
-        cachedResult = result?.dosage;
+        dosageData = result?.dosage;
 
-        if (cachedResult) {
-          await this.drugCache.addDosages(
-            myDrug.userId,
-            Number(id),
-            cachedResult
-          );
+        if (dosageData) {
+          await this.drugCache.addDosages(myDrug.userId, myDrug.id, dosageData);
         }
       }
 
-      if (cachedResult) {
+      if (dosageData) {
         res.status(200).json({
-          dosage: cachedResult,
+          dosage: dosageData,
         });
       } else {
         res.status(404).json({
@@ -290,20 +284,25 @@ export class DrugIAController {
       return;
     }
 
-    let cachedResult: any = await this.drugCache.getIndications(
-      userId,
-      Number(id)
-    );
+    let indicationData = null;
+    indicationData = await this.drugCache.getIndications(userId, Number(id));
 
-    if (!cachedResult) {
-      console.log(
-        "[drugIAController] Indicactiones obtenida de servicio externo"
-      );
+    if (!indicationData || indicationData === null) {
+      const result = await this.drugIAService.indications(Number(id));
+      indicationData = result?.indications;
+
+      if (indicationData) {
+        await this.drugCache.addIndications(
+          myDrug.userId,
+          myDrug.id,
+          indicationData
+        );
+      }
     }
 
-    if (cachedResult) {
+    if (indicationData) {
       res.status(200).json({
-        indications: cachedResult,
+        indications: indicationData,
       });
     } else {
       res.status(404).json({

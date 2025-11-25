@@ -29,7 +29,7 @@ Usa JSON válido con la siguiente estructura:
       "Indicación principal 1 según ficha técnica",
       "Indicación principal 2 según ficha técnica"
     ],
-    "indicaciones_Secundaria": [
+    "indicaciones_secundaria": [
       "Indicación secundaria 1 reconocida oficialmente",
       "Indicación secundaria 2 reconocida oficialmente"
     ],
