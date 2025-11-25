@@ -8,6 +8,7 @@ export interface interfaceDrugCache {
       relativas: string[];
     };
   };
+
   therapeuticClass?: {
     content: string;
     structured: {
@@ -17,6 +18,7 @@ export interface interfaceDrugCache {
       indicaciones_principales: string[];
     };
   };
+
   dosages?: {
     content: string;
     structured: {
@@ -27,6 +29,19 @@ export interface interfaceDrugCache {
       interacciones_relevantes: [];
     };
   };
+
+  indications?: {
+    content: string;
+    strutured: {
+      indicaciones_principales: [];
+      indicaciones_Secundaria: [];
+      otras_indicaciones: [];
+    };
+  };
 }
 
-export type DrugInfoType = "contraindications" | "therapeuticClass" | "dosages";
+export type DrugInfoType =
+  | "contraindications"
+  | "therapeuticClass"
+  | "dosages"
+  | "indications";

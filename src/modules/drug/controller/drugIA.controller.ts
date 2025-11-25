@@ -8,90 +8,6 @@ export class DrugIAController {
   private drugCache = new DrugCacheService();
   private drugService = new DrugService();
 
-  private formatDosageForDisplay(dosageData: any): string {
-    let formatted = "";
-
-    if (dosageData.indicaciones && dosageData.indicaciones.length > 0) {
-      formatted += "INDICACIONES Y DOSIFICACIÓN:\n\n";
-      dosageData.indicaciones.forEach((indicacion: any, index: number) => {
-        formatted += `${index + 1}. ${indicacion.nombre}:\n`;
-        formatted += `   - Dosis habitual: ${indicacion.dosis_habitual}\n`;
-        if (indicacion.dosis_mg_kg) {
-          formatted += `   - Dosis por peso: ${indicacion.dosis_mg_kg}\n`;
-        }
-        formatted += `   - Frecuencia: ${indicacion.frecuencia}\n`;
-        if (indicacion.duracion) {
-          formatted += `   - Duración: ${indicacion.duracion}\n`;
-        }
-        formatted += "\n";
-      });
-    }
-
-    if (dosageData.poblaciones_especiales) {
-      formatted += "POBLACIONES ESPECIALES:\n\n";
-      const pob = dosageData.poblaciones_especiales;
-      if (pob.pediatrica) {
-        formatted += `Pediátrica: ${pob.pediatrica}\n\n`;
-      }
-      if (pob.geriatrica) {
-        formatted += `Geriátrica: ${pob.geriatrica}\n\n`;
-      }
-      if (pob.embarazo_lactancia) {
-        formatted += `Embarazo y Lactancia: ${pob.embarazo_lactancia}\n\n`;
-      }
-    }
-
-    if (dosageData.ajustes_funcionales) {
-      formatted += "AJUSTES POR FUNCIÓN ORGÁNICA:\n\n";
-      const ajustes = dosageData.ajustes_funcionales;
-      if (ajustes.renal) {
-        formatted += "Función Renal:\n";
-        Object.entries(ajustes.renal).forEach(([key, value]: [string, any]) => {
-          if (value) formatted += `- ${key}: ${value}\n`;
-        });
-        formatted += "\n";
-      }
-      if (ajustes.hepatica) {
-        formatted += "Función Hepática:\n";
-        Object.entries(ajustes.hepatica).forEach(
-          ([key, value]: [string, any]) => {
-            if (value) formatted += `- ${key}: ${value}\n`;
-          }
-        );
-        formatted += "\n";
-      }
-    }
-
-    if (dosageData.dosis_maxima_diaria) {
-      formatted += `DOSIS MÁXIMA DIARIA: ${dosageData.dosis_maxima_diaria}\n\n`;
-    }
-
-    if (
-      dosageData.contraindicaciones &&
-      dosageData.contraindicaciones.length > 0
-    ) {
-      formatted += "CONTRAINDICACIONES RELEVANTES:\n";
-      dosageData.contraindicaciones.forEach((item: string, index: number) => {
-        formatted += `${index + 1}. ${item}\n`;
-      });
-      formatted += "\n";
-    }
-
-    if (
-      dosageData.interacciones_relevantes &&
-      dosageData.interacciones_relevantes.length > 0
-    ) {
-      formatted += "INTERACCIONES RELEVANTES:\n";
-      dosageData.interacciones_relevantes.forEach(
-        (item: string, index: number) => {
-          formatted += `${index + 1}. ${item}\n`;
-        }
-      );
-    }
-
-    return formatted.trim();
-  }
-
   async getContraindicationsByDrugId(
     req: Request,
     res: Response,
@@ -139,13 +55,8 @@ export class DrugIAController {
         Number(id)
       );
 
-      if (contraindications) {
-        console.log("[drugIAController] Contraindicaciones obtenidas de caché");
-      } else {
+      if (!contraindications || contraindications === null) {
         const result = await this.drugIAService.DrugContradications(Number(id));
-        console.log(
-          "[drugIAController] Contraindicaciones obtenidas de servicio externo"
-        );
         contraindications = result?.contraindications;
 
         if (contraindications) {
@@ -230,13 +141,8 @@ export class DrugIAController {
         Number(id)
       );
 
-      if (therapeuticClass) {
-        console.log("[drugIAController] Clase terapéutica obtenida de caché");
-      } else {
+      if (!therapeuticClass || therapeuticClass === null) {
         const result = await this.drugIAService.therapeuticClass(Number(id));
-        console.log(
-          "[drugIAController] Clase terapéutica obtenida de servicio externo"
-        );
         therapeuticClass = result?.therapeuticClass;
 
         if (therapeuticClass) {
@@ -313,17 +219,16 @@ export class DrugIAController {
         Number(id)
       );
 
-      if (cachedResult) {
-        console.log("[drugIAController] Dosificación obtenida de caché");
-      } else {
+      if (!cachedResult) {
         const result = await this.drugIAService.dosage(Number(id));
-        console.log(
-          "[drugIAController] Dosificación obtenida de servicio externo"
-        );
         cachedResult = result?.dosage;
 
         if (cachedResult) {
-          await this.drugCache.addDosages(userId, Number(id), cachedResult);
+          await this.drugCache.addDosages(
+            myDrug.userId,
+            Number(id),
+            cachedResult
+          );
         }
       }
 
@@ -344,6 +249,67 @@ export class DrugIAController {
       res.status(500).json({
         success: false,
         message: "Error processing request for drug dosage",
+        dosage: null,
+      });
+    }
+  }
+
+  async getIndications(
+    req: Request,
+    res: Response,
+    _next: NextFunction
+  ): Promise<void> {
+    const userId = (req as any).user.userId;
+    const { id } = req.params;
+
+    if (!userId) {
+      res.status(400).json({
+        success: false,
+        message: "User ID not found in token.",
+        therapeuticClass: null,
+      });
+      return;
+    }
+
+    if (!id || isNaN(Number(id))) {
+      res.status(400).json({
+        success: false,
+        message: "ID de medicamento inválido",
+        therapeuticClass: null,
+      });
+      return;
+    }
+
+    const myDrug = await this.drugService.getMyDrugById(userId, Number(id));
+    if (!myDrug) {
+      res.status(404).json({
+        success: false,
+        message: "Not found Drug",
+        dosage: null,
+      });
+      return;
+    }
+
+    let cachedResult: any = await this.drugCache.getIndications(
+      userId,
+      Number(id)
+    );
+
+    if (!cachedResult) {
+      console.log(
+        "[drugIAController] Indicactiones obtenida de servicio externo"
+      );
+    }
+
+    if (cachedResult) {
+      res.status(200).json({
+        indications: cachedResult,
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message:
+          "No se encontraron indicaciones para este medicamento o el medicamento no existe",
         dosage: null,
       });
     }

@@ -75,6 +75,11 @@ routerUser.get(
   drugIAController.getDosageByDrugId.bind(drugIAController)
 );
 
+routerUser.get(
+  "/me/drugs/:id/indications",
+  drugIAController.getIndications.bind(drugIAController)
+);
+
 routerUser.get("/users", userController.getUsers.bind(userController));
 
 routerUser.get("/users/:id", userController.getUserById.bind(userController));
