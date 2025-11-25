@@ -2,7 +2,7 @@
 
 #  PharmaGuide Backend
 
-[![Version](https://img.shields.io/badge/version-1.5.0-blue?style=flat-square)](./documentation/versions/v1.5.0.md)
+[![Version](https://img.shields.io/badge/version-1.5.0-blue?style=flat-square)](./documentation/versions/v1.6.0.md)
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Express.js](https://img.shields.io/badge/Express.js-000000?style=flat-square&logo=express&logoColor=white)](https://expressjs.com)
