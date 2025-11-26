@@ -1,4 +1,4 @@
-# 📋 Changelog - PharmaGuide Backend
+# Changelog - PharmaGuide Backend
 
 Todas las mejoras, correcciones y cambios importantes del proyecto están documentados en este archivo.
 
