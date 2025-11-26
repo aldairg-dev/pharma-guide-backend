@@ -38,10 +38,22 @@ export interface interfaceDrugCache {
       otras_indicaciones: [];
     };
   };
+
+  mechanismOfActions?: {
+    content: string;
+    structured: {
+      clasificacion_farmacologica: string;
+      diana_molecular_primaria: string;
+      modo_de_accion: string;
+      impacto_bioquimico: string;
+      efectos_terapeuticos_finales: string;
+    };
+  };
 }
 
 export type DrugInfoType =
   | "contraindications"
   | "therapeuticClass"
   | "dosages"
-  | "indications";
+  | "indications"
+  | "mechanismOfActions";

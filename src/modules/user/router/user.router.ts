@@ -80,6 +80,11 @@ routerUser.get(
   drugIAController.getIndications.bind(drugIAController)
 );
 
+routerUser.get(
+  "/me/drug/:id/mechanism-of-action",
+  drugIAController.getMechanismOfActions.bind(drugIAController)
+);
+
 routerUser.get("/users", userController.getUsers.bind(userController));
 
 routerUser.get("/users/:id", userController.getUserById.bind(userController));

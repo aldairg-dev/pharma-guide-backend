@@ -17,25 +17,15 @@ export class DrugIAController {
       const userId = (req as any).user.userId;
       const { id } = req.params;
 
-      if (!userId) {
+      if (!userId || !id || isNaN(Number(id))) {
         res.status(400).json({
           success: false,
-          message: "User ID not found in token.",
-          contraindications: null,
+          message: "User ID not found in token or invalid medication ID",
+          dosage: null,
         });
         return;
       }
 
-      if (!id || isNaN(Number(id))) {
-        res.status(400).json({
-          success: false,
-          message: "ID de medicamento inválido",
-          contraindications: null,
-        });
-        return;
-      }
-
-      let contraindications = null;
       const myDrug = await this.drugService.getMyDrugById(
         Number(userId),
         Number(id)
@@ -50,6 +40,7 @@ export class DrugIAController {
         return;
       }
 
+      let contraindications = null;
       contraindications = await this.drugCache.getDrugContraindications(
         myDrug.userId,
         Number(id)
@@ -103,20 +94,11 @@ export class DrugIAController {
       const userId = (req as any).user.userId;
       const { id } = req.params;
 
-      if (!userId) {
+      if (!userId || !id || isNaN(Number(id))) {
         res.status(400).json({
           success: false,
-          message: "User ID not found in token.",
-          therapeuticClass: null,
-        });
-        return;
-      }
-
-      if (!id || isNaN(Number(id))) {
-        res.status(400).json({
-          success: false,
-          message: "ID de medicamento inválido",
-          therapeuticClass: null,
+          message: "User ID not found in token or invalid medication ID",
+          dosage: null,
         });
         return;
       }
@@ -186,19 +168,10 @@ export class DrugIAController {
       const userId = (req as any).user.userId;
       const { id } = req.params;
 
-      if (!userId) {
+      if (!userId || !id || isNaN(Number(id))) {
         res.status(400).json({
           success: false,
-          message: "User ID not found in token.",
-          dosage: null,
-        });
-        return;
-      }
-
-      if (!id || isNaN(Number(id))) {
-        res.status(400).json({
-          success: false,
-          message: "ID de medicamento inválido",
+          message: "User ID not found in token or invalid medication ID",
           dosage: null,
         });
         return;
@@ -256,20 +229,11 @@ export class DrugIAController {
     const userId = (req as any).user.userId;
     const { id } = req.params;
 
-    if (!userId) {
+    if (!userId || !id || isNaN(Number(id))) {
       res.status(400).json({
         success: false,
-        message: "User ID not found in token.",
-        therapeuticClass: null,
-      });
-      return;
-    }
-
-    if (!id || isNaN(Number(id))) {
-      res.status(400).json({
-        success: false,
-        message: "ID de medicamento inválido",
-        therapeuticClass: null,
+        message: "User ID not found in token or invalid medication ID",
+        dosage: null,
       });
       return;
     }
@@ -310,6 +274,74 @@ export class DrugIAController {
         message:
           "No se encontraron indicaciones para este medicamento o el medicamento no existe",
         dosage: null,
+      });
+    }
+  }
+
+  async getMechanismOfActions(
+    req: Request,
+    res: Response,
+    _next: NextFunction
+  ): Promise<void> {
+    try {
+      const userId = (req as any).user.userId;
+      const { id } = req.params;
+
+      if (!userId || !id || isNaN(Number(id))) {
+        res.status(400).json({
+          success: false,
+          message: "User ID not found in token or invalid medication ID",
+          mechanismOfActions: null,
+        });
+        return;
+      }
+
+      const myDrug = await this.drugService.getMyDrugById(userId, Number(id));
+      if (!myDrug) {
+        res.status(404).json({
+          success: false,
+          message: "Not found Drug",
+          mechanismOfActions: null,
+        });
+        return;
+      }
+
+      let mechanismOfActionsData = null;
+      mechanismOfActionsData = await this.drugCache.getMechanismOfActions(userId, Number(id));
+
+      if (!mechanismOfActionsData || mechanismOfActionsData === null) {
+        const result = await this.drugIAService.mechanismOfActions(Number(id));
+        mechanismOfActionsData = result?.mechanismOfActions;
+
+        if (mechanismOfActionsData) {
+          await this.drugCache.addMechanismOfActions(
+            myDrug.userId,
+            myDrug.id,
+            mechanismOfActionsData
+          );
+        }
+      }
+
+      if (mechanismOfActionsData) {
+        res.status(200).json({
+          mechanismOfActions: mechanismOfActionsData,
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          message:
+            "No se encontró información del mecanismo de acción para este medicamento o el medicamento no existe",
+          mechanismOfActions: null,
+        });
+      }
+    } catch (error) {
+      console.error(
+        `[drugIAController] Error en getMechanismOfActions: ${error}`
+      );
+      res.status(500).json({
+        success: false,
+        message: "Error processing request for drug mechanism of action",
+        mechanismOfActions: null,
       });
     }
   }
