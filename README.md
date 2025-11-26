@@ -17,10 +17,10 @@
 
 </div>
 
-**PharmaGuide Backend v1.5.0** es una API REST avanzada con **inteligencia artificial integrada** y **sistema de cache optimizado**, diseñada para estudiantes de Química Farmacéutica. Proporciona información automatizada sobre medicamentos mediante IA y herramientas inteligentes de aprendizaje.
+**PharmaGuide Backend v1.7.0** es una API REST avanzada con **inteligencia artificial integrada** y **sistema de cache optimizado**, diseñada para estudiantes de Química Farmacéutica. Proporciona información automatizada sobre medicamentos mediante IA y herramientas inteligentes de aprendizaje.
 
->  **Nuevas funcionalidades v1.5.0**: Sistema de IA con Gemini AI, Cache Redis optimizado, Contraindicaciones y Clase Terapéutica automatizadas  
->  **[Ver todas las novedades →](./documentation/versions/v1.5.0.md)**
+>  **Versión actual v1.7.0**: Sistema completo de Identificación del Fármaco  
+>  **[Ver documentación de versión →](./documentation/versions/v1.7.0.md)**
 
 ##  Documentación Completa
 
@@ -28,9 +28,9 @@
 
 ###  Enlaces Rápidos
 - **[ Arquitectura del Sistema](./documentation/architecture/system-architecture.md)** - Diseño modular y patrones
-- **[ Sistema de IA](./documentation/features/artificial-intelligence.md)** - Gemini AI, contraindicaciones y clase terapéutica
+- **[ Sistema de IA](./documentation/features/artificial-intelligence.md)** - Sistema de inteligencia artificial
 - **[ Cache Redis](./documentation/features/redis-cache.md)** - Sistema de cache optimizado
-- **[ Versión 1.5.0](./documentation/versions/v1.5.0.md)** - Nuevas funcionalidades y mejoras
+- **[ Versión 1.7.0](./documentation/versions/v1.7.0.md)** - Identificación del Fármaco
 - **[ API Reference](./documentation/api/)** - Endpoints y ejemplos de uso
 
 ##  Índice Rápido
@@ -45,19 +45,17 @@
 
 ##  Características Principales
 
-###  **Inteligencia Artificial Avanzada**  *Nuevo en v1.5.0*
-- **🤖 Gemini AI Integration**: Información médica automatizada y confiable
-- ** Contraindicaciones**: Obtención automática de contraindicaciones de medicamentos
-- ** Clase Terapéutica**: Clasificación automática de medicamentos por uso terapéutico
-- ** Arquitectura Modular**: Sistema escalable preparado para nuevas funcionalidades
-- **[📖 Ver documentación completa →](./documentation/features/artificial-intelligence.md)**
+### **Inteligencia Artificial**
+- Sistema modular de IA para información médica automatizada
+- Contraindicaciones, Indicaciones, Mecanismo de Acción
+- Clase Terapéutica y Dosificación
+- Arquitectura escalable para nuevas funcionalidades
 
-###  **Sistema de Cache Redis**  *Nuevo en v1.5.0*
-- ** Cache Específico**: Consultas optimizadas por funcionalidad
-- ** 70% más rápido**: Rendimiento mejorado significativamente
-- **💾 Uso eficiente**: Reduce uso de memoria en 60%
-- ** Graceful degradation**: Funciona sin Redis disponible
-- **[📖 Ver documentación completa →](./documentation/features/redis-cache.md)**
+### **Sistema de Cache Redis**
+- Cache específico por funcionalidad
+- TTL de 7 días configurado
+- Degradación elegante sin Redis disponible
+- Consultas optimizadas
 
 ###  **API REST Robusta**
 - ** Arquitectura escalable** con Express.js y TypeScript

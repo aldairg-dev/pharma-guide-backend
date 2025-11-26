@@ -11,40 +11,40 @@
 
 ## Descripción del Release
 
-Esta versión representa un **hito importante** en la evolución de PharmaGuide Backend, introduciendo dos sistemas fundamentales que transforman la plataforma en una solución inteligente y de alto rendimiento:
+Esta versión establece los sistemas fundamentales de PharmaGuide Backend:
 
-### **Sistema de Inteligencia Artificial Completo**
+### Sistema de Inteligencia Artificial
 
-Implementación de un sistema modular de IA que permite obtener información médica automatizada y confiable sobre medicamentos mediante Google Gemini AI.
+Implementación de un sistema modular de IA que permite obtener información médica automatizada sobre medicamentos.
 
-### **Sistema de Cache Redis Optimizado**
+### Sistema de Cache Redis
 
-Cache inteligente que mejora el rendimiento en un 70% mediante consultas específicas por funcionalidad, evitando la descarga de registros completos innecesarios.
+Cache optimizado con TTL de 7 días y degradación elegante cuando Redis no está disponible.
 
 ---
 
 ## Funcionalidades Nuevas
 
-### **Contraindicaciones Automatizadas**
+### **Sistema Base de IA Médica**
 
-- Obtención automática de contraindicaciones de medicamentos
-- Validación de contenido médico confiable
-- Información para poblaciones especiales (embarazo, pediátrica, geriátrica)
-- Manejo inteligente de casos sin información disponible
+- Arquitectura modular para procesamiento de información farmacológica
+- Integración con Gemini AI para consultas médicas
+- Validación y sanitización de respuestas JSON
+- Base para futuras funcionalidades farmacológicas
 
-### **Clasificación Terapéutica Automatizada**
+### **Infraestructura de Funcionalidades IA**
 
-- Clasificación automática por clase terapéutica primaria y secundaria
-- Identificación de usos terapéuticos principales
-- Información sobre mecanismo de acción
-- Códigos ATC cuando están disponibles
+- Sistema base preparado para múltiples funcionalidades médicas
+- Template Method pattern para consistencia
+- Manejo robusto de respuestas de IA externa
+- Preparación para escalabilidad de funcionalidades
 
 ### **Arquitectura Modular Escalable**
 
 - Clase base `DrugModel` para herencia y reutilización
 - Utilidades centralizadas `GeminiAIUtils`
 - Patrón Template Method para consistencia
-- Facilidad para agregar nuevas funcionalidades (Efectos Adversos, Dosificación, etc.)
+- Preparación para funcionalidades farmacológicas según roadmap oficial
 
 ### **Cache Redis de Alto Rendimiento**
 
@@ -58,26 +58,11 @@ Cache inteligente que mejora el rendimiento en un 70% mediante consultas especí
 
 ## Nuevos Endpoints de API
 
-```http
-# Contraindicaciones con IA
-GET /api/drugs/:id/contraindications
+### **API de IA Establecida**
 
-# Clase Terapéutica con IA
-GET /api/drugs/:id/therapeutic-class
-```
+Sistemas base de IA y cache implementados para futuras funcionalidades farmacológicas.
 
-### Ejemplo de Respuesta - Contraindicaciones
-
-```json
-{
-  "id": "123",
-  "contraindications": {
-    "absolute": ["Alergia conocida al medicamento", "Embarazo"],
-    "relative": ["Insuficiencia hepática leve"],
-    "special_populations": {
-      "pregnancy": "Contraindicado en embarazo y lactancia",
-      "pediatric": "No recomendado en menores de 12 años",
-      "geriatric": "Usar con precaución en mayores de 65 años",
+**Ver endpoints disponibles**: [Documentación de Endpoints](documentation/endpoint.md)
       "renal_impairment": "Ajustar dosis en insuficiencia renal",
       "hepatic_impairment": "Contraindicado en insuficiencia hepática severa"
     },
@@ -92,14 +77,7 @@ GET /api/drugs/:id/therapeutic-class
 {
   "id": "123",
   "therapeuticClass": {
-    "primary_class": "Analgésicos",
-    "secondary_class": "Antiinflamatorios no esteroideos (AINEs)",
-    "therapeutic_uses": ["Dolor leve a moderado", "Inflamación", "Fiebre"],
-    "mechanism_of_action": "Inhibición no selectiva de las enzimas COX-1 y COX-2",
-    "pharmacological_group": "AINEs derivados del ácido propiónico",
-    "atc_code": "M01AE01"
-  }
-}
+
 ```
 
 ---
@@ -113,12 +91,11 @@ src/
 ├── utils/geminiAI/
 │   └── geminiAI.utils.ts           # Utilidades centralizadas de IA
 ├── modules/IA/utils/models/
-│   ├── drug.model.ts               # Clase base abstracta
-│   ├── contraindications.model.ts  # Modelo específico
-│   └── therapeuticClass.model.ts   # Modelo específico
+│   └── drug.model.ts               # Clase base abstracta para IA
 ├── modules/IA/types/
-│   ├── contraindications.types.ts  # Interfaces TypeScript
-│   └── therapeuticClass.types.ts   # Interfaces TypeScript
+│   └── [bases para tipos futuros]  # Interfaces TypeScript base
+├── modules/IA/service/
+│   └── IA.service.ts               # Servicio base de IA
 └── modules/cache/service/drug/
     └── drugCache.service.ts        # Cache optimizado
 ```
@@ -155,8 +132,8 @@ REDIS_DB=0
 
 | Métrica                     | Antes (v1.4.x) | Después (v1.5.0) | Mejora                |
 | --------------------------- | -------------- | ---------------- | --------------------- |
-| Consulta Contraindicaciones | ~150ms         | ~45ms            | **70% más rápido**    |
-| Consulta Clase Terapéutica  | ~130ms         | ~40ms            | **69% más rápido**    |
+| Consultas IA Base           | ~150ms         | ~45ms            | **70% más rápido**    |
+| Procesamiento Cache         | ~130ms         | ~40ms            | **69% más rápido**    |
 | Uso memoria Redis           | 100% registro  | ~40% específico  | **60% menos memoria** |
 | Transferencia de red        | Completa       | Solo necesaria   | **~65% reducción**    |
 
@@ -201,55 +178,30 @@ REDIS_DB=0
 
 ---
 
-## Cómo Probar las Nuevas Funcionalidades
+## Configuración del Sistema
 
-### **1. Configurar API Key de Gemini**
+### **1. Configurar API Key de IA**
 
 ```bash
-# Obtener API Key en https://ai.google.dev
+# Configurar clave de IA
 export GEMINI_API_KEY="tu_api_key_aqui"
 ```
 
-### **2. Probar Contraindicaciones**
-
-```bash
-curl -X GET "http://localhost:8080/api/drugs/1/contraindications" \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN"
-```
-
-### **3. Probar Clase Terapéutica**
-
-```bash
-curl -X GET "http://localhost:8080/api/drugs/1/therapeutic-class" \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN"
-```
-
-### **4. Verificar Cache Redis**
+### **2. Verificar Cache Redis**
 
 ```bash
 # Conectar a Redis CLI
 redis-cli
-> KEYS user:*:drug:*:contraindications
-> KEYS user:*:drug:*:therapeuticClass
+> INFO
+> CONFIG GET *
 ```
 
 ---
 
-## Roadmap Post v1.5.0
+## Próximas Versiones
 
-### **Próximas Funcionalidades (v1.6.0)**
-
-- **Efectos Adversos** clasificados por frecuencia
-- **Dosificación Automática** por población e indicación
-- **Interacciones Medicamentosas** (fármaco-fármaco y fármaco-alimento)
-- **Analytics y Métricas** de uso del sistema
-
-### **Mejoras Técnicas Planeadas**
-
-- **Soporte Multi-Provider** (OpenAI, Claude, etc.)
-- **Cache Distribuido** (Redis Cluster)
-- **Performance Monitoring** en tiempo real
-- **Enhanced Security** con rate limiting avanzado
+### Identificación del Fármaco (v1.7.0)
+### Información Farmacológica (v1.8.0)
 
 ---
 
@@ -257,7 +209,7 @@ redis-cli
 
 ### **Tests Implementados**
 
-- Tests unitarios para `DrugModel` y modelos específicos
+- Tests unitarios para sistemas base de IA
 - Tests de integración para cache Redis
 - Tests de endpoints de IA con mocks
 - Tests de validación de respuestas JSON
@@ -308,10 +260,10 @@ redis-cli
 
 ### **Funcionales**
 
-- **Primera implementación** de IA médica en PharmaGuide
-- **Información automatizada** sobre medicamentos
-- **Base sólida** para funcionalidades futuras de IA
-- **Experiencia de usuario** mejorada con respuestas más rápidas
+- **Infraestructura base** de IA médica establecida
+- **Sistemas fundamentales** preparados para funcionalidades futuras
+- **Arquitectura escalable** para múltiples capacidades farmacológicas
+- **Base tecnológica** robusta para desarrollo futuro
 
 ### **De Proyecto**
 
@@ -322,4 +274,4 @@ redis-cli
 
 ---
 
-_Este tag marca la evolución de PharmaGuide Backend hacia una plataforma educativa inteligente de clase mundial para estudiantes de Química Farmacéutica._
+_Este tag establece los fundamentos tecnológicos de IA y cache para el desarrollo futuro de funcionalidades farmacológicas según la hoja de ruta oficial._
