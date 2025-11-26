@@ -61,11 +61,9 @@ POST /api/access/pharma-guide/login
 
 ```
 ┌─── Identificación del Fármaco (v1.7) ───────┐
-│ GET /me/drugs/:id/therapeutic-class         │ ← Clase Terapéutica
-│ GET /me/drugs/:id/indications              │ ← Indicaciones (NUEVO v1.7)
-│ GET /me/drugs/:id/mechanism-of-actions     │ ← Mecanismo de Acción (NUEVO v1.7)
-│ GET /me/drugs/:id/contraindications        │ ← Contraindicaciones
-│ GET /me/drugs/:id/dosages                  │ ← Dosificación
+│ GET /me/drugs/:id/therapeutic-class         │ ← Clase Terapéutica (v1.7)
+│ GET /me/drugs/:id/indications              │ ← Indicaciones (v1.7)
+│ GET /me/drugs/:id/mechanism-of-actions     │ ← Mecanismo de Acción (v1.7)
 └─────────────────────────────────────────────┘
 ```
 
@@ -165,7 +163,17 @@ POST /api/access/pharma-guide/login
 
 ```
 ┌─── Seguridad Clínica (v1.9) ────────────────┐
-│ GET /me/drugs/:id/advanced-contraindications │ ← Contraindicaciones avanzadas
+│ GET /me/drugs/:id/contraindications         │ ← Contraindicaciones
+└─────────────────────────────────────────────┘
+```
+
+### 6.3 v2.0 - Administración del medicamento
+
+```
+┌─── Administración del medicamento (v2.0) ───┐
+│ GET /me/drugs/:id/dosages                   │ ← Dosificación
+│ GET /me/drugs/:id/administration-routes     │ ← Vías de administración  
+│ GET /me/drugs/:id/presentations             │ ← Presentaciones
 └─────────────────────────────────────────────┘
 ```
 

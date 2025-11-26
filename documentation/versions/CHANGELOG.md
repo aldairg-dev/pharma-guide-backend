@@ -10,22 +10,14 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 ## [1.7.0] - 2025-11-25
 
 ### Agregado
-- **Sistema de Indicaciones Terapéuticas completo**
-  - Clasificación estructurada en indicaciones principales, secundarias y off-label
+- **Sistema de Identificación del Fármaco completo (v1.7.0)**
+  - **Clase Terapéutica**: Clasificación farmacológica oficial con códigos ATC
+  - **Indicaciones Terapéuticas**: Clasificación en indicaciones principales, secundarias y off-label
+  - **Mecanismo de Acción**: Diana molecular primaria y efectos terapéuticos finales
   - Información narrativa formateada para profesionales de la salud
   - Validación obligatoria de fuentes oficiales en prompts
-  - Nuevo modelo `IndicationsModel` siguiendo arquitectura modular
+  - Modelos: `TherapeuticClassModel`, `IndicationsModel`, `MechanismOfActionsModel`
   - Datos estructurados JSON para integración frontend
-  - Cache Redis específico con TTL de 7 días
-
-- **Sistema de Mecanismo de Acción científico**
-  - Clasificación farmacológica oficial detallada
-  - Diana molecular primaria específica (receptor, enzima, canal iónico)
-  - Modo de acción molecular y celular detallado
-  - Impacto bioquímico y fisiopatológico resultante
-  - Efectos terapéuticos finales derivados del mecanismo
-  - Nuevo modelo `MechanismOfActionsModel` con validación científica
-  - Terminología técnica apropiada para profesionales de la salud
 
 - **Arquitectura IA robusta mejorada**
   - Sistema de sanitización automática JSON para caracteres de control
@@ -35,17 +27,12 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
   - Manejo robusto de saltos de línea, tabulaciones y caracteres especiales
 
 - **Nuevos endpoints de identificación del fármaco**
+  - `GET /me/drugs/:id/therapeutic-class` - Obtener clase terapéutica
   - `GET /me/drugs/:id/indications` - Obtener indicaciones terapéuticas
   - `GET /me/drugs/:id/mechanism-of-actions` - Obtener mecanismo de acción
-  - Integración completa con sistema de cache Redis
   - Consistencia con arquitectura JWT existente
 
-- **Cache Redis unificado completo**
-  - Métodos específicos `getIndications()` y `addIndications()`
-  - Métodos específicos `getMechanismOfActions()` y `addMechanismOfActions()`
-  - TTL consistente de 7 días para todas las funcionalidades IA
-  - Degradación elegante cuando Redis no está disponible
-  - Claves organizadas y consistentes entre funcionalidades
+
 
 ### Cambiado
 - **Manejo de respuestas IA mejorado significativamente**
@@ -67,12 +54,12 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 - **Precisión científica mejorada a 96%** en información farmacológica
 - **Tiempo de recuperación de errores reducido 70%** (45ms vs 150ms)
 - **Uso de memoria optimizado 9%** menos por request de IA
-- **Cache hit rate total mejorado a 79%** para todas las funcionalidades
+
 
 ### Técnico
-- Nuevos tipos TypeScript: `IndicationData`, `MechanismOfActionData`, `*Response`
-- Prompts científicos especializados: `indications.ts`, `drug.mechanismOfActions.ts`
-- Modelos IA: `indications.model.ts`, `mechanismOfActions.drug.ts`
+- Nuevos tipos TypeScript: `TherapeuticClassData`, `IndicationData`, `MechanismOfActionData`, `*Response`
+- Prompts científicos especializados: `drug.classTherapeutic.ts`, `indications.ts`, `drug.mechanismOfActions.ts`
+- Modelos IA: `therapeuticClass.model.ts`, `indications.model.ts`, `mechanismOfActions.drug.ts`
 - Función `sanitizeJSON()` para manejo robusto de caracteres de control
 - Logging mejorado con información detallada para debugging
 - Validación de fuentes oficiales obligatoria en todos los prompts
@@ -83,27 +70,18 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 - **Logging seguro** sin exposición de datos sensibles en errores
 - **Cache security** mantenido con validación de ownership
 
-### Roadmap Futuro - Implementaciones de IA por Grupos
-- **v1.8 - Información Farmacológica**: Farmacocinética, farmacodinamia, interacciones, advertencias, efectos adversos
-- **v1.9 - Seguridad Clínica**: Contraindicaciones avanzadas
-- **v2.0 - Administración del Medicamento**: Dosificación avanzada, vías de administración, presentaciones
-- **v2.1 - Información Complementaria**: Observaciones clínicas
-- **v2.2 - Información Química**: Estructura química (imagen)
+### Roadmap Futuro
+- **v1.8.0 - Información Farmacológica**
+- **v1.9.0 - Seguridad Clínica**
+- **v2.0.0 - Administración del Medicamento**
+- **v2.1.0 - Información Complementaria**
+- **v2.2.0 - Información Química**
 
 ---
 
 ## [1.6.0] - 2024-11-21
 
 ### Agregado
-- **Sistema de Dosificación Farmacológica completo**
-  - Información detallada de dosificación por indicación clínica
-  - Dosis habituales y dosis por peso (mg/kg) cuando corresponda
-  - Consideraciones para poblaciones especiales (pediátrica, geriátrica, embarazo/lactancia)
-  - Ajustes por función renal y hepática (Child-Pugh)
-  - Dosis máxima diaria y contraindicaciones relevantes
-  - Interacciones que afecten la dosificación
-  - Nuevo modelo `DosageModel` siguiendo arquitectura modular
-
 - **Arquitectura de Seguridad JWT Unificada**
   - Migración completa de endpoints `/users/:id/*` a `/me/*`
   - Validación de propiedad a nivel de SQL con `WHERE userId = ? AND id = ?`
@@ -114,15 +92,11 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
   - `GET /me` - Obtener información del usuario autenticado
   - `PUT /me` - Actualizar información personal
   - `DELETE /me` - Eliminar cuenta propia
-  - `GET /me/drugs/:id/dosages` - Obtener dosificación segura
+
   - `GET /me/study-plans/:id` - Obtener plan de estudio propio
   - Todos los endpoints existentes migrados a `/me/*`
 
-- **Cache Redis optimizado para dosificación**
-  - Métodos específicos `getDosages()` y `addDosages()`
-  - Manejo de errores de conexión Redis con degradación elegante
-  - TTL de 7 días para datos de dosificación
-  - Validación null safety para cliente Redis
+
 
 ### Cambiado
 - **Breaking Change**: Endpoints `/users/:userId/*` deprecados en favor de `/me/*`
@@ -141,16 +115,15 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 ### Mejorado
 - Rendimiento de validación de seguridad mejorado en 73%
 - Reducción de queries SQL en 50% por request
-- Cache de dosificación reduce latencia en 75%
+
 - Uso de memoria reducido en 27% por request
 - Soporte para 10,000+ usuarios concurrentes
 
 ### Técnico
-- Nuevos tipos TypeScript para dosificación (`DosageData`, `DosageResponse`)
-- Prompt farmacológico especializado en `drug.dosage.ts`
-- Refactorización de `dosage.model.ts` usando `getProcessedContent`
-- Corrección de error de sintaxis en evaluación de prompts
-- Mejoras en manejo de errores Redis con null checking
+- Implementación completa de JWT security architecture
+- Métodos seguros con validación de ownership a nivel SQL
+- Migración completa de endpoints inseguros a arquitectura JWT
+- Mejoras en manejo de errores de autenticación y autorización
 
 ### Deprecado
 - Endpoints `/users/:userId/*` marcados como deprecados
@@ -310,5 +283,3 @@ Este proyecto usa [Semantic Versioning](https://semver.org/):
 - **alpha**: Versión muy temprana, inestable
 - **beta**: Versión de prueba, relativamente estable  
 - **rc** (release candidate): Versión candidata para release
-
-Ejemplo: `1.5.0-beta.1`, `1.5.0-rc.2`
