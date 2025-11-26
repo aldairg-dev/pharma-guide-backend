@@ -81,7 +81,7 @@ routerUser.get(
 );
 
 routerUser.get(
-  "/me/drug/:id/mechanism-of-action",
+  "/me/drugs/:id/mechanism-of-actions",
   drugIAController.getMechanismOfActionsByDrugId.bind(drugIAController)
 );
 

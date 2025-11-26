@@ -66,13 +66,13 @@ Migración completa de validación por parámetros a validación por JWT tokens,
 
 ```typescript
 // Funcionalidades de IA Implementadas
-ContraindicationsModel   // v1.5.0
-TherapeuticClassModel    // v1.5.0
-DosageModel              // v1.6.0 - NUEVO
+ContraindicationsModel; // v1.5.0
+TherapeuticClassModel; // v1.5.0
+DosageModel; // v1.6.0 - NUEVO
 
 // Preparado para futuras expansiones
-PharmacologicalInformation     // Futuro v1.7.0
-MechanismOfAction        // Futuro v1.8.0
+PharmacologicalInformation; // Futuro v1.7.0
+MechanismOfAction; // Futuro v1.8.0
 ```
 
 ### **Patrón de Seguridad Implementado**
@@ -248,69 +248,23 @@ user.router.ts          - Reorganización /me/* vs admin
 
 ## Próximas Versiones
 
-### **v1.7.0 - Efectos Adversos** (Planificado)
+### **v1.7.0 Identificación del fármaco**
 
-- Sistema de efectos adversos automático
-- Clasificación por frecuencia y gravedad
-- Alertas de seguridad
+- Clase terapéutica
+- Indicaciones
+- Mecanismo de acción
 
-### **v1.8.0 - Interacciones Medicamentosas** (Planificado)
+### **v1.8.0 Información farmacológica**
 
-- Detección automática de interacciones
-- Niveles de severidad
-- Recomendaciones de manejo
+- Farmacocinética
+- Farmacodinamia
+- Interacciones
+- Advertencias y precauciones
+- Efectos adversos
 
-### **v1.9.0 - Sistema de Alertas** (Planificado)
+### **v1.9.0 Seguridad clínica**
 
-- Notificaciones push
-- Alertas de seguridad en tiempo real
-- Dashboard de monitoreo
-
----
-
-## Checklist de Deployment
-
-### **Pre-Deployment**
-
-- [x] Testing completo de dosificación
-- [x] Validación de seguridad JWT
-- [x] Performance testing con cache
-- [x] Documentación actualizada
-- [x] Backup de base de datos
-
-### **Deployment**
-
-- [x] Compilación sin errores
-- [x] Variables de entorno configuradas
-- [x] Redis funcionando correctamente
-- [x] JWT tokens válidos
-- [x] Endpoints funcionando
-
-### **Post-Deployment**
-
-- [ ] Monitoreo de logs de IA
-- [ ] Validación de cache Redis
-- [ ] Testing en producción
-- [ ] Monitoreo de performance
-- [ ] Feedback de usuarios
-
----
-
-## Colaboradores
-
-**Desarrollo Principal:**
-
-- **Backend Architecture**: Sistema JWT y validación de seguridad
-- **AI Integration**: Sistema de dosificación farmacológica
-- **Cache Optimization**: Redis específico para dosificación
-- **Security Implementation**: Ownership validation
-
-**Testing y QA:**
-
-- Validación de endpoints JWT
-- Testing de funcionalidades IA
-- Performance testing con Redis
-- Security testing y validación
+- Contraindicaciones
 
 ---
 
