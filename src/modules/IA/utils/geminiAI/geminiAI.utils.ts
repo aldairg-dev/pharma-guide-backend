@@ -79,8 +79,47 @@ export class GeminiAIUtils {
       throw new Error("No se encontró formato JSON válido");
     }
 
-    const jsonText = cleanedText.substring(jsonStart, jsonEnd);
+    let jsonText = cleanedText.substring(jsonStart, jsonEnd);
+
+    // Limpiar caracteres de control problemáticos
+    jsonText = this.sanitizeJSON(jsonText);
+
     return JSON.parse(jsonText);
+  }
+
+  static sanitizeJSON(jsonText: string): string {
+    try {
+      // Primero intentar parsear directamente
+      JSON.parse(jsonText);
+      return jsonText;
+    } catch (error) {
+      console.warn("JSON inicial inválido, aplicando sanitización:", error);
+
+      // Limpiar caracteres de control problemáticos
+      let cleaned = jsonText
+        // Remover caracteres de control no válidos en JSON
+        .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "")
+        // Reemplazar saltos de línea literales con \\n escapado
+        .replace(/\n/g, "\\n")
+        // Reemplazar retornos de carro literales con \\r escapado
+        .replace(/\r/g, "\\r")
+        // Reemplazar tabulaciones literales con \\t escapado
+        .replace(/\t/g, "\\t")
+        // Remover espacios múltiples
+        .replace(/\s+/g, " ")
+        .trim();
+
+      // Intentar reparar strings que contengan caracteres problemáticos
+      // Buscar strings entre comillas y escapar caracteres especiales dentro
+      cleaned = cleaned.replace(/"([^"]*?)"/g, (match, content) => {
+        const escapedContent = content
+          .replace(/\\/g, "\\\\") // Escapar backslashes
+          .replace(/"/g, '\\"'); // Escapar comillas
+        return `"${escapedContent}"`;
+      });
+
+      return cleaned;
+    }
   }
 
   static hasUndesiredContent(content: string): boolean {
@@ -140,10 +179,15 @@ export class GeminiAIUtils {
       };
     } catch (parseError) {
       console.error("Error processing IA response:", parseError);
+      console.error(
+        "Raw text that caused error (first 500 chars):",
+        text.substring(0, 500)
+      );
+
       return {
         success: false,
         data: null,
-        message: "Formato de respuesta no válido del servicio de IA",
+        message: `Formato de respuesta no válido del servicio de IA: ${parseError}`,
       };
     }
   }

@@ -455,7 +455,7 @@ export class DrugCacheService {
 
       await client.hSet(cacheKey, dataToUpdate);
       console.log(
-        `[drugCacheService] Indicaciòn almacenada en caché para userId: ${userId}, drugId: ${drugId}`
+        `[drugCacheService] Indicación almacenada en caché para userId: ${userId}, drugId: ${drugId}`
       );
       return true;
     } catch (error) {
@@ -503,6 +503,89 @@ export class DrugCacheService {
     } catch (error) {
       console.log(
         `[drugCacheService] Error al obtener las indicaiones del fármaco drug:${userId}:${drugId}`
+      );
+      return false;
+    }
+  }
+
+  async addMechanismOfActions(
+    userId: number,
+    drugId: number,
+    mechanismOfActions: any
+  ): Promise<Boolean> {
+    try {
+      await this.redisConnection.conexion();
+      const client = this.getClient();
+
+      if (!client) {
+        console.warn(`[drugCacheService] Redis client not available`);
+        return false;
+      }
+
+      const cacheKey = `drug:${userId}:${drugId}`;
+
+      const TTL_SECONDS = this.redisConnection.TIME_EXPIRED || 604800; // 7 días
+      const TTL_MS = TTL_SECONDS * 1000;
+      const now = Date.now();
+
+      const dataToUpdate = {
+        userId: userId.toString(),
+        drugId: drugId.toString(),
+        mechanismOfActions: JSON.stringify(mechanismOfActions),
+        lastUpdated: now.toString(),
+        expiresAt: (now + TTL_MS).toString(),
+      };
+
+      await client.hSet(cacheKey, dataToUpdate);
+      console.log(
+        `[drugCacheService] Mecanismo de acción almacenado en caché para userId: ${userId}, drugId: ${drugId}`
+      );
+      return true;
+    } catch (error) {
+      console.log(
+        `[drugCacheService] Error al agregar el mecanismo de acción a cache: ${userId}: ${drugId}`,
+        error
+      );
+      return false;
+    }
+  }
+
+  async getMechanismOfActions(userId: number, drugId: number): Promise<Boolean> {
+    try {
+      await this.redisConnection.conexion();
+      const client = this.getClient();
+
+      if (!client) {
+        console.warn("[drugCacheService] Redis client not available");
+        return false;
+      }
+
+      const cacheKey = `drug:${userId}:${drugId}`;
+
+      const mechanismOfActionsStr = await client.hGet(cacheKey, "mechanismOfActions");
+
+      if (!mechanismOfActionsStr || mechanismOfActionsStr == "null") {
+        console.log(
+          `[drugCacheService] No se encontraron mecanismos de acción del fármaco drug:${userId}:${drugId}`
+        );
+        return false;
+      }
+
+      try {
+        const mechanismOfActions = JSON.parse(mechanismOfActionsStr);
+        console.log(
+          `[drugCacheService] Mecanismo de acción encontrado en caché para userId: ${userId}, drugId: ${drugId}`
+        );
+        return mechanismOfActions;
+      } catch (parseError) {
+        console.warn(
+          `[drugCacheService] Error parseando el mecanismo de acción: ${parseError}`
+        );
+        return false;
+      }
+    } catch (error) {
+      console.log(
+        `[drugCacheService] Error al obtener los mecanismos de acción del fármaco drug:${userId}:${drugId}`
       );
       return false;
     }

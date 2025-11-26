@@ -48,6 +48,22 @@ export interface IndicationsResponse {
   };
 }
 
+interface MechanismOfActionData {
+  clasificacion_farmacologica: string;
+  diana_molecular_primaria: string;
+  modo_de_accion: string;
+  impacto_bioquimico: string;
+  efectos_terapeuticos_finales: string;
+}
+
+export interface MechanismOfActionsResponse {
+  id: number;
+  mechanismOfActions: {
+    content: string;
+    structured: MechanismOfActionData;
+  };
+}
+
 export class DrugIAService {
   private drugService = new DrugService();
 
@@ -210,6 +226,32 @@ export class DrugIAService {
     return formatted.trim();
   }
 
+  private formatMechanismOfActions(mechanismOfActions: MechanismOfActionData): string {
+    let formatted = "";
+
+    if (mechanismOfActions.clasificacion_farmacologica) {
+      formatted += `CLASIFICACIÓN FARMACOLÓGICA:\n${mechanismOfActions.clasificacion_farmacologica}\n\n`;
+    }
+
+    if (mechanismOfActions.diana_molecular_primaria) {
+      formatted += `DIANA MOLECULAR PRIMARIA:\n${mechanismOfActions.diana_molecular_primaria}\n\n`;
+    }
+
+    if (mechanismOfActions.modo_de_accion) {
+      formatted += `MODO DE ACCIÓN:\n${mechanismOfActions.modo_de_accion}\n\n`;
+    }
+
+    if (mechanismOfActions.impacto_bioquimico) {
+      formatted += `IMPACTO BIOQUÍMICO:\n${mechanismOfActions.impacto_bioquimico}\n\n`;
+    }
+
+    if (mechanismOfActions.efectos_terapeuticos_finales) {
+      formatted += `EFECTOS TERAPÉUTICOS FINALES:\n${mechanismOfActions.efectos_terapeuticos_finales}\n\n`;
+    }
+
+    return formatted.trim();
+  }
+
   async therapeuticClass(
     drugId: number
   ): Promise<DrugTherapeuticClassResponse | null> {
@@ -334,6 +376,50 @@ export class DrugIAService {
       return null;
     } catch (error) {
       console.log(`[drugIAService] Error en las indicaciones ${error}`);
+      return null;
+    }
+  }
+
+  async mechanismOfActions(drugId: number): Promise<MechanismOfActionsResponse | null> {
+    try {
+      const dataDrug = await this.retryOperation(() =>
+        this.drugService.getDrugById(drugId)
+      );
+
+      if (!dataDrug || dataDrug === null) {
+        throw new Error("Failed to retrieve drug data.");
+      }
+
+      const drugInfo = {
+        id: dataDrug.id,
+        name_generic: dataDrug.name_generic,
+        brand_name: dataDrug.brand_name,
+        tags: dataDrug.tags || "",
+      };
+
+      const result = await this.retryOperation(() =>
+        IAService.getValidatedMechanismOfActions(drugInfo)
+      );
+
+      if (!result) {
+        throw new Error("Failed to get validated mechanism of actions from IA service");
+      }
+
+      if (result && result.mechanismOfActions) {
+        const formattedContent = this.formatMechanismOfActions(result.mechanismOfActions.structured);
+
+        return {
+          id: Number(dataDrug.id),
+          mechanismOfActions: {
+            content: formattedContent,
+            structured: result.mechanismOfActions.structured,
+          },
+        };
+      }
+
+      return null;
+    } catch (error) {
+      console.log(`[drugIAService] Error en mecanismo de acción ${error}`);
       return null;
     }
   }
