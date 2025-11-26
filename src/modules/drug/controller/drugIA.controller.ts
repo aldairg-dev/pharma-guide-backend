@@ -221,7 +221,7 @@ export class DrugIAController {
     }
   }
 
-  async getIndications(
+  async getIndicationsByDrugId(
     req: Request,
     res: Response,
     _next: NextFunction
@@ -278,7 +278,7 @@ export class DrugIAController {
     }
   }
 
-  async getMechanismOfActions(
+  async getMechanismOfActionsByDrugId(
     req: Request,
     res: Response,
     _next: NextFunction

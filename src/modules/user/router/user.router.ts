@@ -77,12 +77,12 @@ routerUser.get(
 
 routerUser.get(
   "/me/drugs/:id/indications",
-  drugIAController.getIndications.bind(drugIAController)
+  drugIAController.getIndicationsByDrugId.bind(drugIAController)
 );
 
 routerUser.get(
   "/me/drug/:id/mechanism-of-action",
-  drugIAController.getMechanismOfActions.bind(drugIAController)
+  drugIAController.getMechanismOfActionsByDrugId.bind(drugIAController)
 );
 
 routerUser.get("/users", userController.getUsers.bind(userController));
