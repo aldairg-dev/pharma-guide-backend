@@ -11,7 +11,6 @@ export class IndicationsModel extends DrugModel {
     return !!(
       data &&
       typeof data === "object" &&
-      typeof data.content === "string" &&
       data.structured &&
       typeof data.structured === "object" &&
       Array.isArray(data.structured.indicaciones_principales) &&
@@ -21,11 +20,9 @@ export class IndicationsModel extends DrugModel {
   }
 
   static processData(data: any): {
-    content: string;
     structured: IndicationData;
   } {
     return {
-      content: data.content || "",
       structured: {
         indicaciones_principales:
           data.structured?.indicaciones_principales?.filter(
@@ -82,7 +79,6 @@ export class IndicationsModel extends DrugModel {
     if (!result.indications) {
       return {
         indications: {
-          content: "No se encontraron indicaciones para este medicamento.",
           structured: {
             indicaciones_principales: [],
             indicaciones_secundaria: [],

@@ -23,7 +23,6 @@ Usa JSON válido con la siguiente estructura:
 
 \`\`\`json
 {
-  "content": "Descripción narrativa comprehensiva de todas las indicaciones del medicamento, incluyendo mecanismo de acción y contexto clínico relevante para profesionales de la salud",
   "structured": {
     "indicaciones_principales": [
       "Indicación principal 1 según ficha técnica",
@@ -43,7 +42,6 @@ Usa JSON válido con la siguiente estructura:
 
 ## Requisitos Específicos   
 
-- **Content**: Debe ser un párrafo narrativo de 100-210 palabras que describa el uso clínico del medicamento
 - **Indicaciones principales**: Usos aprobados oficialmente según ficha técnica del fabricante
 - **Indicaciones secundarias**: Usos reconocidos en guías clínicas pero no necesariamente en la indicación principal
 - **Otras indicaciones**: Usos off-label con evidencia científica sólida en literatura médica reconocida

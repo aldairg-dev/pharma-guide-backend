@@ -2,7 +2,6 @@ export interface interfaceDrugCache {
   userId: number;
   drugId: number;
   contraindications?: {
-    content: string;
     structured: {
       absolutas: string[];
       relativas: string[];
@@ -10,7 +9,6 @@ export interface interfaceDrugCache {
   };
 
   therapeuticClass?: {
-    content: string;
     structured: {
       clase_principal: string;
       subclases: string[];
@@ -20,7 +18,6 @@ export interface interfaceDrugCache {
   };
 
   dosages?: {
-    content: string;
     structured: {
       poblaciones_especiales: [];
       indicaciones: [];
@@ -31,7 +28,6 @@ export interface interfaceDrugCache {
   };
 
   indications?: {
-    content: string;
     strutured: {
       indicaciones_principales: [];
       indicaciones_secundaria: [];
@@ -40,7 +36,6 @@ export interface interfaceDrugCache {
   };
 
   mechanismOfActions?: {
-    content: string;
     structured: {
       clasificacion_farmacologica: string;
       diana_molecular_primaria: string;

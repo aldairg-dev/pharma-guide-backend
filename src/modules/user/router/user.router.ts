@@ -61,18 +61,8 @@ routerUser.delete(
 );
 
 routerUser.get(
-  "/me/drugs/:id/contraindications",
-  drugIAController.getContraindicationsByDrugId.bind(drugIAController)
-);
-
-routerUser.get(
   "/me/drugs/:id/therapeutic-class",
   drugIAController.getTherapeuticClassByDrugId.bind(drugIAController)
-);
-
-routerUser.get(
-  "/me/drugs/:id/dosages",
-  drugIAController.getDosageByDrugId.bind(drugIAController)
 );
 
 routerUser.get(
@@ -83,6 +73,16 @@ routerUser.get(
 routerUser.get(
   "/me/drugs/:id/mechanism-of-actions",
   drugIAController.getMechanismOfActionsByDrugId.bind(drugIAController)
+);
+
+routerUser.get(
+  "/me/drugs/:id/contraindications",
+  drugIAController.getContraindicationsByDrugId.bind(drugIAController)
+);
+
+routerUser.get(
+  "/me/drugs/:id/dosages",
+  drugIAController.getDosageByDrugId.bind(drugIAController)
 );
 
 routerUser.get("/users", userController.getUsers.bind(userController));

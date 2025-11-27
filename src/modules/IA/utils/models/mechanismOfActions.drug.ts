@@ -11,7 +11,6 @@ export class MechanismOfActionsModel extends DrugModel {
     return !!(
       data &&
       typeof data === "object" &&
-      typeof data.content === "string" &&
       data.structured &&
       typeof data.structured === "object" &&
       typeof data.structured.clasificacion_farmacologica === "string" &&
@@ -22,15 +21,17 @@ export class MechanismOfActionsModel extends DrugModel {
     );
   }
 
-  static processData(data: any): { content: string; structured: MechanismOfActionData } {
+  static processData(data: any): { structured: MechanismOfActionData } {
     return {
-      content: data.content || "",
       structured: {
-        clasificacion_farmacologica: data.structured?.clasificacion_farmacologica || "",
-        diana_molecular_primaria: data.structured?.diana_molecular_primaria || "",
+        clasificacion_farmacologica:
+          data.structured?.clasificacion_farmacologica || "",
+        diana_molecular_primaria:
+          data.structured?.diana_molecular_primaria || "",
         modo_de_accion: data.structured?.modo_de_accion || "",
         impacto_bioquimico: data.structured?.impacto_bioquimico || "",
-        efectos_terapeuticos_finales: data.structured?.efectos_terapeuticos_finales || "",
+        efectos_terapeuticos_finales:
+          data.structured?.efectos_terapeuticos_finales || "",
       },
     };
   }
@@ -74,7 +75,6 @@ export class MechanismOfActionsModel extends DrugModel {
     if (!result.mechanismOfActions) {
       return {
         mechanismOfActions: {
-          content: "No se encontró información del mecanismo de acción para este medicamento.",
           structured: {
             clasificacion_farmacologica: "",
             diana_molecular_primaria: "",

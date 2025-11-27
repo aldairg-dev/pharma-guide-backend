@@ -8,14 +8,12 @@ export interface MechanismOfActionData {
 
 export interface MechanismOfActionResponse {
   mechanismOfActions?: {
-    content: string;
     structured: MechanismOfActionData;
   };
 }
 
 export interface FormattedMechanismOfActionResponse {
   mechanismOfActions: {
-    content: string;
     structured: MechanismOfActionData;
   };
 }

@@ -6,14 +6,12 @@ export interface IndicationData {
 
 export interface IndicationResponse {
   indications?: {
-    content: string;
     structured: IndicationData;
   };
 }
 
 export interface FormattedIndicationResponse {
   indications: {
-    content: string;
     structured: IndicationData;
   };
 }

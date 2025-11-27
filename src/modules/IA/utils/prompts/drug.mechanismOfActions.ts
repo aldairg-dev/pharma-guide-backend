@@ -25,7 +25,6 @@ Usa JSON válido con la siguiente estructura:
 
 \`\`\`json
 {
-  "content": "Descripción narrativa comprehensiva del mecanismo de acción completo, incluyendo aspectos moleculares, celulares y fisiopatológicos del medicamento para profesionales de la salud",
   "structured": {
     "clasificacion_farmacologica": "Clasificación principal del fármaco (ej: IECA, Bloqueador de canales de calcio, etc.)",
     "diana_molecular_primaria": "Objetivo molecular específico (ej: Enzima convertidora de angiotensina, Canales de calcio tipo L, etc.)",
@@ -38,7 +37,6 @@ Usa JSON válido con la siguiente estructura:
 
 ## Requisitos Específicos
 
-- **Content**: Debe ser una descripción técnica de 200-350 palabras dirigida a profesionales de la salud
 - **Clasificación farmacológica**: Categoría farmacológica principal reconocida oficialmente
 - **Diana molecular primaria**: Objetivo molecular específico y validado científicamente
 - **Modo de acción**: Mecanismo molecular detallado y preciso

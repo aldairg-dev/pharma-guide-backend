@@ -10,7 +10,6 @@ interface ContraindicationData {
 export interface DrugContraindicationResponse {
   id: number;
   contraindications: {
-    content: string;
     structured: ContraindicationData;
   };
 }
@@ -25,7 +24,6 @@ interface TherapeuticClassData {
 export interface DrugTherapeuticClassResponse {
   id: number;
   therapeuticClass: {
-    content: string;
     structured: TherapeuticClassData;
   };
 }
@@ -43,7 +41,6 @@ interface IndicationData {
 export interface IndicationsResponse {
   id: number;
   indications: {
-    content: string;
     structured: IndicationData;
   };
 }
@@ -59,7 +56,6 @@ interface MechanismOfActionData {
 export interface MechanismOfActionsResponse {
   id: number;
   mechanismOfActions: {
-    content: string;
     structured: MechanismOfActionData;
   };
 }
@@ -116,14 +112,9 @@ export class DrugIAService {
       );
 
       if (result && result.contraindications) {
-        const formattedContent = this.formatContraindications(
-          result.contraindications
-        );
-
         return {
           id: Number(dataDrug.id),
           contraindications: {
-            content: formattedContent,
             structured: result.contraindications,
           },
         };
@@ -134,122 +125,6 @@ export class DrugIAService {
       console.error("Error en DrugContradications:", error);
       return null;
     }
-  }
-
-  private formatContraindications(
-    contraindications: ContraindicationData
-  ): string {
-    let formatted = "";
-
-    if (contraindications.absolutas && contraindications.absolutas.length > 0) {
-      formatted += "CONTRAINDICACIONES ABSOLUTAS:\n\n";
-      contraindications.absolutas.forEach((item, index) => {
-        formatted += `${index + 1}. ${item}\n\n`;
-      });
-    }
-
-    if (contraindications.relativas && contraindications.relativas.length > 0) {
-      if (formatted.length > 0) {
-        formatted += "\n";
-      }
-      formatted +=
-        "CONTRAINDICACIONES RELATIVAS (Precauciones Especiales):\n\n";
-      contraindications.relativas.forEach((item, index) => {
-        formatted += `${index + 1}. ${item}\n\n`;
-      });
-    }
-
-    return formatted.trim();
-  }
-
-  private formatTherapeuticClass(
-    therapeuticClass: TherapeuticClassData
-  ): string {
-    let formatted = "";
-
-    formatted += `CLASE TERAPÉUTICA PRINCIPAL: ${therapeuticClass.clase_principal}\n\n`;
-
-    if (therapeuticClass.codigo_atc) {
-      formatted += `CÓDIGO ATC: ${therapeuticClass.codigo_atc}\n\n`;
-    }
-
-    if (therapeuticClass.subclases && therapeuticClass.subclases.length > 0) {
-      formatted += "SUBCLASES TERAPÉUTICAS:\n\n";
-      therapeuticClass.subclases.forEach((item, index) => {
-        formatted += `${index + 1}. ${item}\n\n`;
-      });
-    }
-
-    if (
-      therapeuticClass.indicaciones_principales &&
-      therapeuticClass.indicaciones_principales.length > 0
-    ) {
-      formatted += "INDICACIONES PRINCIPALES:\n\n";
-      therapeuticClass.indicaciones_principales.forEach((item, index) => {
-        formatted += `${index + 1}. ${item}\n\n`;
-      });
-    }
-
-    return formatted.trim();
-  }
-
-  private formatIndications(indications: IndicationData): string {
-    let formatted = "";
-
-    if (indications.indicaciones_principales && indications.indicaciones_principales.length > 0) {
-      formatted += "INDICACIONES PRINCIPALES:\n\n";
-      indications.indicaciones_principales.forEach((item, index) => {
-        formatted += `${index + 1}. ${item}\n\n`;
-      });
-    }
-
-    if (indications.indicaciones_secundaria && indications.indicaciones_secundaria.length > 0) {
-      if (formatted.length > 0) {
-        formatted += "\n";
-      }
-      formatted += "INDICACIONES SECUNDARIAS:\n\n";
-      indications.indicaciones_secundaria.forEach((item, index) => {
-        formatted += `${index + 1}. ${item}\n\n`;
-      });
-    }
-
-    if (indications.otras_indicaciones && indications.otras_indicaciones.length > 0) {
-      if (formatted.length > 0) {
-        formatted += "\n";
-      }
-      formatted += "OTRAS INDICACIONES (Off-label):\n\n";
-      indications.otras_indicaciones.forEach((item, index) => {
-        formatted += `${index + 1}. ${item}\n\n`;
-      });
-    }
-
-    return formatted.trim();
-  }
-
-  private formatMechanismOfActions(mechanismOfActions: MechanismOfActionData): string {
-    let formatted = "";
-
-    if (mechanismOfActions.clasificacion_farmacologica) {
-      formatted += `CLASIFICACIÓN FARMACOLÓGICA:\n${mechanismOfActions.clasificacion_farmacologica}\n\n`;
-    }
-
-    if (mechanismOfActions.diana_molecular_primaria) {
-      formatted += `DIANA MOLECULAR PRIMARIA:\n${mechanismOfActions.diana_molecular_primaria}\n\n`;
-    }
-
-    if (mechanismOfActions.modo_de_accion) {
-      formatted += `MODO DE ACCIÓN:\n${mechanismOfActions.modo_de_accion}\n\n`;
-    }
-
-    if (mechanismOfActions.impacto_bioquimico) {
-      formatted += `IMPACTO BIOQUÍMICO:\n${mechanismOfActions.impacto_bioquimico}\n\n`;
-    }
-
-    if (mechanismOfActions.efectos_terapeuticos_finales) {
-      formatted += `EFECTOS TERAPÉUTICOS FINALES:\n${mechanismOfActions.efectos_terapeuticos_finales}\n\n`;
-    }
-
-    return formatted.trim();
   }
 
   async therapeuticClass(
@@ -276,14 +151,9 @@ export class DrugIAService {
       );
 
       if (result && result.therapeuticClass) {
-        const formattedContent = this.formatTherapeuticClass(
-          result.therapeuticClass
-        );
-
         return {
           id: Number(dataDrug.id),
           therapeuticClass: {
-            content: formattedContent,
             structured: result.therapeuticClass,
           },
         };
@@ -362,12 +232,9 @@ export class DrugIAService {
       }
 
       if (result && result.indications) {
-        const formattedContent = this.formatIndications(result.indications.structured);
-
         return {
           id: Number(dataDrug.id),
           indications: {
-            content: formattedContent,
             structured: result.indications.structured,
           },
         };
@@ -380,7 +247,9 @@ export class DrugIAService {
     }
   }
 
-  async mechanismOfActions(drugId: number): Promise<MechanismOfActionsResponse | null> {
+  async mechanismOfActions(
+    drugId: number
+  ): Promise<MechanismOfActionsResponse | null> {
     try {
       const dataDrug = await this.retryOperation(() =>
         this.drugService.getDrugById(drugId)
@@ -402,16 +271,15 @@ export class DrugIAService {
       );
 
       if (!result) {
-        throw new Error("Failed to get validated mechanism of actions from IA service");
+        throw new Error(
+          "Failed to get validated mechanism of actions from IA service"
+        );
       }
 
       if (result && result.mechanismOfActions) {
-        const formattedContent = this.formatMechanismOfActions(result.mechanismOfActions.structured);
-
         return {
           id: Number(dataDrug.id),
           mechanismOfActions: {
-            content: formattedContent,
             structured: result.mechanismOfActions.structured,
           },
         };
