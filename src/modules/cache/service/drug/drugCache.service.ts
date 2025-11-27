@@ -550,7 +550,10 @@ export class DrugCacheService {
     }
   }
 
-  async getMechanismOfActions(userId: number, drugId: number): Promise<Boolean> {
+  async getMechanismOfActions(
+    userId: number,
+    drugId: number
+  ): Promise<Boolean> {
     try {
       await this.redisConnection.conexion();
       const client = this.getClient();
@@ -562,7 +565,10 @@ export class DrugCacheService {
 
       const cacheKey = `drug:${userId}:${drugId}`;
 
-      const mechanismOfActionsStr = await client.hGet(cacheKey, "mechanismOfActions");
+      const mechanismOfActionsStr = await client.hGet(
+        cacheKey,
+        "mechanismOfActions"
+      );
 
       if (!mechanismOfActionsStr || mechanismOfActionsStr == "null") {
         console.log(
@@ -586,6 +592,47 @@ export class DrugCacheService {
     } catch (error) {
       console.log(
         `[drugCacheService] Error al obtener los mecanismos de acción del fármaco drug:${userId}:${drugId}`
+      );
+      return false;
+    }
+  }
+
+  async addPharmacokinetics(
+    userId: number,
+    drugId: number,
+    pharmacokinetics: any
+  ): Promise<Boolean> {
+    try {
+      await this.redisConnection.conexion();
+      const client = await this.getClient();
+
+      if (!client) {
+        console.warn(`[drugCacheService] Redis client not available`);
+        return false;
+      }
+
+      const cacheKey = `drug:${userId}:${drugId}`;
+
+      const TTL_SECONDS = this.redisConnection.TIME_EXPIRED || 604800; // 7 días
+      const TTL_MS = TTL_SECONDS * 1000;
+      const now = Date.now();
+
+      const dataToUpdate = {
+        userId: userId.toString(),
+        drugId: drugId.toString(),
+        pharmacokinetics: JSON.stringify(pharmacokinetics),
+        lastUpdated: now.toString(),
+        expiresAt: (now + TTL_MS).toString(),
+      };
+
+      await client.hSet(cacheKey, dataToUpdate);
+      console.log(
+        `[drugCacheService] Farmacocinética almacenado en caché para userId: ${userId}, drugId: ${drugId}`
+      );
+      return true;
+    } catch (error) {
+      console.log(
+        `[drugCacheService] Error al guardar en cache la Farmacocinética del user:${userId} y drug:${drugId}`
       );
       return false;
     }
