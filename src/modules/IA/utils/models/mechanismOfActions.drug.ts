@@ -2,7 +2,6 @@ import { DrugModel } from "./drug.model";
 import { DrugInfo, GeminiAIUtils } from "../geminiAI/geminiAI.utils";
 import {
   MechanismOfActionResponse,
-  FormattedMechanismOfActionResponse,
   MechanismOfActionData,
 } from "../../types/mechanismOfActions";
 
@@ -65,29 +64,5 @@ export class MechanismOfActionsModel extends DrugModel {
       console.error("Error al obtener mecanismo de acción:", error);
       return {};
     }
-  }
-
-  static async getFormattedMechanismOfActions(
-    drugInfo: DrugInfo
-  ): Promise<FormattedMechanismOfActionResponse> {
-    const result = await this.getValidatedMechanismOfActions(drugInfo);
-
-    if (!result.mechanismOfActions) {
-      return {
-        mechanismOfActions: {
-          structured: {
-            clasificacion_farmacologica: "",
-            diana_molecular_primaria: "",
-            modo_de_accion: "",
-            impacto_bioquimico: "",
-            efectos_terapeuticos_finales: "",
-          },
-        },
-      };
-    }
-
-    return {
-      mechanismOfActions: result.mechanismOfActions,
-    };
   }
 }

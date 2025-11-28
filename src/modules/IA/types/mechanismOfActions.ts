@@ -11,9 +11,3 @@ export interface MechanismOfActionResponse {
     structured: MechanismOfActionData;
   };
 }
-
-export interface FormattedMechanismOfActionResponse {
-  mechanismOfActions: {
-    structured: MechanismOfActionData;
-  };
-}

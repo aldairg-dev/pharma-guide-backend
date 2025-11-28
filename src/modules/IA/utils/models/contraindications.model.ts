@@ -105,28 +105,4 @@ export class ContraindicationsModel extends DrugModel {
       };
     }
   }
-
-  static async getFormattedContraindications(
-    drugInfo: DrugInfo
-  ): Promise<FormattedContraindicationResponse> {
-    const result = await this.getValidatedContraindications(drugInfo);
-
-    if (!result.success || !result.contraindications) {
-      return {
-        success: result.success,
-        contraindications: null,
-        structuredData: null,
-        message: result.message,
-      };
-    }
-
-    const formatted = this.formatForDisplay(result.contraindications);
-
-    return {
-      success: true,
-      contraindications: formatted,
-      structuredData: result.contraindications,
-      message: result.message,
-    };
-  }
 }

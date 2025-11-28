@@ -2,6 +2,7 @@ export interface DosageIndication {
   nombre: string;
   dosis_habitual: string;
   dosis_mg_kg?: string;
+  dosis_kg?: string;
   frecuencia: string;
   duracion?: string;
 }

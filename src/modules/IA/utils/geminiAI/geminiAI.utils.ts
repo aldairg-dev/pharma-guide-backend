@@ -83,6 +83,7 @@ export class GeminiAIUtils {
 
     // Limpiar caracteres de control problemáticos
     jsonText = this.sanitizeJSON(jsonText);
+    console.log(`${jsonText}`);
 
     return JSON.parse(jsonText);
   }
@@ -193,7 +194,6 @@ export class GeminiAIUtils {
   }
 
   static generatePrompt(moduleName: string, drugInfo: DrugInfo): string {
-    // Importación dinámica para evitar dependencia circular
     const PromptLoader = require("../loaderPrompt").default;
 
     const variables = {

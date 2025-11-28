@@ -118,28 +118,4 @@ export class TherapeuticClassModel extends DrugModel {
       };
     }
   }
-
-  static async getFormattedTherapeuticClass(
-    drugInfo: DrugInfo
-  ): Promise<FormattedTherapeuticClassResponse> {
-    const result = await this.getValidatedTherapeuticClass(drugInfo);
-
-    if (!result.success || !result.therapeuticClass) {
-      return {
-        success: result.success,
-        therapeuticClass: null,
-        structuredData: null,
-        message: result.message,
-      };
-    }
-
-    const formatted = this.formatForDisplay(result.therapeuticClass);
-
-    return {
-      success: true,
-      therapeuticClass: formatted,
-      structuredData: result.therapeuticClass,
-      message: result.message,
-    };
-  }
 }
