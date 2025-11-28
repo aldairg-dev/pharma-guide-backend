@@ -307,7 +307,10 @@ export class DrugIAController {
       }
 
       let mechanismOfActionsData = null;
-      mechanismOfActionsData = await this.drugCache.getMechanismOfActions(userId, Number(id));
+      mechanismOfActionsData = await this.drugCache.getMechanismOfActions(
+        userId,
+        Number(id)
+      );
 
       if (!mechanismOfActionsData || mechanismOfActionsData === null) {
         const result = await this.drugIAService.mechanismOfActions(Number(id));
@@ -330,7 +333,7 @@ export class DrugIAController {
         res.status(404).json({
           success: false,
           message:
-            "No se encontró información del mecanismo de acción para este medicamento o el medicamento no existe",
+            "No mechanism of action information was found for this medication or the medication does not exist",
           mechanismOfActions: null,
         });
       }
@@ -343,6 +346,67 @@ export class DrugIAController {
         message: "Error processing request for drug mechanism of action",
         mechanismOfActions: null,
       });
+    }
+  }
+
+  async getPharmacokinetics(
+    req: Request,
+    res: Response,
+    _next: NextFunction
+  ): Promise<void> {
+    try {
+      const userId = (req as any).user.userId;
+      const { id } = req.params;
+
+      if (!userId || !id || isNaN(Number(id))) {
+        res.status(400).json({
+          success: false,
+          message: "User ID not found in token or invalid medication ID",
+          mechanismOfActions: null,
+        });
+        return;
+      }
+
+      const myDrug = await this.drugService.getMyDrugById(userId, Number(id));
+      if (!myDrug) {
+        res.status(404).json({
+          success: false,
+          message: "Not found Drug",
+          pharmacokinetics: null,
+        });
+        return;
+      }
+
+      let pharmacokinetics = null;
+      const pharmacokineticsCahe = await this.drugCache.getPharmacokinitics(
+        myDrug.userId,
+        myDrug.id
+      );
+
+      if (!pharmacokineticsCahe || pharmacokinetics === null) {
+      } else {
+        pharmacokinetics = pharmacokineticsCahe;
+      }
+
+      if (!pharmacokinetics == null) {
+        res.status(200).json({
+          pharmacokinetics: pharmacokinetics,
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          message:
+            "No pharmacokinetic information was found for this medication or the medication does not exist",
+          pharmacokinetics: null,
+        });
+      }
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: "Error processing request for drug pharmacokinetics",
+        pharmacokinetics: null,
+      });
+      return;
     }
   }
 }

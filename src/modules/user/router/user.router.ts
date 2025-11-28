@@ -75,6 +75,8 @@ routerUser.get(
   drugIAController.getMechanismOfActionsByDrugId.bind(drugIAController)
 );
 
+routerUser.get("/me/drugs/:id/pharmacokinetics", drugIAController.getPharmacokinetics.bind(drugIAController));
+
 routerUser.get(
   "/me/drugs/:id/contraindications",
   drugIAController.getContraindicationsByDrugId.bind(drugIAController)
