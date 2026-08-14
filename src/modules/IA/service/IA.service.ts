@@ -9,6 +9,8 @@ import { IndicationResponse } from "../types/indications.types";
 import { IndicationsModel } from "../utils/models/indications.model";
 import { MechanismOfActionResponse } from "../types/mechanismOfActions";
 import { MechanismOfActionsModel } from "../utils/models/mechanismOfActions.drug";
+import { PharmacokineticsResponse } from "../types/pharmacokinetics";
+import { PharmacokineticsModel } from "../utils/models/pharmacokinetics.model";
 class IAService {
   async getValidatedContraindications(
     drugInfo: DrugInfo
@@ -36,6 +38,12 @@ class IAService {
     drugInfo: DrugInfo
   ): Promise<MechanismOfActionResponse> {
     return MechanismOfActionsModel.getValidatedMechanismOfActions(drugInfo);
+  }
+
+  async getValidatedPharmacokinetics(
+    DrugInfo: DrugInfo
+  ): Promise<PharmacokineticsResponse> {
+    return PharmacokineticsModel.getValidatedPharmacokinetics(drugInfo);
   }
 }
 
