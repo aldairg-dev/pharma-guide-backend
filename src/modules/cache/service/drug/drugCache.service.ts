@@ -1,6 +1,7 @@
 import { interfaceDrugCache } from "../../types/Interfaces/DrugCache";
 import { connectToRedis } from "../../utils/connectToRedis";
 import { getRedisClient } from "../initializeRedis";
+import { RedisManager } from "../RedisManager";
 
 export class DrugCacheService {
   private getClient(): any {
@@ -39,9 +40,7 @@ export class DrugCacheService {
       }
 
       await client.hSet(cacheKey, dataToStore);
-      console.log(
-        `[drugCacheService] Datos almacenados correctamente en caché. Key: ${cacheKey}`
-      );
+
       return true;
     } catch (error) {
       console.error("[drugCacheService] Error al agregar a caché:", error);
@@ -199,14 +198,11 @@ export class DrugCacheService {
       };
 
       await client.hSet(cacheKey, dataToUpdate);
-      console.log(
-        `[drugCacheService] Contraindicaciones almacenadas en caché para userId: ${userId}, drugId: ${drugId}`
-      );
+
       return true;
     } catch (error) {
       console.error(
-        "[drugCacheService] Error al agregar contraindicaciones a caché:",
-        error
+        `[drugCacheService] Error al agregar contraindicaciones de caché: ${error}`
       );
       return false;
     }
@@ -239,21 +235,17 @@ export class DrugCacheService {
 
       try {
         const contraindications = JSON.parse(contraindicationsStr);
-        console.log(
-          `[drugCacheService] Contraindicaciones encontradas en caché para userId: ${userId}, drugId: ${drugId}`
-        );
+
         return contraindications;
       } catch (parseError) {
         console.warn(
-          "[drugCacheService] Error parseando contraindicaciones:",
-          parseError
+          `[drugCacheService] Error parseando contraindicaciones: ${parseError}`
         );
         return false;
       }
     } catch (error) {
       console.error(
-        "[drugCacheService] Error al obtener contraindicaciones de caché:",
-        error
+        `[drugCacheService] Error al obtener contraindicaciones de caché: ${error}`
       );
       return false;
     }
@@ -288,8 +280,7 @@ export class DrugCacheService {
       return true;
     } catch (error) {
       console.error(
-        "[drugCacheService] Error al agregar clase terapéutica a caché:",
-        error
+        `[drugCacheService] Error al agregar clase terapéutica de caché: ${error}`
       );
       return false;
     }
@@ -335,8 +326,7 @@ export class DrugCacheService {
       }
     } catch (error) {
       console.error(
-        "[drugCacheService] Error al obtener clase terapéutica de caché:",
-        error
+        `[drugCacheService] Error al obtener clase terapéutica de caché: ${error}`
       );
       return false;
     }
@@ -377,8 +367,7 @@ export class DrugCacheService {
       return true;
     } catch (error) {
       console.log(
-        `[drugCacheService] Error al agregar la docificación a cache: ${userId}, drugId: ${drugId}`,
-        error
+        `[drugCacheService] Error al agregar la docificación de caché: ${error}`
       );
       return false;
     }
@@ -419,7 +408,7 @@ export class DrugCacheService {
       }
     } catch (error) {
       console.log(
-        `[drugCacheService] Error al obtener la docificación del farmaco: drug:${userId}:${drugId} `
+        `[drugCacheService] Error al obtener la docificación del farmaco de caché: ${error}`
       );
       return false;
     }
@@ -454,13 +443,10 @@ export class DrugCacheService {
       };
 
       await client.hSet(cacheKey, dataToUpdate);
-      console.log(
-        `[drugCacheService] Indicación almacenada en caché para userId: ${userId}, drugId: ${drugId}`
-      );
       return true;
     } catch (error) {
       console.log(
-        `[drugCacheService] Error al agregar la indicacion a cache: ${userId}: ${drugId}`,
+        `[drugCacheService] Error al agregar la indicacion a cache: ${userId}: ${drugId}, el error: ${error}`,
         error
       );
       return false;
@@ -489,11 +475,7 @@ export class DrugCacheService {
       }
 
       try {
-        const indication = JSON.parse(indicationStr);
-        console.log(
-          `[drugCacheService] Indicacion encontrada en caché para userId: ${userId}, drugId: ${drugId}`
-        );
-        return indication;
+        return JSON.parse(indicationStr);
       } catch (parseError) {
         console.warn(
           `[drugCacheService] Error parseando la indicacion: ${parseError}`
@@ -502,7 +484,7 @@ export class DrugCacheService {
       }
     } catch (error) {
       console.log(
-        `[drugCacheService] Error al obtener las indicaiones del fármaco drug:${userId}:${drugId}`
+        `[drugCacheService] Error al obtener las indicaiones del fármaco drug:${userId}:${drugId}, el error: ${error}`
       );
       return false;
     }
@@ -550,7 +532,10 @@ export class DrugCacheService {
     }
   }
 
-  async getMechanismOfActions(userId: number, drugId: number): Promise<Boolean> {
+  async getMechanismOfActions(
+    userId: number,
+    drugId: number
+  ): Promise<Boolean> {
     try {
       await this.redisConnection.conexion();
       const client = this.getClient();
@@ -562,7 +547,10 @@ export class DrugCacheService {
 
       const cacheKey = `drug:${userId}:${drugId}`;
 
-      const mechanismOfActionsStr = await client.hGet(cacheKey, "mechanismOfActions");
+      const mechanismOfActionsStr = await client.hGet(
+        cacheKey,
+        "mechanismOfActions"
+      );
 
       if (!mechanismOfActionsStr || mechanismOfActionsStr == "null") {
         console.log(
@@ -572,11 +560,7 @@ export class DrugCacheService {
       }
 
       try {
-        const mechanismOfActions = JSON.parse(mechanismOfActionsStr);
-        console.log(
-          `[drugCacheService] Mecanismo de acción encontrado en caché para userId: ${userId}, drugId: ${drugId}`
-        );
-        return mechanismOfActions;
+        return JSON.parse(mechanismOfActionsStr);
       } catch (parseError) {
         console.warn(
           `[drugCacheService] Error parseando el mecanismo de acción: ${parseError}`
@@ -586,6 +570,89 @@ export class DrugCacheService {
     } catch (error) {
       console.log(
         `[drugCacheService] Error al obtener los mecanismos de acción del fármaco drug:${userId}:${drugId}`
+      );
+      return false;
+    }
+  }
+
+  async addPharmacokinetics(
+    userId: number,
+    drugId: number,
+    pharmacokinetics: any
+  ): Promise<Boolean> {
+    try {
+      await this.redisConnection.conexion();
+      const client = await this.getClient();
+
+      if (!client) {
+        console.warn(`[drugCacheService] Redis client not available`);
+        return false;
+      }
+
+      const cacheKey = `drug:${userId}:${drugId}`;
+
+      const TTL_SECONDS = this.redisConnection.TIME_EXPIRED || 604800; // 7 días
+      const TTL_MS = TTL_SECONDS * 1000;
+      const now = Date.now();
+
+      const dataToUpdate = {
+        userId: userId.toString(),
+        drugId: drugId.toString(),
+        pharmacokinetics: JSON.stringify(pharmacokinetics),
+        lastUpdated: now.toString(),
+        expiresAt: (now + TTL_MS).toString(),
+      };
+
+      await client.hSet(cacheKey, dataToUpdate);
+      console.log(
+        `[drugCacheService] Farmacocinética almacenado en caché para userId: ${userId}, drugId: ${drugId}`
+      );
+      return true;
+    } catch (error) {
+      console.log(
+        `[drugCacheService] Error al guardar en cache la Farmacocinética del user:${userId} y drug:${drugId}, ${error}`
+      );
+      return false;
+    }
+  }
+
+  async getPharmacokinitics(
+    userId: number,
+    drugId: number
+  ): Promise<Boolean | null> {
+    try {
+      await this.redisConnection.conexion();
+      const client = this.getClient();
+
+      if (!client) {
+        console.warn("[drugCacheService] Redis client not available");
+        return false;
+      }
+
+      const cacheKey = `drug:${userId}:${drugId}`;
+
+      const pharmacokiniticsStr = await client.hGet(
+        cacheKey,
+        "pharmacokinetics"
+      );
+
+      if (!pharmacokiniticsStr || pharmacokiniticsStr == "null") {
+        console.log(
+          `[drugCacheService] No se encontró la farmacocinética fármaco drug:${userId}:${drugId}`
+        );
+      }
+
+      try {
+        return JSON.parse(pharmacokiniticsStr);
+      } catch (parseError) {
+        console.error(
+          `[drugCacheService] Error al parsear el farmacocinética ${parseError}`
+        );
+        return false;
+      }
+    } catch (error) {
+      console.error(
+        `[drugCacheService] Error al obtener de cache la Farmacocinética, ${error}`
       );
       return false;
     }

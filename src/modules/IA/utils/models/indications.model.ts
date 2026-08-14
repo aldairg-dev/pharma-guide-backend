@@ -70,26 +70,4 @@ export class IndicationsModel extends DrugModel {
       return {};
     }
   }
-
-  static async getFormattedIndications(
-    drugInfo: DrugInfo
-  ): Promise<FormattedIndicationResponse> {
-    const result = await this.getValidatedIndications(drugInfo);
-
-    if (!result.indications) {
-      return {
-        indications: {
-          structured: {
-            indicaciones_principales: [],
-            indicaciones_secundaria: [],
-            otras_indicaciones: [],
-          },
-        },
-      };
-    }
-
-    return {
-      indications: result.indications,
-    };
-  }
 }

@@ -1,0 +1,49 @@
+services:
+  app:
+    build: .
+    container_name: pharma-backend
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - pharma-net
+
+  redis:
+    image: redis:7-alpine
+    container_name: pharma-redis
+    command: >
+      redis-server
+      --requirepass ${REDIS_PASSWORD}
+      --appendonly yes
+      --appendfsync everysec
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - pharma-net
+    # Descomenta solo si necesitas acceder a Redis desde tu host (ej. RedisInsight)
+    # ports:
+    #   - "6379:6379"
+
+volumes:
+  redis-data:
+
+networks:
+  pharma-net:
+    driver: bridge

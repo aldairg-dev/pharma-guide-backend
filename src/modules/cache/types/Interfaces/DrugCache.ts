@@ -28,7 +28,7 @@ export interface interfaceDrugCache {
   };
 
   indications?: {
-    strutured: {
+    structured: {
       indicaciones_principales: [];
       indicaciones_secundaria: [];
       otras_indicaciones: [];
@@ -44,6 +44,16 @@ export interface interfaceDrugCache {
       efectos_terapeuticos_finales: string;
     };
   };
+
+  pharmacokinetics?: {
+    structured: {
+      absorcion: string[];
+      distribucion: string[];
+      metabolismo: string[];
+      eliminacion: [];
+      otro_datos: string[];
+    };
+  };
 }
 
 export type DrugInfoType =
@@ -51,4 +61,5 @@ export type DrugInfoType =
   | "therapeuticClass"
   | "dosages"
   | "indications"
-  | "mechanismOfActions";
+  | "mechanismOfActions"
+  | "pharmacokinetics";

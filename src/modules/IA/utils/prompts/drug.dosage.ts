@@ -30,7 +30,16 @@ Eres un farmacólogo clínico especializado en dosificación de medicamentos. Tu
     {
       "nombre": "Indicación clínica",
       "dosis_habitual": "Rango de dosis (ej: 5-10 mg)",
-      "dosis_mg_kg": "Dosis peso-dependiente si aplica",
+      "dosis_mg_kg": {
+        "rango_0_5": "No aplica",
+        "rango_6_12": "No aplica",
+        "rango_13_17": "No aplica",
+        "comentarios": "Notas sobre si existen o no dosis basadas en peso"
+      },
+      "dosis_mg": {
+      "adultos": "No aplica",
+      "geriatrico": "No aplica",
+    },
       "frecuencia": "Intervalos (ej: cada 8 horas)",
       "duracion": "Tiempo de tratamiento si específico"
     }

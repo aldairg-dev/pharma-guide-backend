@@ -1,6 +1,5 @@
 import { DrugService } from "./drug.service";
 import IAService from "../../IA/service/IA.service";
-import { DosageResponse } from "../../IA/types/dosage.types";
 
 interface ContraindicationData {
   absolutas: string[];

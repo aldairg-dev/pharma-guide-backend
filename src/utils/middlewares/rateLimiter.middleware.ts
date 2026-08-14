@@ -25,12 +25,12 @@ export const RateLimit = (req: Request, res: Response, next: NextFunction) => {
       return;
     }
 
-    const timeout = 30000; // 30 segundos
+    const timeout = 40000; // 40 segundos
     const timer = setTimeout(() => {
       if (!res.headersSent) {
         res.status(504).json({
           success: false,
-          message: "La solicitud excedió el tiempo límite de 30 segundos.",
+          message: "La solicitud excedió el tiempo límite de 40 segundos.",
           code: "REQUEST_TIMEOUT",
         });
       }
