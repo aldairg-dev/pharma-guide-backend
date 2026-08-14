@@ -2,12 +2,12 @@ export interface PharmacokineticsData {
   absorcion: string[];
   distribucion: string[];
   metabolismo: string[];
-  excrecion: [];
+  excrecion: string[];
   implicaciones_clinicas: string[];
 }
 
 export interface PharmacokineticsResponse {
   pharmacokinetics?: {
-    strutured: PharmacokineticsData;
+    structured: PharmacokineticsData;
   };
 }
