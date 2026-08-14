@@ -13,13 +13,13 @@ import { PharmacokineticsResponse } from "../types/pharmacokinetics";
 import { PharmacokineticsModel } from "../utils/models/pharmacokinetics.model";
 class IAService {
   async getValidatedContraindications(
-    drugInfo: DrugInfo
+    drugInfo: DrugInfo,
   ): Promise<ContraindicationResponse> {
     return ContraindicationsModel.getValidatedContraindications(drugInfo);
   }
 
   async getValidatedTherapeuticClass(
-    drugInfo: DrugInfo
+    drugInfo: DrugInfo,
   ): Promise<TherapeuticClassResponse> {
     return TherapeuticClassModel.getValidatedTherapeuticClass(drugInfo);
   }
@@ -29,19 +29,19 @@ class IAService {
   }
 
   async getValidatedIndications(
-    drugInfo: DrugInfo
+    drugInfo: DrugInfo,
   ): Promise<IndicationResponse> {
     return IndicationsModel.getValidatedIndications(drugInfo);
   }
 
   async getValidatedMechanismOfActions(
-    drugInfo: DrugInfo
+    drugInfo: DrugInfo,
   ): Promise<MechanismOfActionResponse> {
     return MechanismOfActionsModel.getValidatedMechanismOfActions(drugInfo);
   }
 
   async getValidatedPharmacokinetics(
-    DrugInfo: DrugInfo
+    drugInfo: DrugInfo,
   ): Promise<PharmacokineticsResponse> {
     return PharmacokineticsModel.getValidatedPharmacokinetics(drugInfo);
   }
